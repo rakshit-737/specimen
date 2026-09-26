@@ -32,7 +32,11 @@ EMBER_URL = "https://ember.elastic.co/ember_dataset_2018_2.tar.bz2"
 MALBEHAVD = "https://raw.githubusercontent.com/mpasco/MalbehavD-V1/main/"
 # pinned hashes of fully-downloaded files (prefix downloads are hashed locally)
 KNOWN = {
-    "malbehavd/MalBehavD-V1-dataset.csv": None,
+    "avast_cape/Public_Avast_CTU_CAPEv2_Dataset_Small.zip":
+        "1ea1706019547d0fa2a268ce783725d6090bb3acf992726d08f4637c46531433",
+    "malbehavd/MalBehavD-V1-dataset.csv": "1e39c43a014e9b4ee56766ad6bb367ffe8ec4316eb0be75eb182c3b2d15f6364",
+    # 120 MB prefix (default --ember-mb)
+    "ember/ember_dataset_2018_2.tar.bz2@120": "c1637eaa021ee7d4a534e22c3208907ba0c40e2f3baa59b413fadfbd3d34bf65",
 }
 
 
@@ -75,6 +79,11 @@ def main(argv: list[str] | None = None) -> int:
     for f in files:
         rel = f.relative_to(dest).as_posix()
         lines[rel] = sha256_file(f)
+        key = f"{rel}@{a.ember_mb}" if rel.startswith("ember/") else rel
+        if KNOWN.get(key) and KNOWN[key] != lines[rel]:
+            print(f"WARNING: {rel} sha256 {lines[rel]} differs from pinned {KNOWN[key]}", file=sys.stderr)
+        elif KNOWN.get(key):
+            print(f"  pinned sha256 OK: {rel}")
     sums.write_text("".join(f"{h}  {r}\n" for r, h in sorted(lines.items())))
     print(f"wrote {sums}")
     return 0
