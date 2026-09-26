@@ -1,0 +1,148 @@
+{
+  "benchmark": "family_avast",
+  "generated": "2026-09-26",
+  "python": "3.14.3",
+  "dataset": {
+    "name": "Avast-CTU Public CAPEv2 (reduced reports)",
+    "reports": 48976,
+    "train": 37512,
+    "test": 11464,
+    "split": "date < 2019-08-01 -> train",
+    "families": {
+      "Adload": 704,
+      "Emotet": 14429,
+      "HarHar": 655,
+      "Lokibot": 4191,
+      "Qakbot": 4895,
+      "Swisyn": 12591,
+      "Trickbot": 4202,
+      "Ursnif": 1343,
+      "Zeus": 2594,
+      "njRAT": 3372
+    }
+  },
+  "metrics": [
+    {
+      "model": "mvp-jaccard",
+      "accuracy": 0.8783,
+      "macro_f1": 0.7125,
+      "fit+predict_s": 717.9,
+      "per_family_recall": {
+        "Adload": 0.6,
+        "Emotet": 0.8458,
+        "HarHar": 0.8696,
+        "Lokibot": 0.8672,
+        "Qakbot": 0.9924,
+        "Swisyn": 0.9934,
+        "Trickbot": 0.9528,
+        "Ursnif": 0.0677,
+        "Zeus": 0.6458,
+        "njRAT": 0.7495
+      }
+    },
+    {
+      "model": "static-only",
+      "accuracy": 0.6907,
+      "macro_f1": 0.7366,
+      "fit+predict_s": 683.0,
+      "per_family_recall": {
+        "Adload": 1.0,
+        "Emotet": 0.1391,
+        "HarHar": 0.9855,
+        "Lokibot": 0.7985,
+        "Qakbot": 0.7354,
+        "Swisyn": 0.9981,
+        "Trickbot": 0.9693,
+        "Ursnif": 0.7351,
+        "Zeus": 0.8819,
+        "njRAT": 0.8785
+      }
+    },
+    {
+      "model": "behaviour-only",
+      "accuracy": 0.9587,
+      "macro_f1": 0.9262,
+      "fit+predict_s": 758.9,
+      "per_family_recall": {
+        "Adload": 1.0,
+        "Emotet": 0.9051,
+        "HarHar": 0.9855,
+        "Lokibot": 0.946,
+        "Qakbot": 0.9949,
+        "Swisyn": 0.9991,
+        "Trickbot": 0.9648,
+        "Ursnif": 0.9721,
+        "Zeus": 0.8125,
+        "njRAT": 0.9871
+      }
+    },
+    {
+      "model": "behaviour+static",
+      "accuracy": 0.9497,
+      "macro_f1": 0.923,
+      "fit+predict_s": 840.3,
+      "per_family_recall": {
+        "Adload": 1.0,
+        "Emotet": 0.8657,
+        "HarHar": 0.9855,
+        "Lokibot": 0.9679,
+        "Qakbot": 0.9949,
+        "Swisyn": 0.9993,
+        "Trickbot": 0.9641,
+        "Ursnif": 0.9721,
+        "Zeus": 0.9653,
+        "njRAT": 0.9853
+      }
+    },
+    {
+      "model": "published HMIL behaviour+static (Bosansky 2022)",
+      "accuracy": 0.945,
+      "macro_f1": "-"
+    },
+    {
+      "model": "published HMIL static-only (Bosansky 2022)",
+      "accuracy": "~0.63",
+      "macro_f1": "-"
+    }
+  ],
+  "example": {
+    "sha256": "b0ec4f3c183c1055b98fdc9bb5dbb3e2231f8439cc4f2d039ef0ba6cfbbbdfb8",
+    "true": "Swisyn",
+    "pred": "Swisyn",
+    "top_tokens": [
+      [
+        "api:process32next",
+        0.1241
+      ],
+      [
+        "api:process32first",
+        0.1241
+      ],
+      [
+        "api:getcatalogobject2",
+        0.1212
+      ],
+      [
+        "registry_set:hkcu\\software\\vb and vba program settings\\explorer\\process\\lo",
+        0.1191
+      ],
+      [
+        "registry_set_parent:hkcu\\software\\vb and vba program settings\\explorer\\process",
+        0.1191
+      ],
+      [
+        "registry_set:hkcu\\software\\vb and vba program settings\\explorer\\process",
+        0.1187
+      ],
+      [
+        "registry_set_parent:hkcu\\software\\vb and vba program settings\\explorer",
+        0.1187
+      ],
+      [
+        "registry_read:hklm\\software\\microsoft\\ole\\maxsxshashcount",
+        0.1127
+      ]
+    ]
+  },
+  "markdown": "| model | accuracy | macro_f1 | fit+predict_s |\n|---|---|---|---|\n| mvp-jaccard | 0.8783 | 0.7125 | 717.9 |\n| static-only | 0.6907 | 0.7366 | 683.0 |\n| behaviour-only | 0.9587 | 0.9262 | 758.9 |\n| behaviour+static | 0.9497 | 0.923 | 840.3 |\n| published HMIL behaviour+static (Bosansky 2022) | 0.945 | - |  |\n| published HMIL static-only (Bosansky 2022) | ~0.63 | - |  |"
+}
