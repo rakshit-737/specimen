@@ -52,7 +52,7 @@ flowchart LR
 |---|---|---|
 | Adapters | `specimen/adapters/cape.py`, `api_seq.py` | Full CAPE/Cuckoo call logs, Avast-CTU reduced reports and API sequences, all mapped to one `Trace`. Hostile input is coerced and capped. |
 | Static gate | `specimen/static_triage.py`, `specimen/ml/ember.py` | Additive heuristic on bytes or on `static.pe`; EMBER v2-style vector + LightGBM with TreeSHAP; threshold calibrated for 99 % recall |
-| Provenance | `specimen/provenance.py` | Process tree, file/registry/network/mutex/service edges; about 60 ATT&CK mappings including API-level ones |
+| Provenance | `specimen/provenance.py` | Process tree, file/registry/network/mutex/service edges; about 50 ATT&CK mapping rules (34 API-level, 17 artefact-level) |
 | Tokens | `specimen/tokens.py` | Removes user names, GUIDs, SIDs, hex blobs and numbers so runs of one family share tokens |
 | Family | `specimen/ml/family.py` | 2^18 hashed tokens with multinomial LR. Weights are stored as `.npz` (no pickle), and every prediction is explained by its top tokens |
 | Detection synthesis | `specimen/detect.py` (v2), `specimen/synth.py` (MVP) | See [ADR 0002](docs/adr/0002-specificity-constrained-rule-generalisation.md) |
@@ -63,11 +63,11 @@ flowchart LR
 
 ```bash
 pip install -e ".[dev,ml]"       # core is stdlib-only; [ml] adds numpy/sklearn/lightgbm
-python -m pytest -q               # 60+ tests, no datasets needed
+python -m pytest -q               # 60 tests, no datasets needed
 python -m specimen demo --out out # inert fixtures, all spec demo scenarios
 
 # report-only analysis of a real (bundled) Avast-CTU CAPE report
-python -m specimen report tests/fixtures/cape/avast_lokibot_1.json --out out/reports
+python -m specimen report tests/fixtures/cape/avast_njrat_1.json --out out/reports
 
 # a whole directory, resumable
 python -m specimen batch path/to/cape_reports --out out/batch --workers 4
@@ -79,14 +79,17 @@ python -m specimen analyze sample.bin --trace run.json --out out/
 python -m specimen triage-ember features.jsonl
 ```
 
-Example (`specimen report` on a real Lokibot report, with the trained family model in `models/`):
+Example (`specimen report` on the bundled njRAT report, with the trained family model in `models/`; actual output):
 
 ```json
-{"verdict": {"label": "malicious", "confidence": "medium (behavior-driven)"},
- "family": "Lokibot", "family_confidence": 0.99,
- "techniques": ["T1055", "T1071.001", "T1105", "T1547.001", "T1555.003", "..."],
- "sigma_rules": 7, "yara": true}
+{"verdict": {"label": "malicious", "score": 0.9133, "confidence": "medium (behavior-driven)"},
+ "static_score": 0.2315,
+ "family": "njRAT", "family_confidence": 0.984,
+ "techniques": ["T1105", "T1547.001"],
+ "sigma_rules": 10, "yara": true}
 ```
+
+The bundled fixtures are trimmed to about 8 KB, so they carry fewer behaviour tokens than the full reports the model was evaluated on. The trimmed Lokibot fixture (`avast_lokibot_1.json`) is misattributed as njRAT (0.86); the two Emotet fixtures and the njRAT fixture are attributed correctly.
 
 Each report contains the static contributions, the timeline with ATT&CK tags and anomaly scores, the provenance graph as Mermaid, IOCs, the family evidence tokens, ready-to-review Sigma and YARA rules, and the evidence manifest.
 
@@ -167,7 +170,7 @@ For each family, 10 reference runs are drawn from the training split and rules a
 
 <img src="docs/figures/rule_generalisation.png" width="520" alt="Sibling recall vs cross-family FPR per synthesizer">
 
-Rule generalisation varies a lot by family. For Swisyn and Qakbot, one run gives about 98 % sibling recall. For Lokibot it gives 49 % (61 % with 5 runs), and for njRAT 36 % (56 % with 5 runs). Emotet, Trickbot and Ursnif randomise every artefact that the reduced reports record, so rules synthesized from one run almost never transfer. HarHar reports contain no process, registry or file-write actions, so no rule can be built from them. The v2 synthesizer roughly doubles recall and cuts cross-family false positives by about 140x compared with the MVP. The negatives are other malware families, not benign software; see [Limitations](#limitations).
+Rule generalisation varies a lot by family. For Swisyn and Qakbot, one run gives 99.8 % and 97.9 % sibling recall. For Lokibot it gives 49 % (61 % with 5 runs), and for njRAT 36 % (56 % with 5 runs). Emotet, Trickbot and Ursnif randomise every artefact that the reduced reports record, so rules synthesized from one run almost never transfer. HarHar reports contain no process, registry or file-write actions, so no rule can be built from them. The v2 synthesizer roughly doubles recall and cuts cross-family false positives by about 140x compared with the MVP. The negatives are other malware families, not benign software; see [Limitations](#limitations).
 
 ### 4. Behavioural detection on MalbehavD-V1: `results/behaviour_malbehavd.json`
 
