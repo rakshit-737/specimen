@@ -1,0 +1,88 @@
+{
+  "benchmark": "behaviour_malbehavd",
+  "generated": "2026-09-26",
+  "python": "3.14.3",
+  "dataset": {
+    "name": "MalbehavD-V1",
+    "samples": 2570,
+    "malicious": 1285,
+    "split": "70/30 stratified (seed 0) + 5-fold CV"
+  },
+  "holdout": [
+    {
+      "model": "mvp-synthetic",
+      "roc_auc": 0.22831,
+      "tpr@0.1%fpr": 0.0052,
+      "tpr@1%fpr": 0.0052,
+      "accuracy": 0.5032,
+      "precision": 1.0,
+      "recall": 0.0052,
+      "f1": 0.0103
+    },
+    {
+      "model": "attack-features",
+      "roc_auc": 0.77918,
+      "tpr@0.1%fpr": 0.0649,
+      "tpr@1%fpr": 0.0649,
+      "accuracy": 0.7536,
+      "precision": 0.7252,
+      "recall": 0.8156,
+      "f1": 0.7677
+    },
+    {
+      "model": "api-ngram-lr",
+      "roc_auc": 0.99099,
+      "tpr@0.1%fpr": 0.9273,
+      "tpr@1%fpr": 0.9351,
+      "accuracy": 0.9676,
+      "precision": 0.9712,
+      "recall": 0.9636,
+      "f1": 0.9674
+    },
+    {
+      "model": "api-ngram-lgbm",
+      "roc_auc": 0.98985,
+      "tpr@0.1%fpr": 0.8961,
+      "tpr@1%fpr": 0.9247,
+      "accuracy": 0.9663,
+      "precision": 0.9687,
+      "recall": 0.9636,
+      "f1": 0.9661
+    }
+  ],
+  "cv": [
+    {
+      "model": "mvp-synthetic",
+      "cv_accuracy": "0.5012 +/- 0.0016",
+      "cv_roc_auc": "0.2417 +/- 0.0216"
+    },
+    {
+      "model": "attack-features",
+      "cv_accuracy": "0.7155 +/- 0.0190",
+      "cv_roc_auc": "0.7630 +/- 0.0212"
+    },
+    {
+      "model": "api-ngram-lr",
+      "cv_accuracy": "0.9611 +/- 0.0090",
+      "cv_roc_auc": "0.9887 +/- 0.0057"
+    },
+    {
+      "model": "api-ngram-lgbm",
+      "cv_accuracy": "0.9630 +/- 0.0080",
+      "cv_roc_auc": "0.9900 +/- 0.0049"
+    }
+  ],
+  "published": [
+    {
+      "model": "MalDetConv CNN-BiGRU (Maniriho et al. 2022)",
+      "accuracy": 0.961,
+      "f1": 0.9602
+    },
+    {
+      "model": "MalDy TF-IDF + XGBoost (as reported there)",
+      "accuracy": 0.9559,
+      "f1": "-"
+    }
+  ],
+  "markdown": "| model | roc_auc | accuracy | precision | recall | f1 |\n|---|---|---|---|---|---|\n| mvp-synthetic | 0.22831 | 0.5032 | 1.0 | 0.0052 | 0.0103 |\n| attack-features | 0.77918 | 0.7536 | 0.7252 | 0.8156 | 0.7677 |\n| api-ngram-lr | 0.99099 | 0.9676 | 0.9712 | 0.9636 | 0.9674 |\n| api-ngram-lgbm | 0.98985 | 0.9663 | 0.9687 | 0.9636 | 0.9661 |\n| MalDetConv CNN-BiGRU (Maniriho et al. 2022) |  | 0.961 |  |  | 0.9602 |\n| MalDy TF-IDF + XGBoost (as reported there) |  | 0.9559 |  |  | - |\n\n| model | cv_accuracy | cv_roc_auc |\n|---|---|---|\n| mvp-synthetic | 0.5012 +/- 0.0016 | 0.2417 +/- 0.0216 |\n| attack-features | 0.7155 +/- 0.0190 | 0.7630 +/- 0.0212 |\n| api-ngram-lr | 0.9611 +/- 0.0090 | 0.9887 +/- 0.0057 |\n| api-ngram-lgbm | 0.9630 +/- 0.0080 | 0.9900 +/- 0.0049 |"
+}
