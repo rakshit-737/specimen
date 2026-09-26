@@ -30,7 +30,7 @@ All numbers come from `benchmarks/*.py` runs, and the raw outputs are committed 
 flowchart LR
   S[Sample bytes<br/>read-only] --> G[Static gate<br/>heuristic or EMBER LightGBM + TreeSHAP]
   R[CAPEv2 / Cuckoo report<br/>full or reduced] --> A[Adapters<br/>CAPE, API-sequence, native trace]
-  R -. static.pe .-> G2[PE-metadata gate]
+  R -. "static.pe" .-> G2["PE-metadata gate"]
   G -->|detonate?| D{score >= calibrated<br/>threshold}
   D -->|no| REP
   D -->|yes: replay recorded run| A
