@@ -1,0 +1,132 @@
+{
+  "benchmark": "rules_avast",
+  "generated": "2026-09-26",
+  "python": "3.14.3",
+  "dataset": "Avast-CTU CAPEv2 reduced reports, temporal split",
+  "protocol": {
+    "refs_per_family": 10,
+    "negatives_for_synthesis": "1500 other-family train runs",
+    "cell_format": "sibling recall / cross-family FPR"
+  },
+  "summary": [
+    {
+      "synthesizer": "sigma-mvp",
+      "sibling_recall_mean": 0.1817,
+      "cross_family_fpr_mean": 0.02265,
+      "runs_with_any_hit_on_siblings": 0.511,
+      "rules_per_run": 0.7
+    },
+    {
+      "synthesizer": "sigma-v2",
+      "sibling_recall_mean": 0.3266,
+      "cross_family_fpr_mean": 0.00016,
+      "runs_with_any_hit_on_siblings": 0.789,
+      "rules_per_run": 5.99
+    },
+    {
+      "synthesizer": "yara-imphash",
+      "sibling_recall_mean": 0.0869,
+      "cross_family_fpr_mean": 0.00021,
+      "runs_with_any_hit_on_siblings": 0.233,
+      "rules_per_run": 1.0
+    },
+    {
+      "synthesizer": "yara-v2",
+      "sibling_recall_mean": 0.0833,
+      "cross_family_fpr_mean": 2e-05,
+      "runs_with_any_hit_on_siblings": 0.167,
+      "rules_per_run": 0.87
+    },
+    {
+      "synthesizer": "sigma-v2 (5 runs pooled)",
+      "sibling_recall_mean": 0.4158,
+      "cross_family_fpr_mean": 0.00065,
+      "runs_with_any_hit_on_siblings": 1.0,
+      "rules_per_run": 29.56
+    }
+  ],
+  "per_family": [
+    {
+      "family": "Adload",
+      "n_test": 5,
+      "sigma-mvp": "0.000 / 0.0000",
+      "sigma-v2": "0.040 / 0.0000",
+      "yara-imphash": "0.000 / 0.0000",
+      "yara-v2": "0.060 / 0.0002",
+      "sigma-v2 (5 runs pooled)": "0.200 / 0.0000"
+    },
+    {
+      "family": "Emotet",
+      "n_test": 3529,
+      "sigma-mvp": "0.000 / 0.0115",
+      "sigma-v2": "0.000 / 0.0000",
+      "yara-imphash": "0.000 / 0.0000",
+      "yara-v2": "0.000 / 0.0000",
+      "sigma-v2 (5 runs pooled)": "0.001 / 0.0000"
+    },
+    {
+      "family": "Lokibot",
+      "n_test": 685,
+      "sigma-mvp": "0.063 / 0.0262",
+      "sigma-v2": "0.492 / 0.0000",
+      "yara-imphash": "0.000 / 0.0000",
+      "yara-v2": "0.000 / 0.0000",
+      "sigma-v2 (5 runs pooled)": "0.613 / 0.0000"
+    },
+    {
+      "family": "Qakbot",
+      "n_test": 393,
+      "sigma-mvp": "0.987 / 0.0221",
+      "sigma-v2": "0.979 / 0.0001",
+      "yara-imphash": "0.000 / 0.0000",
+      "yara-v2": "0.000 / 0.0000",
+      "sigma-v2 (5 runs pooled)": "0.992 / 0.0005"
+    },
+    {
+      "family": "Swisyn",
+      "n_test": 4258,
+      "sigma-mvp": "0.000 / 0.0000",
+      "sigma-v2": "0.998 / 0.0000",
+      "yara-imphash": "0.685 / 0.0000",
+      "yara-v2": "0.686 / 0.0000",
+      "sigma-v2 (5 runs pooled)": "0.998 / 0.0000"
+    },
+    {
+      "family": "Trickbot",
+      "n_test": 1336,
+      "sigma-mvp": "0.007 / 0.0397",
+      "sigma-v2": "0.007 / 0.0001",
+      "yara-imphash": "0.000 / 0.0000",
+      "yara-v2": "0.000 / 0.0000",
+      "sigma-v2 (5 runs pooled)": "0.008 / 0.0001"
+    },
+    {
+      "family": "Ursnif",
+      "n_test": 502,
+      "sigma-mvp": "0.002 / 0.0301",
+      "sigma-v2": "0.021 / 0.0000",
+      "yara-imphash": "0.000 / 0.0000",
+      "yara-v2": "0.000 / 0.0000",
+      "sigma-v2 (5 runs pooled)": "0.044 / 0.0000"
+    },
+    {
+      "family": "Zeus",
+      "n_test": 144,
+      "sigma-mvp": "0.291 / 0.0410",
+      "sigma-v2": "0.041 / 0.0000",
+      "yara-imphash": "0.003 / 0.0000",
+      "yara-v2": "0.002 / 0.0000",
+      "sigma-v2 (5 runs pooled)": "0.326 / 0.0002"
+    },
+    {
+      "family": "njRAT",
+      "n_test": 543,
+      "sigma-mvp": "0.285 / 0.0331",
+      "sigma-v2": "0.361 / 0.0012",
+      "yara-imphash": "0.095 / 0.0018",
+      "yara-v2": "0.002 / 0.0000",
+      "sigma-v2 (5 runs pooled)": "0.560 / 0.0050"
+    }
+  ],
+  "markdown": "| synthesizer | sibling_recall_mean | cross_family_fpr_mean | runs_with_any_hit_on_siblings | rules_per_run |\n|---|---|---|---|---|\n| sigma-mvp | 0.1817 | 0.02265 | 0.511 | 0.7 |\n| sigma-v2 | 0.3266 | 0.00016 | 0.789 | 5.99 |\n| yara-imphash | 0.0869 | 0.00021 | 0.233 | 1.0 |\n| yara-v2 | 0.0833 | 2e-05 | 0.167 | 0.87 |\n| sigma-v2 (5 runs pooled) | 0.4158 | 0.00065 | 1.0 | 29.56 |\n\n| family | n_test | sigma-mvp | sigma-v2 | yara-imphash | yara-v2 | sigma-v2 (5 runs pooled) |\n|---|---|---|---|---|---|---|\n| Adload | 5 | 0.000 / 0.0000 | 0.040 / 0.0000 | 0.000 / 0.0000 | 0.060 / 0.0002 | 0.200 / 0.0000 |\n| Emotet | 3529 | 0.000 / 0.0115 | 0.000 / 0.0000 | 0.000 / 0.0000 | 0.000 / 0.0000 | 0.001 / 0.0000 |\n| Lokibot | 685 | 0.063 / 0.0262 | 0.492 / 0.0000 | 0.000 / 0.0000 | 0.000 / 0.0000 | 0.613 / 0.0000 |\n| Qakbot | 393 | 0.987 / 0.0221 | 0.979 / 0.0001 | 0.000 / 0.0000 | 0.000 / 0.0000 | 0.992 / 0.0005 |\n| Swisyn | 4258 | 0.000 / 0.0000 | 0.998 / 0.0000 | 0.685 / 0.0000 | 0.686 / 0.0000 | 0.998 / 0.0000 |\n| Trickbot | 1336 | 0.007 / 0.0397 | 0.007 / 0.0001 | 0.000 / 0.0000 | 0.000 / 0.0000 | 0.008 / 0.0001 |\n| Ursnif | 502 | 0.002 / 0.0301 | 0.021 / 0.0000 | 0.000 / 0.0000 | 0.000 / 0.0000 | 0.044 / 0.0000 |\n| Zeus | 144 | 0.291 / 0.0410 | 0.041 / 0.0000 | 0.003 / 0.0000 | 0.002 / 0.0000 | 0.326 / 0.0002 |\n| njRAT | 543 | 0.285 / 0.0331 | 0.361 / 0.0012 | 0.095 / 0.0018 | 0.002 / 0.0000 | 0.560 / 0.0050 |"
+}
