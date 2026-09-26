@@ -7,6 +7,7 @@ from typing import Any
 EVENT_TYPES = frozenset({
     "process_create", "process_inject", "file_write", "file_read", "file_delete",
     "registry_set", "net_connect", "dns_query", "service_create", "scheduled_task",
+    "api_call", "mutex_create", "registry_delete", "registry_read", "service_start",
 })
 
 

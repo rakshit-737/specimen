@@ -1,0 +1,217 @@
+{
+ "behavior": {
+  "summary": {
+   "keys": [
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\OLEAUT",
+    "HKEY_CURRENT_USER",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\msasn1",
+    "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\DisableImprovedZoneCheck",
+    "HKEY_LOCAL_MACHINE\\Software\\Policies\\Microsoft\\Windows\\CurrentVersion\\Internet Settings",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\Security_HKLM_only",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Cryptography\\Calais\\Debug\\winscard",
+    "HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\CMF\\Config",
+    "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Control\\CMF\\Config\\SYSTEM",
+    "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\Windows Error Reporting\\WMR",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\Windows Error Reporting\\WMR\\Disable"
+   ],
+   "resolved_apis": [
+    "rasapi32.dll.RasConnectionNotificationW",
+    "rasapi32.dll.RasDeleteEntryW",
+    "rasapi32.dll.RasDialW",
+    "rasapi32.dll.RasEnumEntriesW",
+    "rasapi32.dll.RasEnumConnectionsW",
+    "rasapi32.dll.RasGetAutodialEnableW",
+    "rasapi32.dll.RasGetAutodialParamW",
+    "rasapi32.dll.RasGetConnectStatusW",
+    "rasapi32.dll.RasGetCredentialsW",
+    "rasapi32.dll.RasGetEntryDialParamsW",
+    "rasapi32.dll.RasGetErrorStringW",
+    "rasapi32.dll.RasGetHport"
+   ],
+   "executed_commands": [
+    "\"C:\\Users\\comp\\AppData\\Local\\Temp\\65FC7F0A79D3052E4919.exe\"",
+    "\"C:\\Users\\comp\\AppData\\Local\\Microsoft\\Windows\\duplexcatch.exe\""
+   ],
+   "write_keys": [
+    "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Tracing\\65FC7F0A79D3052E4919_RASAPI32",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Tracing\\65FC7F0A79D3052E4919_RASAPI32\\EnableFileTracing",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Tracing\\65FC7F0A79D3052E4919_RASAPI32\\EnableConsoleTracing",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Tracing\\65FC7F0A79D3052E4919_RASAPI32\\FileTracingMask",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Tracing\\65FC7F0A79D3052E4919_RASAPI32\\ConsoleTracingMask",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Tracing\\65FC7F0A79D3052E4919_RASAPI32\\MaxFileSize",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Tracing\\65FC7F0A79D3052E4919_RASAPI32\\FileDirectory",
+    "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Action Center\\Checks\\{11CD958A-C507-4EF3-B3F2-5FD9DFBD2C78}.check.101\\CheckSetting",
+    "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Tracing\\duplexcatch_RASAPI32",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Tracing\\duplexcatch_RASAPI32\\EnableFileTracing",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Tracing\\duplexcatch_RASAPI32\\EnableConsoleTracing",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Tracing\\duplexcatch_RASAPI32\\FileTracingMask"
+   ],
+   "files": [
+    "C:\\Windows\\SysWOW64\\en-US\\SETUPAPI.dll.mui",
+    "C:\\Windows\\Globalization\\Sorting\\sortdefault.nls",
+    "C:\\",
+    "C:\\Users\\comp\\AppData\\Local\\Temp\\65FC7F0A79D3052E4919.exe",
+    "C:\\Users\\",
+    "C:\\Users\\comp\\",
+    "C:\\Users\\comp\\AppData\\",
+    "C:\\Users\\comp\\AppData\\Local\\",
+    "C:\\Users\\comp\\AppData\\Local\\Microsoft\\",
+    "C:\\Users\\comp\\AppData\\Local\\Microsoft\\Windows\\",
+    "\\Device\\KsecDD",
+    "C:\\Windows\\SysWOW64\\shell32.dll"
+   ],
+   "read_files": [
+    "C:\\Windows\\SysWOW64\\en-US\\SETUPAPI.dll.mui",
+    "C:\\Windows\\Globalization\\Sorting\\sortdefault.nls",
+    "C:\\Users\\comp\\AppData\\Local\\Temp\\65FC7F0A79D3052E4919.exe",
+    "\\Device\\KsecDD",
+    "C:\\Windows\\SysWOW64\\shell32.dll",
+    "C:\\",
+    "C:\\Users\\comp\\AppData\\Local\\Microsoft\\Windows\\Caches\\cversions.1.db",
+    "C:\\Users\\comp\\AppData\\Local\\Microsoft\\Windows\\Caches\\{AFBF9F1A-8EE8-4C77-AF34-C647E37CA0D9}.1.ver0x0000000000000003.db",
+    "C:\\Users\\desktop.ini",
+    "C:\\Users",
+    "C:\\Users\\comp",
+    "C:\\Users\\comp\\AppData"
+   ],
+   "started_services": [],
+   "created_services": [],
+   "write_files": [
+    "C:\\Users\\comp\\AppData\\Local\\Microsoft\\Windows\\duplexcatch.exe",
+    "\\??\\PIPE\\wkssvc",
+    "\\??\\PIPE\\DAV RPC SERVICE"
+   ],
+   "delete_keys": [],
+   "read_keys": [
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\DisableImprovedZoneCheck",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\Security_HKLM_only",
+    "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Control\\CMF\\Config\\SYSTEM",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\Windows Error Reporting\\WMR\\Disable",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\MICROSOFT\\Windows\\CurrentVersion\\Setup\\SourcePath",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\DevicePath",
+    "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Control\\Nls\\CustomLocale\\en-US",
+    "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Control\\Nls\\ExtendedLocale\\en-US",
+    "DisableUserModeCallbackFilter",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Tracing\\EnableConsoleTracing",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Tracing\\65FC7F0A79D3052E4919_RASAPI32\\EnableFileTracing",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Tracing\\65FC7F0A79D3052E4919_RASAPI32\\FileTracingMask"
+   ],
+   "delete_files": [
+    "C:\\Users\\comp\\AppData\\Local\\Temp\\65FC7F0A79D3052E4919.exe",
+    "C:\\Users\\comp\\AppData\\Local\\Microsoft\\Windows\\duplexcatch.exe:Zone.Identifier"
+   ],
+   "mutexes": [
+    "RasPbFile",
+    "PEMAA4",
+    "PEM2E4",
+    "Global\\I5C3A8244",
+    "Global\\M5C3A8244",
+    "PEMA34",
+    "PEMB84",
+    "IESQMMUTEX_0_208"
+   ]
+  }
+ },
+ "static": {
+  "pe": {
+   "imphash": "5f242fa8db9d2d99901fa55823ebf5b3",
+   "timestamp": "2018-08-15 19:01:49",
+   "entrypoint": "0x00422d37",
+   "osversion": "5.0",
+   "imported_dll_count": 22,
+   "sections": [
+    {
+     "name": ".text",
+     "entropy": "6.89",
+     "size_of_data": "0x00024600",
+     "virtual_size": "0x00024488"
+    },
+    {
+     "name": ".text",
+     "entropy": "4.23",
+     "size_of_data": "0x00004e00",
+     "virtual_size": "0x00004c1c"
+    },
+    {
+     "name": ".idata",
+     "entropy": "4.79",
+     "size_of_data": "0x00000c00",
+     "virtual_size": "0x00000aca"
+    },
+    {
+     "name": ".rsrc",
+     "entropy": "2.22",
+     "size_of_data": "0x00000400",
+     "virtual_size": "0x00000250"
+    },
+    {
+     "name": ".reloc",
+     "entropy": "6.04",
+     "size_of_data": "0x00001000",
+     "virtual_size": "0x00000ff8"
+    }
+   ],
+   "imports": [
+    {
+     "dll": "RASAPI32.dll",
+     "imports": [
+      {
+       "name": "RasSetAutodialParamA"
+      },
+      {
+       "name": "RasGetSubEntryPropertiesA"
+      }
+     ]
+    },
+    {
+     "dll": "RPCRT4.dll",
+     "imports": [
+      {
+       "name": "I_RpcMapWin32Status"
+      },
+      {
+       "name": "NdrCorrelationInitialize"
+      }
+     ]
+    },
+    {
+     "dll": "ntdll.dll",
+     "imports": [
+      {
+       "name": "strncmp"
+      }
+     ]
+    },
+    {
+     "dll": "OLEAUT32.dll",
+     "imports": [
+      {
+       "name": "VarUI1FromStr"
+      }
+     ]
+    },
+    {
+     "dll": "CRYPT32.dll",
+     "imports": [
+      {
+       "name": "CryptSignAndEncodeCertificate"
+      },
+      {
+       "name": "CryptSIPRemoveSignedDataMsg"
+      },
+      {
+       "name": "CryptInstallOIDFunctionAddress"
+      },
+      {
+       "name": "CertSetEnhancedKeyUsage"
+      },
+      {
+       "name": "CertDuplicateCRLContext"
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

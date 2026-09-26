@@ -9,32 +9,99 @@ LOLBINS = ("powershell.exe", "cmd.exe", "wscript.exe", "mshta.exe", "rundll32.ex
            "regsvr32.exe", "certutil.exe", "vssadmin.exe", "bcdedit.exe", "schtasks.exe")
 
 
+# API names (lower-case, without the ``dll.`` prefix CAPE puts on resolved
+# APIs) that on their own indicate a technique. Kept deliberately small and
+# high-signal: this feeds explainable features, not a signature engine.
+API_TECHNIQUES: dict[str, tuple[str, str]] = {
+    "isdebuggerpresent": ("T1622", "defense-evasion"),
+    "checkremotedebuggerpresent": ("T1622", "defense-evasion"),
+    "ntqueryinformationprocess": ("T1622", "defense-evasion"),
+    "getasynckeystate": ("T1056.001", "collection"),
+    "setwindowshookexa": ("T1056.001", "collection"),
+    "setwindowshookexw": ("T1056.001", "collection"),
+    "getkeyboardstate": ("T1056.001", "collection"),
+    "urldownloadtofilea": ("T1105", "command-and-control"),
+    "urldownloadtofilew": ("T1105", "command-and-control"),
+    "internetopenurla": ("T1071.001", "command-and-control"),
+    "internetopenurlw": ("T1071.001", "command-and-control"),
+    "httpsendrequesta": ("T1071.001", "command-and-control"),
+    "httpsendrequestw": ("T1071.001", "command-and-control"),
+    "winhttpsendrequest": ("T1071.001", "command-and-control"),
+    "createtoolhelp32snapshot": ("T1057", "discovery"),
+    "process32firstw": ("T1057", "discovery"),
+    "enumprocesses": ("T1057", "discovery"),
+    "getcomputernamea": ("T1082", "discovery"),
+    "getcomputernamew": ("T1082", "discovery"),
+    "getnativesysteminfo": ("T1082", "discovery"),
+    "cryptunprotectdata": ("T1555", "credential-access"),
+    "credenumeratea": ("T1555", "credential-access"),
+    "credenumeratew": ("T1555", "credential-access"),
+    "cryptencrypt": ("T1486", "impact"),
+    "bitblt": ("T1113", "collection"),
+    "getclipboarddata": ("T1115", "collection"),
+    "virtualallocex": ("T1055", "defense-evasion"),
+    "writeprocessmemory": ("T1055", "defense-evasion"),
+    "createremotethread": ("T1055", "defense-evasion"),
+    "ntunmapviewofsection": ("T1055.012", "defense-evasion"),
+    "zwunmapviewofsection": ("T1055.012", "defense-evasion"),
+    "adjusttokenprivileges": ("T1134", "privilege-escalation"),
+    "netshareenum": ("T1135", "discovery"),
+    "wnetenumresourcew": ("T1135", "discovery"),
+}
+
+_BROWSER_CRED = (r"\login data", r"\cookies", r"\mozilla\firefox\profiles", r"\logins.json",
+                 r"\key3.db", r"\key4.db", r"\web data", "\\filezilla\\", r"\outlook\profiles")
+_STARTUP = ("\\start menu\\programs\\startup\\",)
+_RUN_KEYS = (r"currentversion\run", r"currentversion\policies\explorer\run",
+             r"currentversion\winlogon\shell", r"currentversion\winlogon\userinit")
+
+
+def api_name(target: str) -> str:
+    """``kernel32.dll.GetProcAddress`` -> ``getprocaddress``."""
+    t = target.lower()
+    if ".dll." in t:
+        t = t.rsplit(".dll.", 1)[1]
+    return t
+
+
 def map_technique(ev: Event) -> tuple[str | None, str | None]:
     t = (ev.target or "").lower()
     c = (ev.cmdline or "").lower()
+    if ev.type == "api_call":
+        return API_TECHNIQUES.get(api_name(t), (None, None))
     if ev.type == "process_inject":
         return "T1055", "defense-evasion"
-    if ev.type == "registry_set" and r"currentversion\run" in t:
+    if ev.type == "registry_set" and any(k in t for k in _RUN_KEYS):
+        return "T1547.001", "persistence"
+    if ev.type == "file_write" and any(k in t for k in _STARTUP):
         return "T1547.001", "persistence"
     if ev.type == "scheduled_task" or "schtasks" in c:
         return "T1053.005", "persistence"
     if ev.type == "service_create":
         return "T1543.003", "persistence"
-    if "vssadmin" in c and "delete" in c or "bcdedit" in c:
+    if ev.type == "service_start":
+        return "T1569.002", "execution"
+    if "vssadmin" in c and "delete" in c or "bcdedit" in c or "wbadmin" in c and "delete" in c:
         return "T1490", "impact"
     if ev.type == "process_create" and ("powershell" in c and ("-enc" in c or "iex" in c)):
         return "T1059.001", "execution"
     if ev.type == "process_create" and "cmd.exe" in (ev.target or "").lower():
         return "T1059.003", "execution"
+    if ev.type == "process_create" and ("wscript" in t or "cscript" in t):
+        return "T1059.005", "execution"
     if ev.type == "file_write" and t.endswith((".locked", ".encrypted", ".crypt")):
         return "T1486", "impact"
     if ev.type == "file_delete":
         return "T1070.004", "defense-evasion"
+    if ev.type in ("file_read", "registry_read") and any(k in t for k in _BROWSER_CRED):
+        return "T1555.003", "credential-access"
+    if ev.type == "registry_set" and "\\policies\\" in t:
+        return "T1112", "defense-evasion"
     if ev.type == "net_connect":
         return "T1071", "command-and-control"
     if ev.type == "dns_query":
         return "T1071.004", "command-and-control"
-    if ev.type == "file_write" and t.endswith((".exe", ".dll", ".ps1", ".vbs")):
+    if ev.type == "file_write" and t.endswith((".exe", ".dll", ".ps1", ".vbs", ".bat", ".scr")):
         return "T1105", "command-and-control"
     return None, None
 
@@ -83,10 +150,19 @@ _REL = {
     "file_delete": ("file", "deleted"), "registry_set": ("registry", "set"),
     "net_connect": ("network", "connected"), "dns_query": ("domain", "resolved"),
     "service_create": ("service", "created"), "scheduled_task": ("task", "scheduled"),
+    "registry_delete": ("registry", "deleted"), "registry_read": ("registry", "read"),
+    "mutex_create": ("mutex", "created"), "service_start": ("service", "started"),
+    "api_call": ("api", "called"),
 }
 
 
-def reconstruct(trace: Trace) -> tuple[ProvenanceGraph, list[TimelineEntry]]:
+def reconstruct(trace: Trace, include_benign_apis: bool = False
+                ) -> tuple[ProvenanceGraph, list[TimelineEntry]]:
+    """Build the provenance graph + ATT&CK timeline.
+
+    ``api_call`` events carry no host side effect; unless they map to a
+    technique they are left out of the graph/timeline (they would otherwise
+    swamp a real CAPE report with thousands of nodes)."""
     g = ProvenanceGraph()
     timeline: list[TimelineEntry] = []
     pid_image: dict[int, str] = {}
@@ -96,6 +172,9 @@ def reconstruct(trace: Trace) -> tuple[ProvenanceGraph, list[TimelineEntry]]:
         return g.add_node(f"proc:{pid}", "process", f"{pid_image[pid]} ({pid})")
 
     for ev in trace.events:
+        tech, tactic = map_technique(ev)
+        if ev.type == "api_call" and not tech and not include_benign_apis:
+            continue
         src = proc(ev.pid, ev.image)
         if ev.type == "process_create":
             child_pid = int(ev.extra.get("child_pid", -1))
@@ -112,6 +191,5 @@ def reconstruct(trace: Trace) -> tuple[ProvenanceGraph, list[TimelineEntry]]:
             dst = g.add_node(f"{kind}:{ev.target}", kind, str(ev.target))
             g.edges.append(Edge(src, dst, rel, ev.ts))
             desc = f"{ev.image} {rel} {ev.target}"
-        tech, tactic = map_technique(ev)
         timeline.append(TimelineEntry(ev.ts, desc, tech, tactic))
     return g, timeline

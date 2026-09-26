@@ -1,0 +1,232 @@
+{
+ "behavior": {
+  "summary": {
+   "keys": [
+    "HKEY_CURRENT_USER",
+    "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\FileSystem",
+    "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Control\\FileSystem\\Win31FileSystem",
+    "DisableUserModeCallbackFilter",
+    "HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Nls\\CustomLocale",
+    "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Control\\Nls\\CustomLocale\\en-US",
+    "HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Nls\\ExtendedLocale",
+    "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Control\\Nls\\ExtendedLocale\\en-US",
+    "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Control\\Nls\\Sorting\\Versions\\00060101.00060101",
+    "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows NT\\CurrentVersion\\GRE_Initialize",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\GRE_Initialize\\DisableMetaFiles",
+    "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\SideBySide"
+   ],
+   "resolved_apis": [
+    "winspool.drv.#218",
+    "winspool.drv.#217",
+    "winspool.drv.SetDefaultPrinterW",
+    "winspool.drv.GetDefaultPrinterW",
+    "winspool.drv.GetPrinterDriverPackagePathW",
+    "winspool.drv.CorePrinterDriverInstalledW",
+    "winspool.drv.GetCorePrinterDriversW",
+    "winspool.drv.UploadPrinterDriverPackageW",
+    "winspool.drv.InstallPrinterDriverFromPackageW",
+    "winspool.drv.#251",
+    "winspool.drv.AddPrinterConnection2W",
+    "winspool.drv.OpenPrinter2W"
+   ],
+   "executed_commands": [
+    "\"C:\\Users\\comp\\AppData\\Local\\Temp\\DF4FD49DC53618D7F3A1.exe\""
+   ],
+   "write_keys": [],
+   "files": [
+    "C:\\Windows\\Globalization\\Sorting\\sortdefault.nls",
+    "C:\\",
+    "C:\\Users\\comp\\AppData\\Local\\Temp\\DF4FD49DC53618D7F3A1.exe",
+    "C:\\Users\\comp\\AppData\\Local\\spcmachine\\spcmachine.exe",
+    "C:\\Users\\comp\\AppData\\Local\\Microsoft\\Windows\\iproppass.exe",
+    "C:\\Users\\comp\\AppData\\Local\\Microsoft\\Windows\\spcmachine.exe",
+    "C:\\Users\\",
+    "C:\\Users\\comp\\",
+    "C:\\Users\\comp\\AppData\\",
+    "C:\\Users\\comp\\AppData\\Local\\",
+    "C:\\Users\\comp\\AppData\\Local\\iproppass\\",
+    "\\Device\\KsecDD"
+   ],
+   "read_files": [
+    "C:\\Windows\\Globalization\\Sorting\\sortdefault.nls",
+    "C:\\Users\\comp\\AppData\\Local\\Temp\\DF4FD49DC53618D7F3A1.exe",
+    "\\Device\\KsecDD",
+    "C:\\Windows\\SysWOW64\\shell32.dll",
+    "C:\\",
+    "C:\\Users\\comp\\AppData\\Local\\Microsoft\\Windows\\Caches\\cversions.1.db",
+    "C:\\Users\\comp\\AppData\\Local\\Microsoft\\Windows\\Caches\\{AFBF9F1A-8EE8-4C77-AF34-C647E37CA0D9}.1.ver0x0000000000000003.db",
+    "C:\\Users\\desktop.ini",
+    "C:\\Users",
+    "C:\\Users\\comp",
+    "C:\\Users\\comp\\AppData",
+    "C:\\Users\\comp\\AppData\\Local"
+   ],
+   "started_services": [],
+   "created_services": [],
+   "write_files": [
+    "C:\\Users\\comp\\AppData\\Local\\iproppass\\iproppass.exe"
+   ],
+   "delete_keys": [],
+   "read_keys": [
+    "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Control\\FileSystem\\Win31FileSystem",
+    "DisableUserModeCallbackFilter",
+    "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Control\\Nls\\CustomLocale\\en-US",
+    "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Control\\Nls\\ExtendedLocale\\en-US",
+    "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Control\\Nls\\Sorting\\Versions\\00060101.00060101",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\GRE_Initialize\\DisableMetaFiles",
+    "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\NoFileFolderConnection",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\NoPropertiesMyComputer",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\NoPropertiesRecycleBin",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\NoControlPanel",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\NoSetFolders",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\NoInternetIcon"
+   ],
+   "delete_files": [
+    "C:\\Users\\comp\\AppData\\Local\\spcmachine\\spcmachine.exe",
+    "C:\\Users\\comp\\AppData\\Local\\Microsoft\\Windows\\iproppass.exe",
+    "C:\\Users\\comp\\AppData\\Local\\Microsoft\\Windows\\spcmachine.exe",
+    "C:\\Users\\comp\\AppData\\Local\\Temp\\DF4FD49DC53618D7F3A1.exe"
+   ],
+   "mutexes": [
+    "PEM9B4",
+    "PEM938",
+    "Global\\I5C3A8244",
+    "Global\\M5C3A8244"
+   ]
+  }
+ },
+ "static": {
+  "pe": {
+   "imphash": "4dea8baa82ea91fb7bfd7710f9db1c8b",
+   "timestamp": "2018-12-15 01:45:23",
+   "entrypoint": "0x00406c71",
+   "osversion": "5.0",
+   "imported_dll_count": 11,
+   "sections": [
+    {
+     "name": ".text",
+     "entropy": "5.08",
+     "size_of_data": "0x00009000",
+     "virtual_size": "0x00008d8a"
+    },
+    {
+     "name": ".data",
+     "entropy": "3.77",
+     "size_of_data": "0x00002000",
+     "virtual_size": "0x00002e40"
+    },
+    {
+     "name": ".idata",
+     "entropy": "4.00",
+     "size_of_data": "0x00001000",
+     "virtual_size": "0x00000b0e"
+    },
+    {
+     "name": ".code",
+     "entropy": "7.86",
+     "size_of_data": "0x00018000",
+     "virtual_size": "0x00017236"
+    }
+   ],
+   "imports": [
+    {
+     "dll": "ADVAPI32.dll",
+     "imports": [
+      {
+       "name": "EnumServicesStatusW"
+      },
+      {
+       "name": "GetWindowsAccountDomainSid"
+      },
+      {
+       "name": "LookupPrivilegeNameW"
+      },
+      {
+       "name": "SetSecurityAccessMask"
+      },
+      {
+       "name": "EqualPrefixSid"
+      }
+     ]
+    },
+    {
+     "dll": "ntdll.dll",
+     "imports": [
+      {
+       "name": "strspn"
+      }
+     ]
+    },
+    {
+     "dll": "USER32.dll",
+     "imports": [
+      {
+       "name": "GetPriorityClipboardFormat"
+      },
+      {
+       "name": "DrawIcon"
+      },
+      {
+       "name": "GetMenuItemCount"
+      },
+      {
+       "name": "GetDlgItemTextA"
+      },
+      {
+       "name": "EnumWindowStationsA"
+      },
+      {
+       "name": "GetDlgItem"
+      },
+      {
+       "name": "GetOpenClipboardWindow"
+      },
+      {
+       "name": "GetWindowRgn"
+      }
+     ]
+    },
+    {
+     "dll": "Secur32.dll",
+     "imports": [
+      {
+       "name": "GetUserNameExW"
+      },
+      {
+       "name": "GetComputerObjectNameW"
+      }
+     ]
+    },
+    {
+     "dll": "GDI32.dll",
+     "imports": [
+      {
+       "name": "LineDDA"
+      },
+      {
+       "name": "GetColorAdjustment"
+      },
+      {
+       "name": "GdiSetBatchLimit"
+      },
+      {
+       "name": "GetCharWidthA"
+      },
+      {
+       "name": "GetSystemPaletteUse"
+      },
+      {
+       "name": "GetBrushOrgEx"
+      },
+      {
+       "name": "GetTextExtentPointA"
+      },
+      {
+       "name": "GetCharWidth32A"
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

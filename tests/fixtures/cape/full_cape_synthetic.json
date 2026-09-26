@@ -1,0 +1,45 @@
+{
+  "info": {"id": 4242, "package": "exe", "machine": {"name": "win10-lab-01"}},
+  "target": {"file": {"name": "invoice_lab.exe", "sha256": "5d1f0a0c3a2f7e6b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a6b"}},
+  "_comment": "Hand-written, inert CAPEv2-shaped report for tests. No real sample exists.",
+  "behavior": {
+    "processtree": [{"pid": 2100, "name": "invoice_lab.exe", "children": [{"pid": 2200, "name": "cmd.exe"}]}],
+    "processes": [
+      {
+        "process_id": 2100, "parent_id": 900, "process_name": "invoice_lab.exe",
+        "environ": {"CommandLine": "\"C:\\Users\\lab\\Downloads\\invoice_lab.exe\""},
+        "calls": [
+          {"timestamp": 1700000000.10, "api": "IsDebuggerPresent", "category": "system", "arguments": []},
+          {"timestamp": 1700000000.20, "api": "NtCreateMutant", "category": "synchronisation",
+           "arguments": [{"name": "MutantName", "value": "Global\\LabMutex-77"}]},
+          {"timestamp": 1700000000.30, "api": "RegSetValueExW", "category": "registry",
+           "arguments": [{"name": "FullName", "value": "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\labupdater"},
+                         {"name": "Buffer", "value": "C:\\Users\\lab\\AppData\\Roaming\\labupd.exe"}]},
+          {"timestamp": 1700000000.40, "api": "WriteProcessMemory", "category": "process",
+           "arguments": [{"name": "ProcessId", "value": "3300"}]},
+          {"timestamp": 1700000000.50, "api": "CreateRemoteThread", "category": "process",
+           "arguments": {"ProcessId": "3300"}},
+          {"timestamp": 1700000000.60, "api": "DeleteFileW", "category": "filesystem",
+           "arguments": [{"name": "FileName", "value": "C:\\Users\\lab\\Downloads\\invoice_lab.exe"}]}
+        ]
+      },
+      {
+        "process_id": 2200, "parent_id": 2100, "process_name": "cmd.exe",
+        "environ": {"CommandLine": "cmd.exe /c vssadmin delete shadows /all /quiet"},
+        "calls": [
+          {"timestamp": 1700000001.00, "api": "NtOpenFile", "category": "filesystem", "arguments": []}
+        ]
+      }
+    ],
+    "summary": {
+      "write_files": ["C:\\Users\\lab\\AppData\\Roaming\\labupd.exe"],
+      "mutexes": ["Global\\LabMutex-77"],
+      "executed_commands": ["cmd.exe /c vssadmin delete shadows /all /quiet"]
+    }
+  },
+  "network": {
+    "dns": [{"request": "c2.lab.invalid", "type": "A"}],
+    "tcp": [{"dst": "203.0.113.66", "dport": 8443}, {"dst": "203.0.113.66", "dport": 8443}],
+    "udp": []
+  }
+}

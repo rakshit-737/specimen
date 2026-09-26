@@ -1,4 +1,4 @@
-from specimen.provenance import map_technique, reconstruct
+from specimen.provenance import reconstruct
 from specimen.trace import load_trace
 
 

@@ -1,0 +1,247 @@
+{
+ "behavior": {
+  "summary": {
+   "keys": [
+    "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\SideBySide",
+    "HKEY_LOCAL_MACHINE\\system\\CurrentControlSet\\control\\NetworkProvider\\HwOrder",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\OLEAUT",
+    "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\DisableImprovedZoneCheck",
+    "HKEY_LOCAL_MACHINE\\Software\\Policies\\Microsoft\\Windows\\CurrentVersion\\Internet Settings",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\Security_HKLM_only",
+    "DisableUserModeCallbackFilter",
+    "HKEY_CURRENT_USER\\Control Panel\\Mouse",
+    "HKEY_CURRENT_USER\\Control Panel\\Mouse\\SwapMouseButtons",
+    "HKEY_CURRENT_USER\\Software\\AutoIt v3\\AutoIt",
+    "HKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\Nls\\CustomLocale"
+   ],
+   "resolved_apis": [
+    "lpk.dll.LpkEditControl",
+    "kernel32.dll.FlsAlloc",
+    "kernel32.dll.FlsFree",
+    "kernel32.dll.FlsGetValue",
+    "kernel32.dll.FlsSetValue",
+    "kernel32.dll.InitializeCriticalSectionEx",
+    "kernel32.dll.CreateEventExW",
+    "kernel32.dll.CreateSemaphoreExW",
+    "kernel32.dll.SetThreadStackGuarantee",
+    "kernel32.dll.CreateThreadpoolTimer",
+    "kernel32.dll.SetThreadpoolTimer",
+    "kernel32.dll.WaitForThreadpoolTimerCallbacks"
+   ],
+   "executed_commands": [
+    "\"C:\\Windows\\SysWOW64\\svchost.exe\""
+   ],
+   "write_keys": [
+    "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\0x433A5C55736572735C636F6D705C43657274456E726F6C6C",
+    "HKEY_CURRENT_USER\\http://mbfgq.ga/Dboy/five/fre.php",
+    "HKEY_CURRENT_USER\\http://mbfgq.ga/Dboy/five/fre.php\\BF783B"
+   ],
+   "files": [
+    "C:\\Windows\\WindowsShell.Manifest",
+    "\\Device\\KsecDD",
+    "C:\\Users\\comp\\AppData\\Local\\Temp\\505B6E5E429EC62B3351.exe",
+    "C:\\Users",
+    "C:\\Users\\comp",
+    "C:\\Users\\comp\\AppData",
+    "C:\\Users\\comp\\AppData\\Local",
+    "C:\\Users\\comp\\AppData\\Local\\Temp",
+    "C:\\Windows\\Globalization\\Sorting\\sortdefault.nls",
+    "C:\\Windows\\System32\\UxTheme.dll.Config",
+    "C:\\Windows\\System32\\uxtheme.dll",
+    "C:\\Users\\comp\\AppData\\Local\\Temp\\505B6E5E429EC62B3351.exe.Local\\"
+   ],
+   "read_files": [
+    "C:\\Windows\\WindowsShell.Manifest",
+    "\\Device\\KsecDD",
+    "C:\\Users\\comp\\AppData\\Local\\Temp\\505B6E5E429EC62B3351.exe",
+    "C:\\Windows\\Globalization\\Sorting\\sortdefault.nls",
+    "C:\\Windows\\System32\\UxTheme.dll.Config",
+    "C:\\Windows\\System32\\uxtheme.dll",
+    "C:\\Windows\\AppPatch\\sysmain.sdb",
+    "C:\\Windows\\SysWOW64\\",
+    "C:\\Windows\\SysWOW64\\svchost.exe",
+    "C:\\Users\\comp\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data",
+    "C:\\Windows\\SysWOW64\\netapi32.dll",
+    "C:\\Windows\\SysWOW64\\netutils.dll"
+   ],
+   "started_services": [
+    "VaultSvc"
+   ],
+   "created_services": [],
+   "write_files": [
+    "C:\\Users\\comp\\CertEnroll\\windeploy.bat",
+    "C:\\Users\\comp\\AppData\\Roaming\\BF783B\\BCDB0B.lck",
+    "C:\\Users\\comp\\AppData\\Roaming\\BF783B\\BCDB0B.exe"
+   ],
+   "delete_keys": [],
+   "read_keys": [
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\DisableImprovedZoneCheck",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\Security_HKLM_only",
+    "DisableUserModeCallbackFilter",
+    "HKEY_CURRENT_USER\\Control Panel\\Mouse\\SwapMouseButtons",
+    "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Control\\Nls\\CustomLocale\\en-US",
+    "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Control\\Nls\\ExtendedLocale\\en-US",
+    "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Control\\Nls\\Sorting\\Versions\\00060101.00060101",
+    "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Control\\Nls\\Locale\\00000409",
+    "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Control\\Nls\\Language Groups\\1",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\safer\\codeidentifiers\\TransparentEnabled",
+    "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\safer\\codeidentifiers\\AuthenticodeEnabled",
+    "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders\\Cache"
+   ],
+   "delete_files": [
+    "C:\\Users\\comp\\AppData\\Roaming\\BF783B\\BCDB0B.lck",
+    "C:\\Windows\\SysWOW64\\svchost.exe"
+   ],
+   "mutexes": [
+    "14E11E0BF783BCDB0BD10C30"
+   ]
+  }
+ },
+ "static": {
+  "pe": {
+   "imphash": "afcdf79be1557326c854b6e20cb900a7",
+   "timestamp": "2019-09-10 23:24:01",
+   "entrypoint": "0x0042800a",
+   "osversion": "5.1",
+   "imported_dll_count": 18,
+   "sections": [
+    {
+     "name": ".text",
+     "entropy": "6.68",
+     "size_of_data": "0x0008e000",
+     "virtual_size": "0x0008dfdd"
+    },
+    {
+     "name": ".rdata",
+     "entropy": "5.76",
+     "size_of_data": "0x0002fe00",
+     "virtual_size": "0x0002fd8e"
+    },
+    {
+     "name": ".data",
+     "entropy": "1.20",
+     "size_of_data": "0x00005200",
+     "virtual_size": "0x00008f74"
+    },
+    {
+     "name": ".rsrc",
+     "entropy": "7.46",
+     "size_of_data": "0x0005ac00",
+     "virtual_size": "0x0005aabc"
+    },
+    {
+     "name": ".reloc",
+     "entropy": "6.78",
+     "size_of_data": "0x00007200",
+     "virtual_size": "0x00007134"
+    }
+   ],
+   "imports": [
+    {
+     "dll": "WSOCK32.dll",
+     "imports": [
+      {
+       "name": "WSACleanup"
+      },
+      {
+       "name": "socket"
+      },
+      {
+       "name": "inet_ntoa"
+      },
+      {
+       "name": "setsockopt"
+      },
+      {
+       "name": "ntohs"
+      },
+      {
+       "name": "recvfrom"
+      },
+      {
+       "name": "ioctlsocket"
+      },
+      {
+       "name": "htons"
+      }
+     ]
+    },
+    {
+     "dll": "VERSION.dll",
+     "imports": [
+      {
+       "name": "GetFileVersionInfoW"
+      },
+      {
+       "name": "GetFileVersionInfoSizeW"
+      },
+      {
+       "name": "VerQueryValueW"
+      }
+     ]
+    },
+    {
+     "dll": "WINMM.dll",
+     "imports": [
+      {
+       "name": "timeGetTime"
+      },
+      {
+       "name": "waveOutSetVolume"
+      },
+      {
+       "name": "mciSendStringW"
+      }
+     ]
+    },
+    {
+     "dll": "COMCTL32.dll",
+     "imports": [
+      {
+       "name": "ImageList_ReplaceIcon"
+      },
+      {
+       "name": "ImageList_Destroy"
+      },
+      {
+       "name": "ImageList_Remove"
+      },
+      {
+       "name": "ImageList_SetDragCursorImage"
+      },
+      {
+       "name": "ImageList_BeginDrag"
+      },
+      {
+       "name": "ImageList_DragEnter"
+      },
+      {
+       "name": "ImageList_DragLeave"
+      },
+      {
+       "name": "ImageList_EndDrag"
+      }
+     ]
+    },
+    {
+     "dll": "MPR.dll",
+     "imports": [
+      {
+       "name": "WNetUseConnectionW"
+      },
+      {
+       "name": "WNetCancelConnection2W"
+      },
+      {
+       "name": "WNetGetConnectionW"
+      },
+      {
+       "name": "WNetAddConnection2W"
+      }
+     ]
+    }
+   ]
+  }
+ }
+}
