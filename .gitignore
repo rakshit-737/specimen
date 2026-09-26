@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+out/
+*.egg-info/
+build/
+dist/
+# never commit real samples
+samples/
+*.exe
+*.dll
+*.zip
