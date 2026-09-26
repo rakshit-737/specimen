@@ -26,7 +26,7 @@
       "model": "mvp-jaccard",
       "accuracy": 0.8783,
       "macro_f1": 0.7125,
-      "fit+predict_s": 717.9,
+      "fit+predict_s": 320.8,
       "per_family_recall": {
         "Adload": 0.6,
         "Emotet": 0.8458,
@@ -44,7 +44,7 @@
       "model": "static-only",
       "accuracy": 0.6907,
       "macro_f1": 0.7366,
-      "fit+predict_s": 683.0,
+      "fit+predict_s": 582.4,
       "per_family_recall": {
         "Adload": 1.0,
         "Emotet": 0.1391,
@@ -62,7 +62,7 @@
       "model": "behaviour-only",
       "accuracy": 0.9587,
       "macro_f1": 0.9262,
-      "fit+predict_s": 758.9,
+      "fit+predict_s": 1175.5,
       "per_family_recall": {
         "Adload": 1.0,
         "Emotet": 0.9051,
@@ -80,7 +80,7 @@
       "model": "behaviour+static",
       "accuracy": 0.9497,
       "macro_f1": 0.923,
-      "fit+predict_s": 840.3,
+      "fit+predict_s": 658.9,
       "per_family_recall": {
         "Adload": 1.0,
         "Emotet": 0.8657,
@@ -111,38 +111,38 @@
     "pred": "Swisyn",
     "top_tokens": [
       [
-        "api:process32next",
-        0.1241
+        "api:process32first",
+        0.1809
       ],
       [
-        "api:process32first",
-        0.1241
+        "api:process32next",
+        0.1808
       ],
       [
         "api:getcatalogobject2",
-        0.1212
+        0.18
       ],
       [
         "registry_set:hkcu\\software\\vb and vba program settings\\explorer\\process\\lo",
-        0.1191
+        0.1699
       ],
       [
         "registry_set_parent:hkcu\\software\\vb and vba program settings\\explorer\\process",
-        0.1191
+        0.1699
       ],
       [
         "registry_set:hkcu\\software\\vb and vba program settings\\explorer\\process",
-        0.1187
+        0.1698
       ],
       [
         "registry_set_parent:hkcu\\software\\vb and vba program settings\\explorer",
-        0.1187
+        0.1698
       ],
       [
-        "registry_read:hklm\\software\\microsoft\\ole\\maxsxshashcount",
-        0.1127
+        "api:getmodulefilenameexa",
+        0.1624
       ]
     ]
   },
-  "markdown": "| model | accuracy | macro_f1 | fit+predict_s |\n|---|---|---|---|\n| mvp-jaccard | 0.8783 | 0.7125 | 717.9 |\n| static-only | 0.6907 | 0.7366 | 683.0 |\n| behaviour-only | 0.9587 | 0.9262 | 758.9 |\n| behaviour+static | 0.9497 | 0.923 | 840.3 |\n| published HMIL behaviour+static (Bosansky 2022) | 0.945 | - |  |\n| published HMIL static-only (Bosansky 2022) | ~0.63 | - |  |"
+  "markdown": "| model | accuracy | macro_f1 | fit+predict_s |\n|---|---|---|---|\n| mvp-jaccard | 0.8783 | 0.7125 | 320.8 |\n| static-only | 0.6907 | 0.7366 | 582.4 |\n| behaviour-only | 0.9587 | 0.9262 | 1175.5 |\n| behaviour+static | 0.9497 | 0.923 | 658.9 |\n| published HMIL behaviour+static (Bosansky 2022) | 0.945 | - |  |\n| published HMIL static-only (Bosansky 2022) | ~0.63 | - |  |"
 }
