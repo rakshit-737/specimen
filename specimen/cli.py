@@ -27,7 +27,7 @@ def main(argv: list[str] | None = None) -> int:
     t.add_argument("sample")
     a = sub.add_parser("analyze", help="full pipeline using a recorded trace")
     a.add_argument("sample")
-    a.add_argument("--trace", help="recorded/synthetic behavior trace JSON")
+    a.add_argument("--trace", help="recorded run: native trace JSON, CAPE/Cuckoo JSON, or Sysmon XML / JSON-lines export")
     a.add_argument("--out", type=Path, help="write report .json/.md here")
     a.add_argument("--force-detonate", action="store_true", help="replay trace even if gate says skip")
     r = sub.add_parser("report", help="report-only analysis of a CAPE/Cuckoo JSON report")
