@@ -31,10 +31,17 @@ def hash_tokens(docs: Sequence[Sequence[str]]) -> sparse.csr_matrix:
 
 
 class FamilyModel:
-    def __init__(self, coef: np.ndarray, intercept: np.ndarray, classes: list[str]) -> None:
+    def __init__(self, coef: np.ndarray, intercept: np.ndarray, classes: list[str],
+                 meta: dict[str, Any] | None = None) -> None:
         self.coef = coef
         self.intercept = intercept
         self.classes = classes
+        self.meta = meta or {}
+
+    @property
+    def uses_static(self) -> bool:
+        """Whether the model was trained on static.pe tokens as well."""
+        return "static" in self.meta.get("tokens", ["behaviour", "static"])
 
     @classmethod
     def fit(cls, docs: Sequence[Sequence[str]], labels: Sequence[str], C: float = 10.0) -> FamilyModel:
@@ -76,4 +83,6 @@ class FamilyModel:
     @classmethod
     def load(cls, path: Path) -> FamilyModel:
         d = np.load(path / "family_model.npz")  # numeric/unicode arrays only, no pickle
-        return cls(d["coef"], d["intercept"], [str(c) for c in d["classes"]])
+        mp = path / "family_meta.json"
+        meta = json.loads(mp.read_text()) if mp.exists() else {}
+        return cls(d["coef"], d["intercept"], [str(c) for c in d["classes"]], meta)

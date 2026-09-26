@@ -83,19 +83,24 @@ def main() -> int:
     rows.append({"model": "published HMIL behaviour+static (Bosansky 2022)", "accuracy": 0.945, "macro_f1": "-"})
     rows.append({"model": "published HMIL static-only (Bosansky 2022)", "accuracy": "~0.63", "macro_f1": "-"})
 
-    best = models["behaviour+static"]
+    # ship the most accurate variant; the pipeline reads which token sets it needs
+    best_name = max(variants, key=lambda n: accuracy_score(y_te, preds[n]))
+    best = models[best_name]
     best.save(ROOT / "models", {"trained_on": "Avast-CTU CAPEv2 reduced reports, split=train",
-                                "n_train": len(train), "classes": best.classes})
+                                "variant": best_name, "tokens": best_name.split("+") if "+" in best_name
+                                else [best_name.replace("-only", "")], "n_train": len(train),
+                                "classes": best.classes})
     # an explained test prediction
     ex = test[0]
-    fam_pred = best.predict([ex["beh"] + ex["static"]])[0]
-    expl = best.explain(ex["beh"] + ex["static"], fam_pred)
+    f = variants[best_name]
+    fam_pred = best.predict([f(ex)])[0]
+    expl = best.explain(f(ex), fam_pred)
 
     try:
         import matplotlib
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
-        cm = confusion_matrix(y_te, preds["behaviour+static"], labels=fams, normalize="true")
+        cm = confusion_matrix(y_te, preds[best_name], labels=fams, normalize="true")
         fig, ax = plt.subplots(figsize=(6.4, 5.4))
         im = ax.imshow(cm, cmap="Blues", vmin=0, vmax=1)
         ax.set_xticks(range(len(fams)), fams, rotation=45, ha="right")

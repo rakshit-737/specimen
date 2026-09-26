@@ -94,12 +94,12 @@ def _attach_family(behavior: Any, trace: Trace, stoks: list[str]) -> None:
         behavior.family, behavior.family_similarity = None, 0.0
         behavior.family_model = "none (no trained model in SPECIMEN_MODELS)"
         return
-    toks = behavior_tokens(trace) + stoks
+    toks = behavior_tokens(trace) + (stoks if fm.uses_static else [])
     probs = fm.proba([toks])[0]
     i = int(probs.argmax())
     behavior.family = fm.classes[i]
     behavior.family_similarity = round(float(probs[i]), 3)
-    behavior.family_model = "avast-ctu-logreg"
+    behavior.family_model = f"avast-ctu-logreg ({fm.meta.get('variant', 'behaviour+static')})"
     behavior.family_evidence = fm.explain(toks, fm.classes[i], k=6)
 
 
