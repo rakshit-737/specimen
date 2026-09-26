@@ -5,7 +5,8 @@ on:
 permissions:
   contents: read
 jobs:
-  test:
+  core:
+    name: core (stdlib only) - py${{ matrix.python-version }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -16,5 +17,16 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: pip install -r requirements.txt
-      - run: make test
-      - run: make demo
+      - run: python -m pytest -q
+      - run: python -m specimen demo --out out
+      - run: python -m specimen report tests/fixtures/cape/avast_lokibot_1.json
+  ml-and-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[dev,ml]"
+      - run: python -m ruff check .
+      - run: python -m pytest -q -m "not realdata"
