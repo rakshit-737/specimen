@@ -1,0 +1,118 @@
+{
+  "benchmark": "static_ember",
+  "generated": "2026-09-26",
+  "python": "3.14.3",
+  "dataset": {
+    "name": "EMBER 2018 v2 raw features (prefix)",
+    "rows": 56893,
+    "malicious": 29872,
+    "benign": 27021,
+    "split": "stratified random 75/25 (seed 0); single month 2018-01 in prefix"
+  },
+  "metrics": [
+    {
+      "model": "mvp-heuristic",
+      "roc_auc": 0.55957,
+      "tpr@0.1%fpr": 0.0074,
+      "tpr@1%fpr": 0.017,
+      "accuracy": 0.5228,
+      "precision": 0.5588,
+      "recall": 0.4324,
+      "f1": 0.4875
+    },
+    {
+      "model": "logreg",
+      "roc_auc": 0.96803,
+      "tpr@0.1%fpr": 0.0104,
+      "tpr@1%fpr": 0.5738,
+      "accuracy": 0.9263,
+      "precision": 0.9299,
+      "recall": 0.9297,
+      "f1": 0.9298
+    },
+    {
+      "model": "lightgbm",
+      "roc_auc": 0.99428,
+      "tpr@0.1%fpr": 0.8386,
+      "tpr@1%fpr": 0.9242,
+      "accuracy": 0.9654,
+      "precision": 0.9739,
+      "recall": 0.9598,
+      "f1": 0.9668
+    }
+  ],
+  "gate_at_99pct_recall": [
+    {
+      "gate": "mvp-policy (detonate every PE)",
+      "threshold": "-",
+      "detonations_saved_pct": 0.0,
+      "benign_skipped_pct": 0.0,
+      "malware_missed_pct": 0.0
+    },
+    {
+      "gate": "mvp-heuristic",
+      "threshold": 0.23148,
+      "detonations_saved_pct": 0.0,
+      "benign_skipped_pct": 0.0,
+      "malware_missed_pct": 0.0
+    },
+    {
+      "gate": "logreg",
+      "threshold": 0.00236,
+      "detonations_saved_pct": 17.38,
+      "benign_skipped_pct": 35.46,
+      "malware_missed_pct": 1.02
+    },
+    {
+      "gate": "lightgbm",
+      "threshold": 0.04314,
+      "detonations_saved_pct": 42.32,
+      "benign_skipped_pct": 87.76,
+      "malware_missed_pct": 1.21
+    }
+  ],
+  "lightgbm_train_seconds": 2245.4,
+  "lightgbm_ms_per_sample": 1.7162,
+  "example_explanation": [
+    [
+      "datadir[2].size",
+      0.9755
+    ],
+    [
+      "datadir[4].size",
+      0.6092
+    ],
+    [
+      "section.size#33",
+      0.536
+    ],
+    [
+      "imports.library#21",
+      0.5295
+    ],
+    [
+      "datadir[9].va",
+      0.4957
+    ],
+    [
+      "section.entropy#43",
+      0.4953
+    ],
+    [
+      "imports:CreateToolhelp32Snapshot",
+      0.3821
+    ],
+    [
+      "datadir[6].va",
+      0.3264
+    ]
+  ],
+  "published_reference": {
+    "EMBER 2017 LightGBM (Anderson & Roth 2018)": {
+      "roc_auc": 0.99911,
+      "tpr@0.1%fpr": 0.9299,
+      "tpr@1%fpr": 0.982
+    }
+  },
+  "markdown": "| model | roc_auc | tpr@0.1%fpr | tpr@1%fpr | accuracy | f1 |\n|---|---|---|---|---|---|\n| mvp-heuristic | 0.55957 | 0.0074 | 0.017 | 0.5228 | 0.4875 |\n| logreg | 0.96803 | 0.0104 | 0.5738 | 0.9263 | 0.9298 |\n| lightgbm | 0.99428 | 0.8386 | 0.9242 | 0.9654 | 0.9668 |\n\n| gate | threshold | detonations_saved_pct | benign_skipped_pct | malware_missed_pct |\n|---|---|---|---|---|\n| mvp-policy (detonate every PE) | - | 0.0 | 0.0 | 0.0 |\n| mvp-heuristic | 0.23148 | 0.0 | 0.0 | 0.0 |\n| logreg | 0.00236 | 17.38 | 35.46 | 1.02 |\n| lightgbm | 0.04314 | 42.32 | 87.76 | 1.21 |"
+}
