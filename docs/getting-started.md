@@ -46,4 +46,4 @@ python benchmarks/bench_malbehavd.py
 
 ## Models
 
-`models/` ships the trained artefacts: the EMBER LightGBM static gate (text), the Avast-CTU family model (`.npz`) and the MalbehavD-V1 API n-gram behaviour scorer (JSON, pure-Python inference). None of them is ever unpickled. Point `SPECIMEN_MODELS` elsewhere to use your own.
+Only the MalbehavD-V1 API n-gram behaviour scorer (`models/api_behaviour.json`, pure-Python inference, ~few hundred KB) is committed. The EMBER LightGBM gate (`static_lgbm.txt`, 4.4 MB) and the Avast-CTU family model (`family_model.npz`, 5.8 MB) exceed the repository's 1 MB file limit: they are rebuilt by `bench_static.py` / `bench_family.py` and attached to the GitHub Release as assets. Drop them into `models/` (or point `SPECIMEN_MODELS` elsewhere) to enable the trained gate and family attribution. No model is ever unpickled.

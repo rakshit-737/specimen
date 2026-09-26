@@ -20,9 +20,9 @@ def test_ngrams_and_sequence_extraction():
     assert ngrams(["A", "b"]) == ["a", "b", "a>b"]
     t = Trace("r", "", "cape", [
         Event(0.0, "api_call", 1, "x", target="NtOpenKey"),
-        Event(0.1, "registry_set", 1, "x", target="HKCU\k", extra={"api": "RegSetValueExW"}),
+        Event(0.1, "registry_set", 1, "x", target=r"HKCU\k", extra={"api": "RegSetValueExW"}),
         Event(0.2, "api_call", 1, "x", target="GetProcAddress", extra={"resolved_only": True}),
-        Event(0.3, "file_write", 1, "x", target="c:\a"),
+        Event(0.3, "file_write", 1, "x", target=r"c:\a"),
     ])
     assert api_sequence(t) == ["NtOpenKey", "RegSetValueExW"]
 

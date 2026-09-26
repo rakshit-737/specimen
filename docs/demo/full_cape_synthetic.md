@@ -132,9 +132,9 @@ Specificity: YARA FP []; dropped Sigma ['rejected_nonspecific:0']
   "trace_sha256": "1c6780cf6a678c2cc7b0d0f74d9677973ae5e1129642ec16cbf156ade159800d",
   "trace_run_id": "full_cape_synthetic",
   "python": "3.14.3",
-  "specimen_version": "0.1.0",
+  "specimen_version": "1.0.0",
   "execution": "report-only (sandbox report replay; no sample bytes handled)",
-  "report_content_sha256": "3aff17290f1665281b2f05f464565f77577383ff91508a3add04edc12455eed4",
+  "report_content_sha256": "ba06cfebbfa3895014f195cbe7582f51177e5dd073e24d0584a9e15a50ac61a9",
   "report_sha256": "1c6780cf6a678c2cc7b0d0f74d9677973ae5e1129642ec16cbf156ade159800d"
 }
 ```

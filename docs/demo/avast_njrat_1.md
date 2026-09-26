@@ -423,9 +423,9 @@ Specificity: YARA FP []; dropped Sigma ['rejected_nonspecific:0']
   "trace_sha256": "e706854024aef57f26d2e9bf55f0fe68faef5c47fd23ef095087607b43fda736",
   "trace_run_id": "avast_njrat_1",
   "python": "3.14.3",
-  "specimen_version": "0.1.0",
+  "specimen_version": "1.0.0",
   "execution": "report-only (sandbox report replay; no sample bytes handled)",
-  "report_content_sha256": "4649c4c554614bd73b0e2e08cc8d413fe8433adfa3732f76fc930edc58d52dc5",
+  "report_content_sha256": "6dd904bcfbc1f75808116795690988c363018bf75598eedc7aa10f838e9fb2a2",
   "report_sha256": "e706854024aef57f26d2e9bf55f0fe68faef5c47fd23ef095087607b43fda736"
 }
 ```

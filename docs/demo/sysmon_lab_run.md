@@ -142,8 +142,8 @@ level: medium
   "trace_sha256": "c6f3b134300078d908aae4e6d65e13bd938066832405d8a702a3b8781c779330",
   "trace_run_id": "lab_run",
   "python": "3.14.3",
-  "specimen_version": "0.1.0",
+  "specimen_version": "1.0.0",
   "execution": "trace-replay (no live detonation)",
-  "report_content_sha256": "9b245b23a7bc3f5fff04e693924a7dc8c20b9c1269b8718f646681ed3e78a0fe"
+  "report_content_sha256": "37a263c2371ad5519ca901a76b4817f7822ba82c34e307b519dd1b1d9c9e7419"
 }
 ```

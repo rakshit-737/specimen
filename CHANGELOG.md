@@ -4,6 +4,39 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project
 uses [Semantic Versioning](https://semver.org/).
 
+## [1.0.0] - 2026-09-26
+
+Closes the feasible roadmap gaps and adds docs, container image and releases.
+
+### Added
+- **Real-data behaviour scorer in the pipeline**: the MalbehavD-V1 API
+  uni+bigram TF-IDF + LR model is exported to `models/api_behaviour.json`
+  and evaluated in pure Python (core stays stdlib-only). It is used when a
+  trace carries at least 20 real API calls; the report's `behavior.scorer`
+  says which scorer ran.
+- **Sysmon adapter** (`specimen/adapters/sysmon.py`): Sysmon XML
+  (`wevtutil /f:xml`, `ToXml()`) and JSON-lines exports to the trace
+  format; `specimen analyze --trace` detects them automatically. DTDs are
+  refused.
+- **Rule validation**: every emitted Sigma rule is parsed and converted by
+  pySigma and every YARA rule compiled by yara-python in a CI job.
+- **Confidence intervals and seeds**: bootstrap 95 % CIs on holdout
+  metrics; EMBER gate over 5 re-split seeds; MalbehavD over 5 seeds x 70/30
+  and 5 x 5-fold CV (95 % t-intervals).
+- MkDocs Material docs site on GitHub Pages with API reference and static
+  demo reports (`scripts/build_demo.py`).
+- Dockerfile (slim, non-root), release workflow publishing
+  `ghcr.io/rakshit-737/specimen` and wheel/sdist on `v*` tags.
+
+### Changed
+- MalbehavD headline is now the seed-averaged 96.3 ± 0.6 % (the seed-0
+  split alone gave 96.8 %, at the lucky end of the spread).
+- Mermaid edge labels are quoted.
+
+### Fixed
+- `specimen.__version__` reported 0.1.0 while the package was 0.2.0; a
+  test now keeps them in sync.
+
 ## [0.2.0] - 2026-09-26
 
 The pipeline now runs on real public data.

@@ -14,7 +14,7 @@ SPECIMEN is a sample-to-story malware analysis pipeline. It runs an explainable 
 | Can a static gate skip detonations safely? | EMBER 2018, 56,893 PEs | skips ~42 % of detonations, misses ~1.2 % of malware; AUC 0.994 | detonate everything |
 | Which family is it? | Avast-CTU CAPEv2, 48,976 reports, temporal split | 95.9 % accuracy | 87.8 % |
 | Do Sigma rules from one run catch later siblings? | Avast-CTU, 10 families x 10 runs | recall 0.33 at 0.016 % FPR | 0.18 at 2.3 % |
-| Is the behaviour malicious? | MalbehavD-V1 API traces | ~96-97 % accuracy, AUC 0.99 | 50 % |
+| Is the behaviour malicious? | MalbehavD-V1 API traces | ~96 % accuracy (5 seeds), AUC 0.99 | 50 % |
 
 Exact numbers, confidence intervals and caveats are on the [Benchmarks](benchmarks.md) page. The [demo reports](demo/index.md) show real pipeline output on the bundled fixtures.
 
