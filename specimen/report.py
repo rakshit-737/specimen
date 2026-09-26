@@ -76,7 +76,7 @@ def render_markdown(rep: dict[str, Any]) -> str:
     L += [f"- `{r['feature']}` impact {r['impact']:+.2f}" for r in rep["static"]["top_reasons"]] or ["- no suspicious static features"]
     if rep["behavior"]:
         b = rep["behavior"]
-        L += ["", "## Behavior", f"P(malicious)={b['probability']} label={b['label']}"
+        L += ["", "## Behavior", f"P(malicious)={b['probability']} label={b['label']} scorer={b.get('scorer', '')}"
               + (f" | family match **{b['family']}** (jaccard {b['family_similarity']})" if b["family"] else "")]
         L += [f"- `{c['feature']}`={c['value']} impact {c['impact']:+.2f}" for c in b["contributions"][:6]]
     if rep["timeline"]:

@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from .adapters.cape import cape_to_trace, static_pe
+from .adapters.sysmon import sysmon_to_trace
 from .corpus import synthetic_corpus
 from .detect import blobs, synthesize_sigma, synthesize_yara_pe
 from .hashing import sha256_bytes
@@ -48,6 +49,37 @@ def family_model() -> Any | None:
         return None
 
 
+@lru_cache(maxsize=1)
+def api_model() -> Any | None:
+    """The real-data API n-gram behaviour scorer (pure Python), if trained."""
+    p = models_dir()
+    if not (p / "api_behaviour.json").exists():
+        return None
+    from .api_behaviour import ApiBehaviourModel
+    return ApiBehaviourModel.load(p)
+
+
+def behaviour_score(trace: Trace) -> Any:
+    """Real-data API n-gram scorer when the trace has an API-call sequence,
+    otherwise the MVP ATT&CK-feature scorer."""
+    am = api_model()
+    real = am.score(trace) if am is not None else None
+    if real is None:
+        return score(trace)
+    mvp = score(trace)
+    real.family, real.family_similarity = mvp.family, mvp.family_similarity
+    return real
+
+
+def is_sysmon(raw: bytes) -> bool:
+    """Sysmon XML export, or JSON lines whose first object carries an ``EventID``."""
+    head = raw[:4096].removeprefix(b"\xef\xbb\xbf").lstrip()
+    if head.startswith(b"<"):
+        return b"Microsoft-Windows-Sysmon" in raw[:65536] or b"<Event" in head
+    first = head.splitlines()[0] if head else b""
+    return first.startswith(b"{") and b'"EventID"' in first
+
+
 def _benign_traces() -> list[Trace]:
     return [t for t, lab, _ in synthetic_corpus() if lab == 0]
 
@@ -59,7 +91,7 @@ def _replay(trace: Trace) -> tuple[Any, list, Any]:
     evs = [e for e in trace.events if not (e.type == "api_call" and not map_technique(e)[0])]
     for t, ev in zip(timeline, evs):
         t.anomaly = event_anomaly(ev.type, t.technique)
-    return graph, timeline, score(trace)
+    return graph, timeline, behaviour_score(trace)
 
 
 def run(sample_path: str | Path, trace_path: str | Path | None = None,
@@ -71,11 +103,16 @@ def run(sample_path: str | Path, trace_path: str | Path | None = None,
     timeline: list = []
     if (static.detonate or force_detonate) and trace_path:
         raw = Path(trace_path).read_bytes()
-        doc = json.loads(raw)
-        if isinstance(doc, dict) and "behavior" in doc and "events" not in doc:
-            trace = cape_to_trace(doc, run_id=Path(trace_path).stem, raw=raw)
+        doc = None
+        if is_sysmon(raw):
+            trace = sysmon_to_trace(raw, run_id=Path(trace_path).stem, sample_sha256=sample.sha256)
+            trace.source_sha256 = sha256_bytes(raw)
         else:
-            trace = load_trace(trace_path)
+            doc = json.loads(raw)
+            if isinstance(doc, dict) and "behavior" in doc and "events" not in doc:
+                trace = cape_to_trace(doc, run_id=Path(trace_path).stem, raw=raw)
+            else:
+                trace = load_trace(trace_path)
         if trace.sample_sha256 and trace.sample_sha256 != sample.sha256:
             raise ValueError("trace sample_sha256 does not match sample (evidence mismatch)")
         graph, timeline, behavior = _replay(trace)
