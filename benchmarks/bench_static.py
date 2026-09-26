@@ -18,7 +18,7 @@ import argparse
 import time
 
 import numpy as np
-from common import FIGURES, ROOT, binary_metrics, md_table, write_result
+from common import FIGURES, ROOT, binary_metrics, bootstrap_ci, md_table, mean_ci, write_result
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
@@ -91,7 +91,8 @@ def main() -> int:
     rows, gates = [], []
     for name, s, sv in (("mvp-heuristic", h[te], h[va]), ("logreg", s_lr, s_lr_va), ("lightgbm", s_lgb, s_va)):
         m = binary_metrics(y[te], s)
-        rows.append({"model": name, **m})
+        lo, hi = bootstrap_ci(y[te], s, "roc_auc", n=300)
+        rows.append({"model": name, **m, "roc_auc_95ci": f"[{lo}, {hi}]"})
         g = gate_stats(y[te], s, gate_threshold(y[va], sv, TARGET_RECALL))
         gates.append({"gate": name, **g})
     gates.insert(0, {"gate": "mvp-policy (detonate every PE)", "threshold": "-", "detonations_saved_pct": 0.0,
@@ -100,6 +101,20 @@ def main() -> int:
         print(r)
     for g in gates:
         print(g)
+
+    # seed robustness of the shipped gate: re-split + retrain over 5 seeds
+    seed_rows = []
+    for sd in range(5):
+        tr2, te2 = train_test_split(idx, test_size=0.25, stratify=y, random_state=sd)
+        trf2, va2 = train_test_split(tr2, test_size=0.1, stratify=y[tr2], random_state=sd + 1)
+        b2 = booster if sd == 0 else train(X[trf2], y[trf2])
+        st, sv2 = b2.predict(X[te2]), b2.predict(X[va2])
+        g = gate_stats(y[te2], st, gate_threshold(y[va2], sv2, TARGET_RECALL))
+        seed_rows.append({"seed": sd, "roc_auc": binary_metrics(y[te2], st)["roc_auc"], **g})
+        print(seed_rows[-1])
+    seed_summary = {k: mean_ci([r[k] for r in seed_rows]) for k in
+                    ("roc_auc", "detonations_saved_pct", "benign_skipped_pct", "malware_missed_pct")}
+    print(seed_summary)
 
     thr = gate_threshold(y[va], s_va, TARGET_RECALL)
     model = StaticModel(booster, thr, {"trained_on": "EMBER 2018 v2 (train_features_1 prefix)", "n_train": len(trf),
@@ -136,11 +151,12 @@ def main() -> int:
                     "malicious": int(y.sum()), "benign": int((y == 0).sum()),
                     "split": "stratified random 75/25 (seed 0); single month 2018-01 in prefix"},
         "metrics": rows, "gate_at_99pct_recall": gates,
+        "lightgbm_5_seeds": seed_rows, "lightgbm_5_seeds_mean_95ci": seed_summary,
         "lightgbm_train_seconds": round(t_train, 1), "lightgbm_ms_per_sample": round(t_pred, 4),
         "example_explanation": expl,
         "published_reference": {"EMBER 2017 LightGBM (Anderson & Roth 2018)": {
             "roc_auc": 0.99911, "tpr@0.1%fpr": 0.9299, "tpr@1%fpr": 0.982}},
-        "markdown": md_table(rows, ["model", "roc_auc", "tpr@0.1%fpr", "tpr@1%fpr", "accuracy", "f1"]) + "\n\n"
+        "markdown": md_table(rows, ["model", "roc_auc", "roc_auc_95ci", "tpr@0.1%fpr", "tpr@1%fpr", "accuracy", "f1"]) + "\n\n"
         + md_table(gates, ["gate", "threshold", "detonations_saved_pct", "benign_skipped_pct",
                            "malware_missed_pct"]),
     })

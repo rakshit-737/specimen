@@ -11,7 +11,8 @@ samples/
 *.dll
 *.zip
 data/
-models/
+models/*
+!models/api_behaviour.json
 *.chunks.json
 .venv/
 .ruff_cache/

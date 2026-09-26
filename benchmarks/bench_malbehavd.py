@@ -18,19 +18,17 @@ Published: MalDetConv (CNN-BiGRU) 96.10 % accuracy, MalDy (TF-IDF+XGBoost)
 from __future__ import annotations
 
 import numpy as np
-from common import binary_metrics, md_table, write_result
+from common import ROOT, binary_metrics, bootstrap_ci, md_table, mean_ci, write_result
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold, train_test_split
 
 from specimen.adapters.api_seq import api_sequence_to_trace
+from specimen.api_behaviour import ApiBehaviourModel, ngrams
 from specimen.datasets import iter_malbehavd
 from specimen.scoring import featurize, score
 
-
-def ngrams(apis: list[str]) -> list[str]:
-    a = [x.lower() for x in apis]
-    return a + [f"{x}>{y}" for x, y in zip(a, a[1:])]
+SEEDS = [0, 1, 2, 3, 4]
 
 
 def fit_predict(name: str, tr: np.ndarray, te: np.ndarray, docs: list[list[str]], F: np.ndarray,
@@ -63,28 +61,52 @@ def main() -> int:
     tr, te = train_test_split(idx, test_size=0.3, stratify=y, random_state=0)
     holdout = []
     for n in names:
-        m = binary_metrics(y[te], fit_predict(n, tr, te, docs, F, y, mvp))
-        holdout.append({"model": n, **m})
+        s = fit_predict(n, tr, te, docs, F, y, mvp)
+        m = binary_metrics(y[te], s)
+        lo, hi = bootstrap_ci(y[te], s, "accuracy")
+        alo, ahi = bootstrap_ci(y[te], s, "roc_auc")
+        holdout.append({"model": n, **m, "accuracy_95ci": f"[{lo}, {hi}]", "roc_auc_95ci": f"[{alo}, {ahi}]"})
         print(holdout[-1])
-    cv = []
-    skf = StratifiedKFold(5, shuffle=True, random_state=0)
+    # repeated 70/30 splits over 5 seeds, and 5-fold CV repeated over 5 seeds
+    seeds, cv = [], []
     for n in names:
-        accs, aucs = [], []
-        for ftr, fte in skf.split(idx, y):
-            s = fit_predict(n, ftr, fte, docs, F, y, mvp)
-            m = binary_metrics(y[fte], s)
+        accs, aucs, f1s = [], [], []
+        for sd in SEEDS:
+            str_, ste = train_test_split(idx, test_size=0.3, stratify=y, random_state=sd)
+            m = binary_metrics(y[ste], fit_predict(n, str_, ste, docs, F, y, mvp))
             accs.append(m["accuracy"])
             aucs.append(m["roc_auc"])
-        cv.append({"model": n, "cv_accuracy": f"{np.mean(accs):.4f} +/- {np.std(accs):.4f}",
-                   "cv_roc_auc": f"{np.mean(aucs):.4f} +/- {np.std(aucs):.4f}"})
+            f1s.append(m["f1"])
+        seeds.append({"model": n, "accuracy": mean_ci(accs), "roc_auc": mean_ci(aucs), "f1": mean_ci(f1s)})
+        print(seeds[-1])
+        accs, aucs = [], []
+        for sd in SEEDS:
+            for ftr, fte in StratifiedKFold(5, shuffle=True, random_state=sd).split(idx, y):
+                m = binary_metrics(y[fte], fit_predict(n, ftr, fte, docs, F, y, mvp))
+                accs.append(m["accuracy"])
+                aucs.append(m["roc_auc"])
+        cv.append({"model": n, "cv_accuracy": mean_ci(accs), "cv_roc_auc": mean_ci(aucs)})
         print(cv[-1])
+    # ship the pipeline scorer: TF-IDF + LR on all rows, exported as pure-Python JSON
+    vec = TfidfVectorizer(analyzer=lambda d: d, min_df=2, sublinear_tf=True)
+    X = vec.fit_transform(docs)
+    lr = LogisticRegression(C=10, max_iter=3000).fit(X, y)
+    vocab = vec.get_feature_names_out()
+    model = ApiBehaviourModel(dict(zip(vocab, vec.idf_.astype(float))), dict(zip(vocab, lr.coef_[0].astype(float))),
+                              float(lr.intercept_[0]), {"trained_on": "MalbehavD-V1", "n_train": int(len(y)),
+                                                        "features": "API uni+bigram sublinear TF-IDF", "C": 10})
+    model.save(ROOT / "models")
+    ref = lr.predict_proba(X[:200])[:, 1]
+    mine = np.asarray([model.proba(rows[i][2]) for i in range(200)])
+    print(f"pure-Python export max |diff| vs sklearn: {np.abs(ref - mine).max():.2e}")
     published = [{"model": "MalDetConv CNN-BiGRU (Maniriho et al. 2022)", "accuracy": 0.961, "f1": 0.9602},
                  {"model": "MalDy TF-IDF + XGBoost (as reported there)", "accuracy": 0.9559, "f1": "-"}]
     write_result("behaviour_malbehavd", {
         "dataset": {"name": "MalbehavD-V1", "samples": int(len(y)), "malicious": int(y.sum()),
-                    "split": "70/30 stratified (seed 0) + 5-fold CV"},
-        "holdout": holdout, "cv": cv, "published": published,
-        "markdown": md_table(holdout + published, ["model", "roc_auc", "accuracy", "precision", "recall", "f1"])
+                    "split": "70/30 stratified (seed 0, bootstrap 95% CI) + 5 seeds x 70/30 + 5 seeds x 5-fold CV"},
+        "holdout": holdout, "seeds_70_30": seeds, "cv": cv, "published": published,
+        "markdown": md_table(holdout + published, ["model", "roc_auc", "roc_auc_95ci", "accuracy", "accuracy_95ci", "f1"])
+        + "\n\n" + md_table(seeds, ["model", "accuracy", "roc_auc", "f1"])
         + "\n\n" + md_table(cv, ["model", "cv_accuracy", "cv_roc_auc"]),
     })
     return 0

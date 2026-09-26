@@ -56,3 +56,42 @@ def md_table(rows: list[dict[str, Any]], cols: list[str]) -> str:
     for r in rows:
         out.append("| " + " | ".join(str(r.get(c, "")) for c in cols) + " |")
     return "\n".join(out)
+
+
+def bootstrap_ci(y: np.ndarray, s: np.ndarray, metric: str, n: int = 1000, seed: int = 0,
+                 thr: float = 0.5) -> tuple[float, float]:
+    """95 % percentile bootstrap CI of one ``binary_metrics`` field over test rows."""
+    from sklearn.metrics import roc_auc_score
+    rng = np.random.default_rng(seed)
+    vals = []
+    for _ in range(n):
+        i = rng.integers(0, len(y), len(y))
+        if len(np.unique(y[i])) < 2:
+            continue
+        if metric == "roc_auc":
+            vals.append(roc_auc_score(y[i], s[i]))
+        else:
+            vals.append(binary_metrics_fast(y[i], s[i], thr)[metric])
+    lo, hi = np.percentile(vals, [2.5, 97.5])
+    return round(float(lo), 4), round(float(hi), 4)
+
+
+def binary_metrics_fast(y: np.ndarray, s: np.ndarray, thr: float = 0.5) -> dict[str, float]:
+    pred = s >= thr
+    tp = float((pred & (y == 1)).sum())
+    fp = float((pred & (y == 0)).sum())
+    fn = float((~pred & (y == 1)).sum())
+    prec = tp / (tp + fp) if tp + fp else 0.0
+    rec = tp / (tp + fn) if tp + fn else 0.0
+    return {"accuracy": float((pred == (y == 1)).mean()), "precision": prec, "recall": rec,
+            "f1": 2 * prec * rec / (prec + rec) if prec + rec else 0.0}
+
+
+def mean_ci(vals: list[float]) -> str:
+    """mean +/- 95 % t-interval half-width over seeds/folds."""
+    a = np.asarray(vals, dtype=float)
+    if len(a) < 2:
+        return f"{a.mean():.4f}"
+    from scipy import stats
+    h = stats.t.ppf(0.975, len(a) - 1) * a.std(ddof=1) / np.sqrt(len(a))
+    return f"{a.mean():.4f} +/- {h:.4f}"
