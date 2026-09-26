@@ -72,6 +72,7 @@ def main(argv: list[str] | None = None) -> int:
         files.append(download(EMBER_URL, dest / "ember" / "ember_dataset_2018_2.tar.bz2",
                               max_bytes=a.ember_mb * 1024 * 1024, workers=a.workers))
     lines = {}
+    mismatched = 0
     if sums.exists():
         for line in sums.read_text().splitlines():
             h, rel = line.split(maxsplit=1)
@@ -81,12 +82,13 @@ def main(argv: list[str] | None = None) -> int:
         lines[rel] = sha256_file(f)
         key = f"{rel}@{a.ember_mb}" if rel.startswith("ember/") else rel
         if KNOWN.get(key) and KNOWN[key] != lines[rel]:
-            print(f"WARNING: {rel} sha256 {lines[rel]} differs from pinned {KNOWN[key]}", file=sys.stderr)
+            print(f"ERROR: {rel} sha256 {lines[rel]} differs from pinned {KNOWN[key]}", file=sys.stderr)
+            mismatched += 1
         elif KNOWN.get(key):
             print(f"  pinned sha256 OK: {rel}")
     sums.write_text("".join(f"{h}  {r}\n" for r, h in sorted(lines.items())))
     print(f"wrote {sums}")
-    return 0
+    return 1 if mismatched else 0
 
 
 if __name__ == "__main__":
