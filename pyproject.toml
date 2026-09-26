@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "specimen"
+version = "0.1.0"
+description = "Sample-to-story malware triage pipeline: static gate, trace-replay provenance, ML scoring, YARA/Sigma synthesis (lab-only)"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.scripts]
+specimen = "specimen.cli:main"
+
+[tool.setuptools]
+packages = ["specimen"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
