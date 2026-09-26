@@ -1,0 +1,73 @@
+site_name: SPECIMEN
+site_description: Sample-to-story malware analysis pipeline (lab-only, never executes samples)
+site_url: https://rakshit-737.github.io/specimen/
+repo_url: https://github.com/rakshit-737/specimen
+repo_name: rakshit-737/specimen
+edit_uri: edit/main/docs/
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.highlight
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue grey
+      toggle: {icon: material/weather-night, name: Dark mode}
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue grey
+      toggle: {icon: material/weather-sunny, name: Light mode}
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - Architecture: architecture.md
+  - Datasets: datasets.md
+  - Benchmarks: benchmarks.md
+  - Demo reports:
+      - demo/index.md
+      - njRAT (CAPE reduced): demo/avast_njrat_1.md
+      - Emotet (CAPE reduced): demo/avast_emotet_1.md
+      - Lokibot (CAPE reduced): demo/avast_lokibot_1.md
+      - Synthetic full CAPE: demo/full_cape_synthetic.md
+      - Sysmon lab run: demo/sysmon_lab_run.md
+  - Reference:
+      - CLI: reference/cli.md
+      - Python API: reference/api.md
+  - Threat model: threat-model.md
+  - Security: security.md
+  - ADRs:
+      - "0001 Report replay": adr/0001-report-replay-instead-of-live-detonation.md
+      - "0002 Rule generalisation": adr/0002-specificity-constrained-rule-generalisation.md
+      - "0003 Optional ML stack": adr/0003-optional-ml-stack.md
+      - "0004 Job queue": adr/0004-job-queue.md
+  - Changelog: changelog.md
+  - Limitations & roadmap: limitations.md
+markdown_extensions:
+  - admonition
+  - tables
+  - attr_list
+  - md_in_html
+  - toc: {permalink: true}
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.snippets: {base_path: ["."], check_paths: true}
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+          options:
+            show_source: false
+            docstring_style: sphinx
+            show_root_heading: true
+            members_order: source
