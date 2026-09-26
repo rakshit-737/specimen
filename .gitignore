@@ -10,3 +10,8 @@ samples/
 *.exe
 *.dll
 *.zip
+data/
+models/
+*.chunks.json
+.venv/
+.ruff_cache/
