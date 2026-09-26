@@ -141,7 +141,7 @@ class ProvenanceGraph:
             label = n.label.replace('"', "'")[:60]
             lines.append(f'  {ids[nid]}["{n.kind}: {label}"]')
         for e in self.edges:
-            lines.append(f"  {ids[e.src]} -->|{e.relation}| {ids[e.dst]}")
+            lines.append(f'  {ids[e.src]} -->|"{e.relation}"| {ids[e.dst]}')
         return "\n".join(lines)
 
 
