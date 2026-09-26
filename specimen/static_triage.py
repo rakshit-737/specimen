@@ -89,3 +89,38 @@ def triage(data: bytes) -> StaticVerdict:
     reasons.sort(key=lambda c: -abs(c.impact))
     return StaticVerdict(round(score, 4), label, detonate, reasons, strings,
                          {"urls": urls, "ips": ips}, round(ent, 4), is_pe)
+
+
+def triage_pe_metadata(pe: dict, sha256: str = "") -> StaticVerdict:
+    """Static gate for *report-only* analysis: the same additive, explainable
+    scoring applied to a sandbox's parsed PE metadata (CAPE ``static.pe``)
+    instead of raw bytes. Used when only the report is available."""
+    reasons: list[Contribution] = []
+    imports = {str(f.get("name", "")).lower()
+               for d in pe.get("imports") or [] if isinstance(d, dict)
+               for f in d.get("imports") or [] if isinstance(f, dict)}
+    for api, w in SUSPICIOUS_APIS.items():
+        if any(i.startswith(api.lower()) for i in imports):
+            reasons.append(Contribution(f"api:{api}", 1.0, w))
+    names = {str(s.get("name", "")) for s in pe.get("sections") or [] if isinstance(s, dict)}
+    for mark, w in PACKER_MARKERS.items():
+        if mark in names:
+            reasons.append(Contribution(f"packer:{mark}", 1.0, w))
+            break
+    ents = []
+    for s in pe.get("sections") or []:
+        try:
+            ents.append(float(s.get("entropy", 0)))
+        except (TypeError, ValueError, AttributeError):
+            pass
+    ent = max(ents, default=0.0)
+    if ent > 7.2:
+        reasons.append(Contribution("high_section_entropy", round(ent - 7.2, 3), 2.0))
+    if len(imports) < 10:
+        reasons.append(Contribution("few_imports", 1.0, 0.6))
+    reasons.append(Contribution("pe_executable", 1.0, 0.8))
+    logit = BIAS + sum(c.impact for c in reasons)
+    score = 1 / (1 + math.exp(-logit))
+    label = "malicious" if score >= 0.8 else "suspicious" if score >= DETONATE_THRESHOLD else "benign"
+    reasons.sort(key=lambda c: -abs(c.impact))
+    return StaticVerdict(round(score, 4), label, True, reasons, [], {"urls": [], "ips": []}, round(ent, 4), True)

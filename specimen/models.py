@@ -100,6 +100,8 @@ class BehaviorScore:
     contributions: list[Contribution] = field(default_factory=list)
     family: str | None = None
     family_similarity: float = 0.0
+    family_model: str = "synthetic-prototypes"
+    family_evidence: list = field(default_factory=list)
 
 
 @dataclass

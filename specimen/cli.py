@@ -7,10 +7,10 @@ import sys
 from pathlib import Path
 
 from .lab_fixtures import write_fixtures
-from .pipeline import run
+from .models import to_dict
+from .pipeline import run, run_report
 from .report import render_markdown
 from .static_triage import load_sample, triage
-from .models import to_dict
 
 
 def _emit(rep: dict, out: Path | None, stem: str) -> None:
@@ -30,9 +30,48 @@ def main(argv: list[str] | None = None) -> int:
     a.add_argument("--trace", help="recorded/synthetic behavior trace JSON")
     a.add_argument("--out", type=Path, help="write report .json/.md here")
     a.add_argument("--force-detonate", action="store_true", help="replay trace even if gate says skip")
+    r = sub.add_parser("report", help="report-only analysis of a CAPE/Cuckoo JSON report")
+    r.add_argument("report")
+    r.add_argument("--out", type=Path, help="write report .json/.md here")
+    b = sub.add_parser("batch", help="queue a directory of CAPE reports (resumable job ledger)")
+    b.add_argument("directory", type=Path)
+    b.add_argument("--out", type=Path, default=Path("out/batch"))
+    b.add_argument("--workers", type=int, default=2)
+    e = sub.add_parser("triage-ember", help="static gate (trained LightGBM + TreeSHAP) on EMBER raw-feature JSON lines")
+    e.add_argument("features", type=Path, help="JSON-lines file of EMBER raw features")
     d = sub.add_parser("demo", help="generate inert fixtures and run all demo scenarios")
     d.add_argument("--out", type=Path, default=Path("out"))
     args = ap.parse_args(argv)
+
+    if args.cmd == "report":
+        rep = run_report(args.report)
+        _emit(rep, args.out, Path(args.report).stem)
+        bh = rep["behavior"] or {}
+        print(json.dumps({"verdict": rep["verdict"], "static_score": rep["static"]["score"],
+                          "family": bh.get("family"), "family_confidence": bh.get("family_similarity"),
+                          "techniques": rep["techniques"], "sigma_rules": len(rep["detections"]["sigma"]),
+                          "yara": bool(rep["detections"]["yara"])}, indent=2))
+        return 0
+    if args.cmd == "batch":
+        from .jobqueue import run_batch
+        res = run_batch(args.directory.glob("*.json"), args.out, args.workers)
+        done = sum(r["status"] == "done" for r in res)
+        print(f"{done}/{len(res)} jobs done, ledger: {args.out / 'jobs.jsonl'}")
+        return 0 if done == len(res) else 1
+    if args.cmd == "triage-ember":
+        from .ml.ember import StaticModel, vectorize
+        from .pipeline import models_dir
+        model = StaticModel.load(models_dir())
+        for line in args.features.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            x = vectorize(row)
+            p = float(model.predict(x.reshape(1, -1))[0])
+            print(json.dumps({"sha256": row.get("sha256"), "score": round(p, 4),
+                              "detonate": p >= model.threshold, "threshold": round(model.threshold, 5),
+                              "top_shap": model.explain(x, 6)}))
+        return 0
 
     if args.cmd == "triage":
         _, data = load_sample(args.sample)
