@@ -4,20 +4,40 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "specimen"
-version = "0.1.0"
-description = "Sample-to-story malware triage pipeline: static gate, trace-replay provenance, ML scoring, YARA/Sigma synthesis (lab-only)"
+version = "0.2.0"
+description = "Sample-to-story malware analysis pipeline: explainable static gate, CAPE/trace replay into a provenance graph, family attribution, and specificity-checked YARA + Sigma synthesis (lab-only, never executes samples)"
+readme = "README.md"
+license = { text = "MIT" }
 requires-python = ">=3.10"
 dependencies = []
 
 [project.optional-dependencies]
-dev = ["pytest>=7"]
+ml = ["numpy>=1.26", "scipy>=1.11", "scikit-learn>=1.4", "lightgbm>=4.0", "matplotlib>=3.8"]
+dev = ["pytest>=7", "ruff>=0.5"]
 
 [project.scripts]
 specimen = "specimen.cli:main"
 
-[tool.setuptools]
-packages = ["specimen"]
+[tool.setuptools.packages.find]
+include = ["specimen*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+markers = [
+    "realdata: needs the downloaded public datasets (SPECIMEN_DATA); skipped otherwise",
+    "ml: needs the optional [ml] dependencies",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["E501", "B905"]
+
+[tool.ruff.lint.per-file-ignores]
+"benchmarks/*" = ["E402"]
+# payload() is always fully consumed before the loop advances
+"specimen/datasets.py" = ["B023"]

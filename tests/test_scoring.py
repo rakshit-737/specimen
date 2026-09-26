@@ -1,5 +1,5 @@
 from specimen.corpus import synthetic_corpus
-from specimen.scoring import score, trained, featurize
+from specimen.scoring import featurize, score, trained
 from specimen.trace import load_trace
 
 

@@ -1,6 +1,6 @@
 from specimen.corpus import synthetic_corpus
 from specimen.static_triage import load_sample, triage
-from specimen.synth import synthesize, yara_matches, pick_yara_strings
+from specimen.synth import pick_yara_strings, synthesize, yara_matches
 from specimen.trace import load_trace
 
 

@@ -59,7 +59,7 @@ class LogisticModel:
         return 1 / (1 + math.exp(-z))
 
     def fit(self, X: list[list[float]], y: list[int], lr: float = 0.3,
-            epochs: int = 400, l2: float = 0.01) -> "LogisticModel":
+            epochs: int = 400, l2: float = 0.01) -> LogisticModel:
         n = len(X)
         for _ in range(epochs):
             gw = [0.0] * len(self.w)

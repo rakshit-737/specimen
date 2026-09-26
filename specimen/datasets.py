@@ -161,9 +161,12 @@ def parse_avast_labels(text: str) -> dict[str, AvastLabel]:
     return out
 
 
-def iter_avast(path: Path | None = None, limit: int | None = None
-               ) -> Iterator[tuple[AvastLabel, dict[str, Any]]]:
-    """Stream ``(label, reduced_report)`` pairs from the (possibly partial) archive."""
+def iter_avast(path: Path | None = None, limit: int | None = None, parse: bool = True
+               ) -> Iterator[tuple[AvastLabel, Any]]:
+    """Stream ``(label, reduced_report)`` pairs from the (possibly partial) archive.
+
+    With ``parse=False`` the report is yielded as raw JSON bytes (lets the
+    caller parse in worker processes)."""
     path = path or data_root() / AVAST_ZIP
     labels: dict[str, AvastLabel] = {}
     n = 0
@@ -182,11 +185,14 @@ def iter_avast(path: Path | None = None, limit: int | None = None
         lab = labels.get(sha)
         if lab is None:
             continue
-        try:
-            rep = json.loads(raw)
-        except (json.JSONDecodeError, UnicodeDecodeError):
-            continue
-        yield lab, rep
+        if not parse:
+            yield lab, raw
+        else:
+            try:
+                rep = json.loads(raw)
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                continue
+            yield lab, rep
         n += 1
         if limit and n >= limit:
             return

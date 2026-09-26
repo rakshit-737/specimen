@@ -44,7 +44,7 @@ def test_iter_zip_truncated_is_tolerated(tmp_path):
     cut = tmp_path / "cut.zip"
     cut.write_bytes(raw[: len(raw) // 2] + b"\x00" * 1000)  # partial download, zero-filled tail
     names = []
-    for name, chunks in iter_zip(cut):
+    for name, _chunks in iter_zip(cut):
         names.append(name)
     assert names and names[0] == "public_labels.csv"
     list(iter_avast(cut))  # must not raise

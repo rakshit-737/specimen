@@ -3,8 +3,14 @@ from pathlib import Path
 
 import pytest
 
-from specimen.adapters import (CapeFormatError, api_sequence_to_trace, cape_to_trace, load_cape,
-                               looks_like_cape, static_pe)
+from specimen.adapters import (
+    CapeFormatError,
+    api_sequence_to_trace,
+    cape_to_trace,
+    load_cape,
+    looks_like_cape,
+    static_pe,
+)
 from specimen.adapters.cape import command_image
 from specimen.provenance import reconstruct
 
