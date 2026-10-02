@@ -23,11 +23,13 @@ theme:
 nav:
   - Home: index.md
   - Getting started: getting-started.md
+  - How it works: how-it-works.md
   - Architecture: architecture.md
   - Datasets: datasets.md
-  - Benchmarks: benchmarks.md
+  - Evaluation: benchmarks.md
+  - Reproduce: reproduce.md
   - Demo reports:
-      - demo/index.md
+      - Overview: demo/index.md
       - njRAT (CAPE reduced): demo/avast_njrat_1.md
       - Emotet (CAPE reduced): demo/avast_emotet_1.md
       - Lokibot (CAPE reduced): demo/avast_lokibot_1.md

@@ -2,11 +2,15 @@
 
 [![ci](https://github.com/rakshit-737/specimen/actions/workflows/ci.yml/badge.svg)](https://github.com/rakshit-737/specimen/actions/workflows/ci.yml)
 [![docs](https://github.com/rakshit-737/specimen/actions/workflows/docs.yml/badge.svg)](https://rakshit-737.github.io/specimen/)
-![python](https://img.shields.io/badge/python-3.10%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue)
+![python](https://img.shields.io/badge/python-3.10%20%E2%80%93%203.14-blue)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 ![core deps](https://img.shields.io/badge/core-stdlib%20only-lightgrey)
 
 **Docs:** <https://rakshit-737.github.io/specimen/> (architecture, benchmarks with confidence intervals, API reference, [demo reports](https://rakshit-737.github.io/specimen/demo/)) · **Image:** `ghcr.io/rakshit-737/specimen`
+
+**Contribution, in one sentence:** from a single sandbox run, SPECIMEN synthesises Sigma rules that are generalised only as far as a real negative corpus allows, and measures on a temporal split of 48,976 CAPEv2 reports how often those single-run rules catch later samples of the same family, inside one explainable sample-to-report pipeline.
+
+[![njRAT demo report: verdict, provenance graph and a synthesised Sigma rule](docs/figures/demo.png)](https://rakshit-737.github.io/specimen/demo/avast_njrat_1/)
 
 **One sample (or one sandbox report) in, one defensible story out:** what the sample is, what it did on the host, how to detect it next time, and the evidence behind each conclusion.
 
@@ -20,10 +24,10 @@ SPECIMEN is a sample-to-story malware analysis pipeline. It runs an explainable 
 
 | Question | Dataset | SPECIMEN | Baseline (MVP) | Published reference |
 |---|---|---|---|---|
-| Can a static gate skip detonations safely? | EMBER 2018, 56,893 PEs | **Skips 42 % of detonations (88 % of benign) and misses 1.2 % of malware** at a 99 %-recall threshold (5 seeds: 42.2 ± 1.7 % saved, 1.2 ± 0.5 % missed); ROC AUC **0.994** [0.993, 0.995] | Detonate every PE (0 % saved); heuristic AUC 0.560 | EMBER LightGBM AUC 0.9991 (2017 set, full data) |
+| Can a static gate skip detonations safely? | EMBER 2018, **temporal** (train Jan-Sep, test Nov-Dec), 5 subsample seeds | Skips **72 %** of benign and misses **0.6 %** of malware at a 99 %-recall threshold calibrated on October (36 % of all test detonations at EMBER's malware share); ROC AUC **0.989**, TPR **0.49** at 0.1 % FPR. A random split of the same data gives 0.997 / 0.85, so drift costs a lot | Detonate every PE (0 % saved); heuristic AUC 0.560 | Upstream EMBER-2018 LightGBM, 600k rows: AUC 0.9964, TPR 0.868 at 0.1 % FPR |
 | Which family is it? | Avast-CTU CAPEv2, 48,976 reports, temporal split | **95.9 %** accuracy (macro-F1 0.926) | Jaccard over ATT&CK sets: 87.8 % (macro-F1 0.713) | HMIL: 94.5 % |
 | Do auto-Sigma rules from **one** run catch later siblings? | Avast-CTU, 10 families x 10 runs | Sibling recall **0.33** at **0.016 %** cross-family FPR (0.42 when 5 runs are pooled) | Recall 0.18 at 2.3 % FPR | - (research question from the spec) |
-| Is the behaviour malicious? | MalbehavD-V1, 2,570 Cuckoo API traces | **96.3 ± 0.6 %** accuracy over 5 re-split seeds, AUC 0.989 (5x5-fold CV 96.2 ± 0.4 %) | MVP synthetic-trained scorer: 50 % (AUC 0.23) | MalDetConv 96.1 %, MalDy 95.6 % |
+| Is the behaviour malicious? | MalbehavD-V1, 2,570 Cuckoo API traces | **96.3 ± 1.1 %** accuracy over 5 random 70/30 splits (paper protocol; 42 % of test rows have an exact duplicate in train). **93.4 ± 2.6 %** on a duplicate-free split. Through the shipped pipeline routing: 96.0 ± 1.3 % | MVP synthetic-trained scorer: 50 % (AUC 0.23) | MalDetConv 96.1 %, MalDy 95.6 % (both random split, duplicates included) |
 
 All numbers come from `benchmarks/*.py` runs, and the raw outputs are committed in [`results/`](results/). The [evaluation section](#evaluation) gives the protocol, the caveats and what did *not* work.
 
@@ -31,7 +35,8 @@ All numbers come from `benchmarks/*.py` runs, and the raw outputs are committed 
 
 ```mermaid
 flowchart LR
-  S[Sample bytes<br/>read-only] --> G[Static gate<br/>heuristic or EMBER LightGBM + TreeSHAP]
+  S["Sample bytes<br/>read-only"] --> G["Static gate<br/>MVP heuristic (every PE detonated)"]
+  EF["EMBER raw features"] --> GE["triage-ember<br/>LightGBM + TreeSHAP (standalone)"]
   R[CAPEv2 / Cuckoo report<br/>full or reduced] --> A[Adapters<br/>CAPE, API-sequence, native trace]
   R -. "static.pe" .-> G2["PE-metadata gate"]
   G -->|detonate?| D{score >= calibrated<br/>threshold}
@@ -55,7 +60,7 @@ flowchart LR
 |---|---|---|
 | Adapters | `specimen/adapters/cape.py`, `api_seq.py`, `sysmon.py` | Full CAPE/Cuckoo call logs, Avast-CTU reduced reports, API sequences and Sysmon XML / JSON-lines exports, all mapped to one `Trace`. Hostile input is coerced and capped; XML with DTDs is refused. |
 | Behaviour scorer | `specimen/api_behaviour.py`, `specimen/scoring.py` | MalbehavD-V1 API uni+bigram TF-IDF + LR, exported to JSON and run in pure Python when a trace has >= 20 real API calls; otherwise the MVP ATT&CK-feature scorer. The report names the scorer used. |
-| Static gate | `specimen/static_triage.py`, `specimen/ml/ember.py` | Additive heuristic on bytes or on `static.pe`; EMBER v2-style vector + LightGBM with TreeSHAP; threshold calibrated for 99 % recall |
+| Static gate | `specimen/static_triage.py`, `specimen/ml/ember.py` | `analyze` uses the additive heuristic and still detonates every PE. The EMBER LightGBM gate (TreeSHAP, 99 %-recall threshold) runs only through `triage-ember` on EMBER raw-feature JSON: SPECIMEN has no PE-to-EMBER feature extractor, so the integrated pipeline saves 0 % of PE detonations today |
 | Provenance | `specimen/provenance.py` | Process tree, file/registry/network/mutex/service edges; about 50 ATT&CK mapping rules (34 API-level, 17 artefact-level) |
 | Tokens | `specimen/tokens.py` | Removes user names, GUIDs, SIDs, hex blobs and numbers so runs of one family share tokens |
 | Family | `specimen/ml/family.py` | 2^18 hashed tokens with multinomial LR. Weights are stored as `.npz` (no pickle), and every prediction is explained by its top tokens |
@@ -63,37 +68,48 @@ flowchart LR
 | Report | `specimen/report.py` | JSON + Markdown, Mermaid graph, manifest with sample, trace, report and content SHA-256 |
 | Queue | `specimen/jobqueue.py` | Resumable append-only ledger with per-job failure isolation |
 
-## Quickstart
+## Try it in 60 seconds
+
+Core install is stdlib-only, so this needs nothing but Python 3.10+:
+
+<!-- quickstart:start -->
+```bash
+git clone https://github.com/rakshit-737/specimen && cd specimen
+pip install -e .
+python -m specimen demo --out out
+python -m specimen report tests/fixtures/cape/avast_njrat_1.json --out out/reports
+python -m specimen batch tests/fixtures/cape --out out/batch --workers 2
+python -m specimen analyze tests/fixtures/sysmon/lab_sample.bin --trace tests/fixtures/sysmon/lab_run.xml --force-detonate --out out/sysmon
+```
+<!-- quickstart:end -->
+
+CI runs this block exactly as written on every push. `lab_sample.bin` is an inert dummy file whose hash the Sysmon fixture is bound to.
+
+## Usage
 
 ```bash
-pip install -e ".[dev,ml]"       # core is stdlib-only; [ml] adds numpy/sklearn/lightgbm
-python -m pytest -q               # 72 tests, no datasets needed
-python -m specimen demo --out out # inert fixtures, all spec demo scenarios
+pip install -e ".[dev,ml]"       # [ml] adds numpy/scikit-learn/lightgbm for the trained models
+python -m pytest -q
 
-# report-only analysis of a real (bundled) Avast-CTU CAPE report
-python -m specimen report tests/fixtures/cape/avast_njrat_1.json --out out/reports
+# trained family model and EMBER gate (too large for git): fetch the release assets
+gh release download v1.0.0 -R rakshit-737/specimen -p 'family_*' -p 'static_*' -D models
 
-# a whole directory, resumable
-python -m specimen batch path/to/cape_reports --out out/batch --workers 4
-
-# sample bytes + a recorded run (native trace or CAPE JSON; sha256 binding enforced)
-python -m specimen analyze sample.bin --trace run.json --out out/
-
-# ...or a recorded Sysmon export (wevtutil qe ... /f:xml, or JSON lines)
-python -m specimen analyze sample.bin --trace tests/fixtures/sysmon/lab_run.xml --force-detonate --out out/
-
-# trained static gate on EMBER raw-feature JSON lines (after bench_static.py)
-python -m specimen triage-ember features.jsonl
+python -m specimen analyze <your-sample> --trace <recorded-run.json|sysmon.xml> --out out/
+python -m specimen batch <your-report-dir> --out out/batch --workers 4
+python -m specimen triage-ember <ember-raw-features.jsonl>
 ```
+
+Without the family model, `family` is `null`; the API behaviour model ships inside the package. In Docker: `docker run --rm --network none -v "$PWD/tests/fixtures:/fx:ro" ghcr.io/rakshit-737/specimen:latest report /fx/cape/avast_njrat_1.json` (the image has no family or EMBER model; mount them with `-v ./models:/opt/specimen/models:ro`).
 
 Example (`specimen report` on the bundled njRAT report, with the trained family model in `models/`; actual output):
 
 ```json
 {"verdict": {"label": "malicious", "score": 0.9133, "confidence": "medium (behavior-driven)"},
  "static_score": 0.2315,
+ "behaviour_scorer": "mvp-synthetic-logreg (ATT&CK features)",
  "family": "njRAT", "family_confidence": 0.984,
  "techniques": ["T1105", "T1547.001"],
- "sigma_rules": 10, "yara": true}
+ "sigma_rules": 9, "yara": true}
 ```
 
 The bundled fixtures are trimmed to about 8 KB, so they carry fewer behaviour tokens than the full reports the model was evaluated on. The trimmed Lokibot fixture (`avast_lokibot_1.json`) is misattributed as njRAT (0.86); the two Emotet fixtures and the njRAT fixture are attributed correctly.
@@ -102,12 +118,14 @@ Each report contains the static contributions, the timeline with ATT&CK tags and
 
 ## Data
 
-Nothing is committed. `scripts/download_data.py` fetches the data into `$SPECIMEN_DATA` (outside the repo) with resumable parallel range requests and records SHA-256 hashes in `SHA256SUMS` (`--verify` re-checks them).
+Nothing is committed. Benign behaviour corpora that were searched for Sigma false-positive measurement, and why none was adopted yet, are listed in [docs/datasets.md](docs/datasets.md#benign-behaviour-corpora-searched-round-3). `scripts/download_data.py` fetches the data into `$SPECIMEN_DATA` (outside the repo) with resumable parallel range requests and records SHA-256 hashes in `SHA256SUMS` (`--verify` re-checks them).
 
 | Dataset | What is used | Size | Licence | Citation |
 |---|---|---|---|---|
 | [Avast-CTU Public CAPEv2 Dataset](https://github.com/avast/avast-ctu-cape-dataset) | Reduced reports (`behavior.summary` + `static.pe`) for 48,976 samples in 10 families, labels and dates | 593 MB zip | MIT (per `Licences.txt`) | Bošanský et al., *Avast-CTU Public CAPE Dataset*, arXiv:2209.03188 (2022) |
-| [EMBER 2018 v2](https://github.com/elastic/ember) | Raw feature JSON lines; **only a 120 MB prefix** of the 1.7 GB archive, stream-decoded (56,893 labelled rows) | 120 MB | data: MIT (code upstream is AGPL-3.0; none is used) | Anderson & Roth, *EMBER*, arXiv:1804.04637 (2018) |
+| [EMBER 2018 v2](https://github.com/elastic/ember) | Raw feature JSON lines. Locally a 120 MB prefix (56,893 rows, 2018-01); the full 1.7 GB archive (pinned SHA-256 `b6052eb8...7812`) is downloaded only inside the GitHub Actions `bench` workflow for the temporal evaluation | 1.7 GB | data: MIT | Anderson & Roth, *EMBER*, arXiv:1804.04637 (2018) |
+| [Mal-API-2019](https://github.com/ocatak/malware_api_class) | 7,107 Cuckoo API-call sequences in 8 malware families (2.17 GB text, streamed line by line from the zip) | 12 MB zip | MIT | Catak et al., *PeerJ CS* 2020 |
+| Oliveira API-call sequences (re-host of the 2019 Kaggle/IEEE DataPort release) | 42,797 malware + 1,079 goodware, first 100 calls, integer-coded | 15 MB | not stated by the re-host; used for within-dataset evaluation only | Oliveira, *Malware Analysis Datasets: API Call Sequences*, 2019 |
 | [MalbehavD-V1](https://github.com/mpasco/MalbehavD-V1) | Cuckoo API-call sequences, 1,285 benign + 1,285 malicious | 2.3 MB | MIT | Maniriho et al., *MalDetConv*, arXiv:2209.03547 (2022); *API-MalDetect*, JNCA 2023 |
 
 ```bash
@@ -120,33 +138,35 @@ The test fixtures in `tests/fixtures/cape/` are four real Avast-CTU reduced repo
 
 ## Evaluation
 
-The results can be reproduced with `make bench`. Without `make`, run `python benchmarks/bench_static.py`, `bench_family.py`, `bench_rules.py` and `bench_malbehavd.py` with `SPECIMEN_DATA` set. The Avast token cache (built once in about 20 minutes on 10 processes) is shared by the family and rule benchmarks.
+Exact commands, runtimes and expected numbers are on the [Reproduce](https://rakshit-737.github.io/specimen/reproduce/) page. Full-data runs (rules, family, temporal EMBER) go through the manual `bench` GitHub Actions workflow; MalbehavD, Mal-API and the paper reproductions are light enough for a laptop.
 
-### 1. Static gate on EMBER: `results/static_ember.json`
+### 1. Static gate on EMBER
 
-The data is a held-out, stratified 25 % of 56,893 labelled rows, with the gate threshold tuned on a separate validation slice for 99 % malware recall.
+The gate evaluated here is the standalone `triage-ember` model on EMBER raw features; `analyze` does not call it (see Architecture).
+
+**Temporal (round 3, `results/static_ember_temporal.json`, `docs/figures/static_temporal.png`).** Full EMBER-2018 archive downloaded in a GitHub Actions job (pinned SHA-256), vectorised with SPECIMEN's own featuriser, month-stratified subsample; train Jan-Sep, threshold calibrated for 99 % recall on October, test Nov-Dec; 5 subsample seeds (min-max shown).
+
+| protocol | ROC AUC | TPR @ 0.1 % FPR | TPR @ 1 % FPR | detonations saved | malware missed | benign skipped |
+|---|---|---|---|---|---|---|
+| **temporal (SPECIMEN)** | **0.9892** (0.9889-0.9894) | **0.488** (0.466-0.538) | **0.873** (0.869-0.879) | 36.4 % | 0.63 % | 72.2 % |
+| random split, same months and volume | 0.9965 | 0.852 | 0.949 | | | |
+| *upstream EMBER-2018 LightGBM (600k train rows)* | *0.99643* | *0.868* | *0.965* | | | |
+
+<img src="docs/figures/static_temporal.png" width="480" alt="Per-month AUC and detonations saved on the temporal EMBER test months">
+
+Under drift the gate is clearly worse than on a random split, mostly in the low-FPR region. "Detonations saved" depends on the malware share of the submissions: it is benign share x 72 % + malware share x 0.6 %, so about 8 % at a 90 % malware mix and 58 % at 20 %.
+
+**Earlier one-month random split (`results/static_ember.json`).** A stratified 25 % of a 56,893-row prefix (2018-01 only), kept for comparison; this is optimistic about drift.
 
 | model | ROC AUC | TPR @ 0.1 % FPR | TPR @ 1 % FPR | accuracy | F1 |
 |---|---|---|---|---|---|
 | MVP heuristic (ported) | 0.560 | 0.007 | 0.017 | 0.523 | 0.488 |
 | logistic regression | 0.968 | 0.010 | 0.574 | 0.926 | 0.930 |
-| **LightGBM (SPECIMEN)** | **0.994** | **0.839** | **0.924** | **0.965** | **0.967** |
-| *EMBER paper, LightGBM, 2017 test set* | *0.9991* | *0.930* | *0.982* | | |
-
-| gate policy | detonations saved | benign skipped | malware missed |
-|---|---|---|---|
-| MVP: detonate every PE | 0 % | 0 % | 0 % |
-| MVP heuristic @ 99 % recall | 0 % | 0 % | 0 % |
-| logistic regression @ 99 % recall | 17.4 % | 35.5 % | 1.0 % |
-| **LightGBM @ 99 % recall** | **42.3 %** | **87.8 %** | **1.2 %** |
+| LightGBM (SPECIMEN) | 0.994 | 0.839 (about 7 of 6,756 benign rows define this FPR) | 0.924 | 0.965 | 0.967 |
 
 <img src="docs/figures/static_roc.png" width="420" alt="ROC curves of the three static gates on EMBER">
 
-This answers the first half of the spec's research question. An explainable learned gate removes most benign detonations and wrongly skips about 1 % of malware. The hand-weighted MVP heuristic is barely better than chance on real PEs, so it cannot skip anything safely. Every gate decision carries TreeSHAP contributions over named features, for example `section.n_rx`, `datadir[2].size` or `imports:CreateToolhelp32Snapshot`.
-
-Over 5 re-split seeds the LightGBM gate saves 42.2 ± 1.7 % of detonations and misses 1.16 ± 0.46 % of malware (95 % t-intervals); AUC 0.9947 ± 0.0005.
-
-*Caveats:* the archive prefix covers one month (2018-01), so the split is random rather than temporal and optimistic about drift. The model is trained on about 38k rows instead of 600k, which is a likely reason it trails the published AUC. CRC32 hashing makes the vectors differ from upstream EMBER vectors.
+Every gate decision carries TreeSHAP contributions over named features, for example `section.n_rx`, `datadir[2].size` or `imports:CreateToolhelp32Snapshot`. The hand-weighted MVP heuristic is barely better than chance on real PEs.
 
 ### 2. Family attribution on Avast-CTU CAPEv2: `results/family_avast.json`
 
@@ -183,20 +203,24 @@ Rule generalisation varies a lot by family. For Swisyn and Qakbot, one run gives
 
 ### 4. Behavioural detection on MalbehavD-V1: `results/behaviour_malbehavd.json`
 
-Every sample goes through `api_sequence_to_trace`. Seed-0 70/30 holdout (as in the dataset paper) with 95 % bootstrap CIs, then 5 re-split seeds and 5-fold CV repeated over 5 seeds (mean ± 95 % t-interval).
+Every sample goes through `api_sequence_to_trace`. Intervals over repeated splits and folds use the Nadeau-Bengio corrected resampled t (they were naive t-intervals before round 3 and are now about 1.8-2.7x wider).
 
-| model | holdout accuracy [95 % CI] | holdout AUC | 5 seeds x 70/30 accuracy | 5x5-fold CV accuracy |
+| model | seed-0 holdout [bootstrap CI] | 5 x 70/30 (paper protocol) | 5x5-fold CV | 5 x 70/30, duplicate-free |
 |---|---|---|---|---|
-| MVP scorer (synthetic-trained, ATT&CK features) | 0.503 [0.468, 0.537] | 0.228 | 0.502 ± 0.001 | 0.501 ± 0.001 |
-| same 9 ATT&CK features, retrained | 0.754 [0.722, 0.786] | 0.779 | 0.724 ± 0.028 | 0.715 ± 0.008 |
-| **API uni+bigram tokens + LR (shipped scorer)** | **0.968 [0.955, 0.979]** | **0.991** | **0.963 ± 0.006** | **0.962 ± 0.004** |
-| API uni+bigram tokens + LightGBM | 0.966 [0.952, 0.978] | 0.990 | 0.961 ± 0.009 | 0.963 ± 0.003 |
-| *MalDetConv CNN-BiGRU (published)* | *0.961* | | | |
+| MVP scorer (synthetic-trained, ATT&CK features) | 0.503 [0.468, 0.537] | 0.502 ± 0.002 | 0.501 ± 0.002 | |
+| same 9 ATT&CK features, retrained | 0.754 [0.722, 0.786] | 0.724 ± 0.050 | 0.715 ± 0.020 | 0.723 ± 0.018 |
+| **API uni+bigram tokens + LR (shipped scorer)** | **0.968 [0.955, 0.979]** | **0.963 ± 0.011** | **0.962 ± 0.010** | **0.934 ± 0.026** |
+| API uni+bigram tokens + LightGBM | 0.966 [0.952, 0.978] | 0.961 ± 0.016 | 0.963 ± 0.008 | 0.939 ± 0.012 |
+| *MalDetConv CNN-BiGRU (published, random split)* | *0.961* | | | |
 | *MalDy TF-IDF + XGBoost (as reported there)* | *0.956* | | | |
 
-The seed-0 split is at the lucky end of the seed spread; the fairer figure is about 96.2-96.3 %, on par with (not clearly above) the published deep models. The LR model is now the pipeline's behaviour scorer (`models/api_behaviour.json`, pure-Python inference, max deviation from scikit-learn 2e-16).
+**Duplicate leakage.** The 2,570 rows hold only 1,601 distinct sequences (478 distinct malicious ones); 42 ± 4 % of test rows in a random 70/30 split have an exact copy in train. The LR is 99.5 % accurate on those and 93.9 % on unseen rows. The paper protocol (and the published numbers) therefore include memorised duplicates; the duplicate-free number is the honest one.
 
-This was an honest negative result for the MVP. Its synthetic-trained behaviour scorer does not transfer at all: API-only traces trigger almost no ATT&CK-mapped features, so the scorer's ranking is inverted. Nine coarse technique counts are too lossy. A plain n-gram model through the same trace path is on par with the published deep models.
+**Pipeline path.** The shipped routing now sends traces with at least 5 API calls to the LR (it used to need 20, which sent 24 % of MalbehavD traces to the MVP scorer at 56 % accuracy). End-to-end accuracy through `behaviour_score` is 0.960 ± 0.013. The shipped JSON model deviates from a scikit-learn refit by at most 1.3e-6 (5-decimal rounding).
+
+The MVP's synthetic-trained scorer does not transfer at all: API-only traces trigger almost no ATT&CK-mapped features, so its ranking is inverted.
+
+<!-- round3:repro -->
 
 ## Prior art and how SPECIMEN differs
 
@@ -205,34 +229,40 @@ This was an honest negative result for the MVP. Its synthetic-trained behaviour 
 | Cuckoo / CAPEv2 | Mature dynamic sandboxes that produce behaviour reports | SPECIMEN *consumes* those reports. It adds a static detonation gate with a measured cost/miss trade-off, a provenance graph and ATT&CK timeline, family attribution with token evidence, and rules that are checked for specificity before they are kept |
 | Any.run / Joe Sandbox | Commercial, closed and cloud-based | Open, offline and extendable; every score is explainable |
 | VirusTotal / Intezer | Verdicts, code reuse and relationships | Host-level reconstruction and detection synthesis from one run |
-| EMBER / MalConv / HMIL / MalDetConv | Single-stage classifiers | Used here as baselines for individual stages. SPECIMEN's contribution is the integration and the rule-generalisation measurement |
+| EMBER / HMIL / MalDetConv / Li et al. 2024 | Single-stage classifiers | Published numbers used as reference points; MalDetConv and Li et al. are re-implemented and reproduced below. SPECIMEN's contribution is the integration and the rule-generalisation measurement |
+| LLM CTI-to-Sigma generators | Rules from threat-report *text* | SPECIMEN works from sandbox runs; no published single-run sandbox-to-Sigma benchmark was found to compare against |
 | Sigma / YARA rule generators (e.g. yarGen) | String-based rule generation | Behavioural Sigma from sandbox actions, with a generalisation ladder bounded by a negative corpus |
 
 ## Limitations
 
-- **No live detonation.** The detonation controller (QEMU/KVM snapshot and revert, egress verification) and live eBPF capture are not built: they need an isolated lab hypervisor / Linux host and must never run on a development machine. SPECIMEN replays recorded runs instead ([ADR 0001](docs/adr/0001-report-replay-instead-of-live-detonation.md)); recorded Sysmon exports are supported, binary `.evtx` must first be exported to XML.
-- **Reduced reports have no timing.** Events from them are ordered deterministically and flagged `synthetic_ts`. Full CAPE reports and Sysmon exports keep real timestamps.
-- **The negatives for rule specificity are other malware families plus a small synthetic benign set**, not a large benign behaviour corpus (no adequately sized public benign CAPE corpus was found). Real-world false-positive rates on clean enterprise telemetry are unmeasured.
-- **EMBER is evaluated on a one-month prefix** (random split, 5 seeds). A temporal evaluation needs the full 2018 set (~9 GB unpacked) and is left out to respect the data budget. No model has been adversarially evaluated.
-- **The API behaviour scorer only applies to traces with call logs** (full CAPE/Cuckoo, API sequences). Avast-CTU reduced reports carry no call sequence, so they still get the MVP scorer, which transfers poorly (result 4); for those, family attribution is the meaningful signal.
-- **Model artefacts over 1 MB are not in git.** The EMBER gate (4.4 MB) and the family model (5.8 MB) are rebuilt by the benchmarks and attached to GitHub Releases.
-- Family and rule benchmarks use one fixed temporal split (binomial CIs on the docs site), not repeated seeds: each re-run takes hours on this machine.
+- **No live detonation.** The detonation controller (QEMU/KVM snapshot and revert, egress verification) and live eBPF capture are not built: they need an isolated lab host and must never run on this development machine. SPECIMEN replays recorded runs instead ([ADR 0001](docs/adr/0001-report-replay-instead-of-live-detonation.md)). Recorded Sysmon exports are supported offline; binary `.evtx` must be exported to XML first.
+- **Reduced reports have no timing.** Events from them are ordered deterministically and flagged `synthetic_ts`.
+- **Negatives for rule specificity** are other malware families (a packaged sample of Avast-CTU training runs) plus a small synthetic benign set. Benign false-positive rates are unmeasured; the corpora searched and why none was adopted are listed on [Datasets](docs/datasets.md#benign-behaviour-corpora-searched-round-3).
+- **The EMBER LightGBM gate is standalone** (`triage-ember` on EMBER raw features). `analyze` has no PE-to-EMBER feature extractor and still detonates every PE.
+- **Under temporal drift the gate is weaker**: AUC 0.989 and TPR 0.49 at 0.1 % FPR on Nov-Dec 2018 when trained on Jan-Sep (vs 0.997 / 0.85 on a random split). Detonations saved depend on the malware share of submissions.
+- **Family attribution is closed-set over 10 families**; an abstain threshold marks low-probability reports as `unknown (closest: X)`, but it has not been evaluated on held-out families.
+- **MalbehavD-V1 contains exact duplicate sequences** (1,601 distinct of 2,570); random splits, including the published ones, partly measure memorisation. The duplicate-free accuracy is 93.4 %.
+- **The API behaviour scorer is trained on MalbehavD-V1** (Cuckoo API names, 2,570 samples). It only runs on traces with a real call sequence; reduced reports (no call logs) still use the MVP scorer, which is known to transfer poorly (see Benchmarks).
+- No adversarial robustness evaluation of any model.
 
 ## Roadmap
 
-- [x] Stage 1: wire the static gate into reconstruction on pre-captured logs (CAPE adapters, 49k real runs)
-- [x] Stage 2: detection synthesizer with measured generalisation
-- [x] Stage 3: unified report with evidence manifest; batch queue
-- [x] Stage 7 (partial): family clustering/attribution; job queue (file ledger)
+- [x] Static gate wired into reconstruction on pre-captured logs (CAPE adapters, 49k real runs)
+- [x] Detection synthesizer with measured generalisation
+- [x] Unified report with evidence manifest; batch queue
+- [x] Family attribution; job queue
 - [x] Real-data behaviour scorer in the pipeline (API n-grams, pure-Python inference)
-- [x] Validate emitted rules with pySigma and `yara-python` in CI
-- [x] Stage 5 (offline part): Sysmon XML / JSON-lines to trace
+- [x] Emitted rules validated with pySigma and yara-python in CI
+- [x] Sysmon (XML / JSON lines) to trace adapter
 - [x] Seeds and confidence intervals for the static and behaviour benchmarks
-- [x] Docs site, Docker image, tagged releases
-- [ ] Stage 4: detonation controller with EICAR and benign binaries only, fail-closed if egress is not verified (needs a lab hypervisor)
-- [ ] Live eBPF capture (ROOTLINE) on a Linux lab host
-- [ ] Benign CAPE corpus for Sigma FP measurement
-- [ ] Temporal EMBER evaluation on the full 2018 set; adversarial robustness checks
+- [ ] Stage 4: detonation controller with EICAR and benign binaries only, fail-closed without verified egress isolation (needs a lab hypervisor)
+- [ ] Live eBPF capture (needs a Linux lab host)
+- [x] Temporal EMBER evaluation on the full 2018 set (GitHub Actions)
+- [x] Seeded rule benchmark with ablation; family variant chosen on a validation slice
+- [x] More API-call datasets (Mal-API-2019, Oliveira) and paper reproductions (MalDetConv, Li et al. 2024)
+- [ ] Benign behaviour corpus for Sigma FP measurement (Quo Vadis Speakeasy adapter)
+- [ ] PE-to-EMBER feature extraction so `analyze` uses the trained gate
+- [ ] Adversarial robustness checks
 
 ## Safety
 
