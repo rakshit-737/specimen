@@ -14,6 +14,14 @@ from .provenance import ProvenanceGraph
 
 
 def fuse(static: StaticVerdict, behavior: BehaviorScore | None) -> tuple[str, str, float]:
+    """Fuse static and behaviour scores into a final verdict.
+
+    The final score is the maximum of both; confidence drops when they disagree.
+
+    :param static: static-gate verdict.
+    :param behavior: behaviour score, or ``None`` when no trace was analysed.
+    :returns: ``(label, confidence, final_score)``.
+    """
     s = static.score
     if behavior is None:
         return static.label, "medium" if static.label == "benign" else "low", s

@@ -13,6 +13,7 @@ EVENT_TYPES = frozenset({
 
 @dataclass(frozen=True)
 class Sample:
+    """Identity of a submitted file: path, hashes, size and bytes analysed."""
     path: str
     sha256: str
     md5: str
@@ -22,6 +23,7 @@ class Sample:
 
 @dataclass
 class Contribution:
+    """One feature's share of a score: ``impact = value * weight``."""
     feature: str
     value: float
     weight: float
@@ -33,6 +35,7 @@ class Contribution:
 
 @dataclass
 class StaticVerdict:
+    """Static-gate output: score in [0, 1], label, detonate decision, reasons and extracted strings/IOCs."""
     score: float                 # 0..1
     label: str                   # benign | suspicious | malicious
     detonate: bool
@@ -45,6 +48,7 @@ class StaticVerdict:
 
 @dataclass(frozen=True)
 class Event:
+    """One normalised sandbox event (type from ``EVENT_TYPES``, timestamp, process, optional target)."""
     ts: float
     type: str
     pid: int
@@ -63,6 +67,7 @@ class Event:
 
 @dataclass
 class Trace:
+    """Ordered events of one detonation run, with the sandbox name and source-file hash."""
     run_id: str
     sample_sha256: str
     sandbox: str
@@ -72,6 +77,7 @@ class Trace:
 
 @dataclass(frozen=True)
 class Node:
+    """Provenance-graph vertex (process, file, registry key, network endpoint, ...)."""
     id: str
     kind: str      # process | file | registry | network | domain | service | task
     label: str
@@ -79,6 +85,7 @@ class Node:
 
 @dataclass(frozen=True)
 class Edge:
+    """Directed, timestamped provenance-graph relation between two node ids."""
     src: str
     dst: str
     relation: str
@@ -87,6 +94,7 @@ class Edge:
 
 @dataclass
 class TimelineEntry:
+    """Report timeline row: description, optional ATT&CK technique/tactic and anomaly score."""
     ts: float
     description: str
     technique: str | None
@@ -96,6 +104,7 @@ class TimelineEntry:
 
 @dataclass
 class BehaviorScore:
+    """Behaviour-model output: malicious probability, label, contributions and family estimate."""
     probability: float
     label: str
     contributions: list[Contribution] = field(default_factory=list)
@@ -108,6 +117,7 @@ class BehaviorScore:
 
 @dataclass
 class Detections:
+    """Synthesised YARA and Sigma rules plus their hits on the packaged false-positive corpus."""
     yara: str | None
     sigma: list[str]
     yara_fp_hits: list[str] = field(default_factory=list)
@@ -115,6 +125,11 @@ class Detections:
 
 
 def to_dict(obj: Any) -> Any:
+    """Recursively convert dataclasses (and lists of them) to plain dicts for JSON output.
+
+    :param obj: a dataclass instance, a list, or any other value (returned unchanged).
+    :returns: a JSON-serialisable structure.
+    """
     if hasattr(obj, "__dataclass_fields__"):
         return asdict(obj)
     if isinstance(obj, list):

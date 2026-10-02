@@ -67,14 +67,30 @@ class ApiBehaviourModel:
         return {t: x / n for t, x in v.items()}
 
     def proba(self, apis: Sequence[str]) -> float:
+        """Malicious probability of an API sequence.
+
+        :param apis: API names in call order.
+        :returns: probability in [0, 1].
+        """
         z = self.intercept + sum(x * self.weight.get(t, 0.0) for t, x in self._vector(apis).items())
         return 1 / (1 + math.exp(-max(min(z, 30), -30)))
 
     def explain(self, apis: Sequence[str], k: int = 8) -> list[Contribution]:
+        """Top n-gram contributions to the score of an API sequence.
+
+        :param apis: API names in call order.
+        :param k: number of contributions to return.
+        :returns: contributions sorted by absolute impact.
+        """
         cs = [Contribution(t, round(x, 4), round(self.weight.get(t, 0.0), 4)) for t, x in self._vector(apis).items()]
         return sorted((c for c in cs if c.impact), key=lambda c: -abs(c.impact))[:k]
 
     def score(self, trace: Trace) -> BehaviorScore | None:
+        """Score a trace; ``None`` when it holds fewer than ``MIN_CALLS`` API calls.
+
+        :param trace: normalised sandbox trace.
+        :returns: a ``BehaviorScore`` or ``None``.
+        """
         apis = api_sequence(trace)
         if len(apis) < MIN_CALLS:
             return None
@@ -84,6 +100,11 @@ class ApiBehaviourModel:
                              scorer=f"api-ngram-lr ({self.meta.get('trained_on', 'MalbehavD-V1')})")
 
     def save(self, path: Path) -> Path:
+        """Write the model as JSON into a directory.
+
+        :param path: destination directory (created if missing).
+        :returns: the model file written.
+        """
         path.mkdir(parents=True, exist_ok=True)
         f = path / MODEL_FILE
         doc = {"meta": self.meta, "intercept": self.intercept,
@@ -93,6 +114,11 @@ class ApiBehaviourModel:
 
     @classmethod
     def load(cls, path: Path) -> ApiBehaviourModel:
+        """Load a model saved with :meth:`save`.
+
+        :param path: directory holding the model file.
+        :returns: the loaded model.
+        """
         doc = json.loads((path / MODEL_FILE).read_text(encoding="utf-8"))
         toks = doc["tokens"]
         return cls({t: v[0] for t, v in toks.items()}, {t: v[1] for t, v in toks.items()},
