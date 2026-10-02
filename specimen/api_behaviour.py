@@ -21,7 +21,9 @@ from typing import Any
 
 from .models import BehaviorScore, Contribution, Trace
 
-MIN_CALLS = 20
+# Below this the MVP scorer is used. 5 calls give at least 4 bigrams; on MalbehavD the
+# n-gram LR is as accurate on 5-19-call traces as on longer ones (results/behaviour_malbehavd.json).
+MIN_CALLS = 5
 MODEL_FILE = "api_behaviour.json"
 
 

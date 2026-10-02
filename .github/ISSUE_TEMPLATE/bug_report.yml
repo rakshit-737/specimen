@@ -1,0 +1,31 @@
+name: Bug report
+description: Something in SPECIMEN does not work as documented
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "Never attach malware samples or live IOCs. Sandbox reports are fine if they are safe to share."
+  - type: input
+    id: version
+    attributes:
+      label: specimen --version
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command and input
+      description: The exact command, and which bundled fixture or kind of report reproduces it.
+      render: bash
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened, and what you expected
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: OS / Python / install method (pip, wheel, Docker)

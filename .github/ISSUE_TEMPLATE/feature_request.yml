@@ -1,0 +1,21 @@
+name: Feature request
+description: Suggest an adapter, metric, benchmark or report improvement
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Scope
+      options:
+        - label: This does not require executing samples or shipping malware.
+          required: true

@@ -7,13 +7,16 @@ permissions:
 jobs:
   core:
     name: core (stdlib only) - py${{ matrix.python-version }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
+      fail-fast: false
       matrix:
-        python-version: ["3.10", "3.12", "3.13"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ matrix.python-version }}
       - run: pip install -r requirements.txt
@@ -21,29 +24,111 @@ jobs:
       - run: python -m specimen demo --out out
       - run: python -m specimen report tests/fixtures/cape/avast_lokibot_1.json
   ml-and-lint:
-    runs-on: ubuntu-latest
+    name: ml + lint - py${{ matrix.python-version }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.14"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          python-version: "3.12"
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python-version }}
       - run: pip install -e ".[dev,ml]"
       - run: python -m ruff check .
       - run: python -m pytest -q -m "not realdata"
-  rules:
-    name: rule validation (pySigma + yara-python)
-    runs-on: ubuntu-latest
+      - name: Benchmark scripts still compile and import (bench-smoke)
+        run: |
+          python -m py_compile benchmarks/*.py scripts/*.py
+          cd benchmarks && python -c "import common, bench_rules, bench_family, bench_malbehavd, bench_static, bench_static_temporal, bench_api_cross"
+  quickstart:
+    name: README quickstart, exactly as written
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
-      - run: pip install -e ".[dev]" pySigma pySigma-backend-sqlite yara-python
-      - run: python -m pytest -q tests/test_rule_validation.py -rs
+      - name: Run every command of the README "Try it in 60 seconds" block
+        run: |
+          python - <<'PY' > quickstart.sh
+          import re
+          readme = open("README.md", encoding="utf-8").read()
+          block = re.search(r"<!-- quickstart:start -->\s*```bash\n(.*?)```", readme, re.S).group(1)
+          # the clone is already done by actions/checkout
+          lines = [l for l in block.splitlines() if l.strip() and not l.startswith(("git clone", "cd specimen"))]
+          print("set -euxo pipefail"); print("\n".join(lines))
+          PY
+          cat quickstart.sh
+          bash quickstart.sh
+  package:
+    name: wheel in a clean venv, outside the repo
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - run: pip install build && python -m build
+      - name: Install the wheel and use it from another directory
+        run: |
+          python -m venv "$RUNNER_TEMP/v"
+          "$RUNNER_TEMP/v/bin/pip" install dist/*.whl
+          cp tests/fixtures/cape/avast_njrat_1.json "$RUNNER_TEMP/r.json"
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/v/bin/specimen" --version
+          "$RUNNER_TEMP/v/bin/specimen" --help
+          "$RUNNER_TEMP/v/bin/python" -c "from specimen.pipeline import api_model; from specimen.negatives import meta; assert api_model() is not None; assert meta()['families']"
+          "$RUNNER_TEMP/v/bin/specimen" report r.json --out o
+          test -s o/r.md
+      - name: sdist tests are complete
+        run: tar -tzf dist/*.tar.gz | grep -q "tests/conftest.py"
+  audit:
+    name: dependency audit (pip-audit)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[dev,ml]" pip-audit
+      # runtime core has no dependencies; this audits the [dev,ml] environment
+      - run: pip-audit --skip-editable
+  rules:
+    name: rule validation (pySigma + yara-python)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[dev]" pySigma pySigma-backend-sqlite yara-python pyyaml
+      - run: python -m pytest -q tests/test_rule_validation.py tests/test_escaping.py -rs
       - run: python -c "import sigma, yara; print('pySigma + yara-python present')"
   docker:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - run: docker build -t specimen:ci .
-      - run: docker run --rm -v "$PWD/tests/fixtures:/fx:ro" specimen:ci report /fx/cape/avast_njrat_1.json
+      - run: docker run --rm --network none -v "$PWD/tests/fixtures:/fx:ro" specimen:ci report /fx/cape/avast_njrat_1.json
+      - name: Documented bind-mount command writes reports as the host user
+        run: |
+          mkdir -p "$RUNNER_TEMP/o" && cp tests/fixtures/cape/avast_njrat_1.json "$RUNNER_TEMP/o/report.json"
+          docker run --rm --network none --user "$(id -u):$(id -g)" -v "$RUNNER_TEMP/o:/work" specimen:ci report /work/report.json --out /work/out
+          test -s "$RUNNER_TEMP/o/out/report.md"
+      - name: Image carries no pip and no wheel layer
+        run: |
+          ! docker run --rm --entrypoint python specimen:ci -c "import pip" 2>/dev/null

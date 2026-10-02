@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use SPECIMEN, please cite it as below."
+title: "SPECIMEN: sample-to-story malware analysis with specificity-checked rule synthesis"
+type: software
+authors:
+  - name: Rakshit
+repository-code: "https://github.com/rakshit-737/specimen"
+url: "https://rakshit-737.github.io/specimen/"
+license: MIT
+version: 1.0.0
+keywords: [malware analysis, sandbox, Sigma, YARA, provenance, CAPE]
+references:
+  - type: article
+    title: "Avast-CTU Public CAPEv2 Dataset: Explainable Malware Analysis"
+    authors: [{family-names: "Bosansky"}, {family-names: "Kouba"}, {family-names: "Manhal"}, {family-names: "Pevny"}]
+    year: 2022
+    identifiers: [{type: other, value: "arXiv:2209.03188"}]
+  - type: article
+    title: "EMBER: An Open Dataset for Training Static PE Malware Machine Learning Models"
+    authors: [{family-names: "Anderson"}, {family-names: "Roth"}]
+    year: 2018
+    identifiers: [{type: other, value: "arXiv:1804.04637"}]
+  - type: article
+    title: "MalDetConv: Automated Behaviour-based Malware Detection Framework Based on Natural Language Processing and Deep Learning Techniques"
+    authors: [{family-names: "Maniriho"}, {family-names: "Mahmood"}, {family-names: "Chowdhury"}]
+    year: 2022
+    identifiers: [{type: other, value: "arXiv:2209.03547"}]
+  - type: article
+    title: "Data Augmentation Based Malware Detection using Convolutional Neural Networks (Mal-API-2019)"
+    authors: [{family-names: "Catak"}, {family-names: "Ahmed"}, {family-names: "Sahinbas"}, {family-names: "Khan"}]
+    year: 2021

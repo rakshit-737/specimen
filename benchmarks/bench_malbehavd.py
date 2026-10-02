@@ -114,7 +114,7 @@ def main() -> int:
                  "rows_in_duplicate_groups": int(sum(key.count(k) > 1 for k in key)),
                  "distinct_malicious": int(y[uniq].sum())}
     seen_in_train, seen_acc, unseen_acc = [], [], []
-    dedup, pipe = [], []
+    dedup, pipe, short_lr, short_mvp = [], [], [], []
     for sd in SEEDS:
         str_, ste = train_test_split(idx, test_size=0.3, stratify=y, random_state=sd)
         trk = {key[i] for i in str_}
@@ -128,6 +128,9 @@ def main() -> int:
         short = np.asarray([len(rows[i][2]) < MIN_CALLS for i in ste])
         routed = np.where(short, mvp[ste], s_lr)
         pipe.append(binary_metrics(y[ste], routed))
+        s20 = np.asarray([len(rows[i][2]) < 20 for i in ste])
+        short_lr.append(float(((s_lr[s20] >= 0.5) == (y[ste][s20] == 1)).mean()))
+        short_mvp.append(float(((mvp[ste][s20] >= 0.5) == (y[ste][s20] == 1)).mean()))
     for n in ("api-ngram-lr", "api-ngram-lgbm", "attack-features"):
         accs, aucs = [], []
         for sd in SEEDS:
@@ -148,7 +151,9 @@ def main() -> int:
                      "short_trace_share": round(float(np.mean([len(a) < MIN_CALLS for _, _, a in rows])), 4),
                      "accuracy": mean_ci_nb([p["accuracy"] for p in pipe], len(y) - nt, nt),
                      "recall_at_0.5": mean_ci_nb([p["recall"] for p in pipe], len(y) - nt, nt),
-                     "roc_auc": mean_ci_nb([p["roc_auc"] for p in pipe], len(y) - nt, nt)}
+                     "roc_auc": mean_ci_nb([p["roc_auc"] for p in pipe], len(y) - nt, nt),
+                     "traces_under_20_calls_lr_accuracy": mean_ci_nb(short_lr, len(y) - nt, nt),
+                     "traces_under_20_calls_mvp_accuracy": mean_ci_nb(short_mvp, len(y) - nt, nt)}
     print("leakage", leakage)
     print("pipeline", pipeline_path)
     # ship the pipeline scorer: TF-IDF + LR on all rows, exported as pure-Python JSON
