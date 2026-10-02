@@ -1,6 +1,6 @@
 {
   "benchmark": "behaviour_malbehavd",
-  "generated": "2026-09-26",
+  "generated": "2026-10-02",
   "python": "3.14.3",
   "dataset": {
     "name": "MalbehavD-V1",
@@ -61,49 +61,53 @@
   "seeds_70_30": [
     {
       "model": "mvp-synthetic",
-      "accuracy": "0.5016 +/- 0.0014",
-      "roc_auc": "0.2386 +/- 0.0268",
-      "f1": "0.0052 +/- 0.0045"
+      "accuracy": "0.5016 +/- 0.0024",
+      "roc_auc": "0.2386 +/- 0.0475",
+      "f1": "0.0052 +/- 0.0080",
+      "accuracy_sd": 0.0011
     },
     {
       "model": "attack-features",
-      "accuracy": "0.7235 +/- 0.0283",
-      "roc_auc": "0.7654 +/- 0.0254",
-      "f1": "0.7301 +/- 0.0308"
+      "accuracy": "0.7235 +/- 0.0501",
+      "roc_auc": "0.7654 +/- 0.0450",
+      "f1": "0.7301 +/- 0.0546",
+      "accuracy_sd": 0.0228
     },
     {
       "model": "api-ngram-lr",
-      "accuracy": "0.9627 +/- 0.0064",
-      "roc_auc": "0.9889 +/- 0.0048",
-      "f1": "0.9623 +/- 0.0067"
+      "accuracy": "0.9627 +/- 0.0113",
+      "roc_auc": "0.9889 +/- 0.0085",
+      "f1": "0.9623 +/- 0.0119",
+      "accuracy_sd": 0.0052
     },
     {
       "model": "api-ngram-lgbm",
-      "accuracy": "0.9614 +/- 0.0092",
-      "roc_auc": "0.9887 +/- 0.0038",
-      "f1": "0.9609 +/- 0.0097"
+      "accuracy": "0.9614 +/- 0.0162",
+      "roc_auc": "0.9887 +/- 0.0068",
+      "f1": "0.9609 +/- 0.0173",
+      "accuracy_sd": 0.0074
     }
   ],
   "cv": [
     {
       "model": "mvp-synthetic",
-      "cv_accuracy": "0.5012 +/- 0.0007",
-      "cv_roc_auc": "0.2417 +/- 0.0079"
+      "cv_accuracy": "0.5012 +/- 0.0018",
+      "cv_roc_auc": "0.2417 +/- 0.0213"
     },
     {
       "model": "attack-features",
-      "cv_accuracy": "0.7152 +/- 0.0075",
-      "cv_roc_auc": "0.7628 +/- 0.0081"
+      "cv_accuracy": "0.7152 +/- 0.0201",
+      "cv_roc_auc": "0.7628 +/- 0.0219"
     },
     {
       "model": "api-ngram-lr",
-      "cv_accuracy": "0.9622 +/- 0.0037",
-      "cv_roc_auc": "0.9892 +/- 0.0019"
+      "cv_accuracy": "0.9622 +/- 0.0099",
+      "cv_roc_auc": "0.9892 +/- 0.0052"
     },
     {
       "model": "api-ngram-lgbm",
-      "cv_accuracy": "0.9628 +/- 0.0030",
-      "cv_roc_auc": "0.9899 +/- 0.0016"
+      "cv_accuracy": "0.9628 +/- 0.0080",
+      "cv_roc_auc": "0.9899 +/- 0.0042"
     }
   ],
   "published": [
@@ -118,5 +122,42 @@
       "f1": "-"
     }
   ],
-  "markdown": "| model | roc_auc | roc_auc_95ci | accuracy | accuracy_95ci | f1 |\n|---|---|---|---|---|---|\n| mvp-synthetic | 0.22831 | [0.1948, 0.2594] | 0.5032 | [0.4682, 0.537] | 0.0103 |\n| attack-features | 0.77918 | [0.7485, 0.8112] | 0.7536 | [0.7224, 0.786] | 0.7677 |\n| api-ngram-lr | 0.99099 | [0.9839, 0.9962] | 0.9676 | [0.9546, 0.9792] | 0.9674 |\n| api-ngram-lgbm | 0.98985 | [0.9827, 0.9955] | 0.9663 | [0.952, 0.978] | 0.9661 |\n| MalDetConv CNN-BiGRU (Maniriho et al. 2022) |  |  | 0.961 |  | 0.9602 |\n| MalDy TF-IDF + XGBoost (as reported there) |  |  | 0.9559 |  | - |\n\n| model | accuracy | roc_auc | f1 |\n|---|---|---|---|\n| mvp-synthetic | 0.5016 +/- 0.0014 | 0.2386 +/- 0.0268 | 0.0052 +/- 0.0045 |\n| attack-features | 0.7235 +/- 0.0283 | 0.7654 +/- 0.0254 | 0.7301 +/- 0.0308 |\n| api-ngram-lr | 0.9627 +/- 0.0064 | 0.9889 +/- 0.0048 | 0.9623 +/- 0.0067 |\n| api-ngram-lgbm | 0.9614 +/- 0.0092 | 0.9887 +/- 0.0038 | 0.9609 +/- 0.0097 |\n\n| model | cv_accuracy | cv_roc_auc |\n|---|---|---|\n| mvp-synthetic | 0.5012 +/- 0.0007 | 0.2417 +/- 0.0079 |\n| attack-features | 0.7152 +/- 0.0075 | 0.7628 +/- 0.0081 |\n| api-ngram-lr | 0.9622 +/- 0.0037 | 0.9892 +/- 0.0019 |\n| api-ngram-lgbm | 0.9628 +/- 0.0030 | 0.9899 +/- 0.0016 |"
+  "dedup_70_30": [
+    {
+      "model": "api-ngram-lr",
+      "accuracy": "0.9343 +/- 0.0260",
+      "roc_auc": "0.9713 +/- 0.0151"
+    },
+    {
+      "model": "api-ngram-lgbm",
+      "accuracy": "0.9389 +/- 0.0115",
+      "roc_auc": "0.9704 +/- 0.0132"
+    },
+    {
+      "model": "attack-features",
+      "accuracy": "0.7231 +/- 0.0182",
+      "roc_auc": "0.6816 +/- 0.0754"
+    }
+  ],
+  "duplicate_leakage": {
+    "rows": 2570,
+    "distinct_sequences": 1601,
+    "rows_in_duplicate_groups": 1157,
+    "distinct_malicious": 478,
+    "test_rows_with_exact_duplicate_in_train": "0.4236 +/- 0.0401",
+    "lr_accuracy_on_seen_rows": "0.9950 +/- 0.0109",
+    "lr_accuracy_on_unseen_rows": "0.9387 +/- 0.0238"
+  },
+  "pipeline_path": {
+    "min_calls": 5,
+    "short_trace_share": 0.0043,
+    "accuracy": "0.9595 +/- 0.0127",
+    "recall_at_0.5": "0.9496 +/- 0.0269",
+    "roc_auc": "0.9881 +/- 0.0087",
+    "traces_under_20_calls_lr_accuracy": "0.9644 +/- 0.0175",
+    "traces_under_20_calls_mvp_accuracy": "0.5556 +/- 0.0879"
+  },
+  "shipped_model_max_abs_diff_vs_sklearn": 1.32e-06,
+  "ci_method": "Nadeau-Bengio corrected resampled t (repeated splits/folds); percentile bootstrap (seed-0 holdout)",
+  "markdown": "| model | roc_auc | roc_auc_95ci | accuracy | accuracy_95ci | f1 |\n|---|---|---|---|---|---|\n| mvp-synthetic | 0.22831 | [0.1948, 0.2594] | 0.5032 | [0.4682, 0.537] | 0.0103 |\n| attack-features | 0.77918 | [0.7485, 0.8112] | 0.7536 | [0.7224, 0.786] | 0.7677 |\n| api-ngram-lr | 0.99099 | [0.9839, 0.9962] | 0.9676 | [0.9546, 0.9792] | 0.9674 |\n| api-ngram-lgbm | 0.98985 | [0.9827, 0.9955] | 0.9663 | [0.952, 0.978] | 0.9661 |\n| MalDetConv CNN-BiGRU (Maniriho et al. 2022) |  |  | 0.961 |  | 0.9602 |\n| MalDy TF-IDF + XGBoost (as reported there) |  |  | 0.9559 |  | - |\n\n| model | accuracy | roc_auc | f1 |\n|---|---|---|---|\n| mvp-synthetic | 0.5016 +/- 0.0024 | 0.2386 +/- 0.0475 | 0.0052 +/- 0.0080 |\n| attack-features | 0.7235 +/- 0.0501 | 0.7654 +/- 0.0450 | 0.7301 +/- 0.0546 |\n| api-ngram-lr | 0.9627 +/- 0.0113 | 0.9889 +/- 0.0085 | 0.9623 +/- 0.0119 |\n| api-ngram-lgbm | 0.9614 +/- 0.0162 | 0.9887 +/- 0.0068 | 0.9609 +/- 0.0173 |\n\n| model | cv_accuracy | cv_roc_auc |\n|---|---|---|\n| mvp-synthetic | 0.5012 +/- 0.0018 | 0.2417 +/- 0.0213 |\n| attack-features | 0.7152 +/- 0.0201 | 0.7628 +/- 0.0219 |\n| api-ngram-lr | 0.9622 +/- 0.0099 | 0.9892 +/- 0.0052 |\n| api-ngram-lgbm | 0.9628 +/- 0.0080 | 0.9899 +/- 0.0042 |\n\n| model | accuracy | roc_auc |\n|---|---|---|\n| api-ngram-lr | 0.9343 +/- 0.0260 | 0.9713 +/- 0.0151 |\n| api-ngram-lgbm | 0.9389 +/- 0.0115 | 0.9704 +/- 0.0132 |\n| attack-features | 0.7231 +/- 0.0182 | 0.6816 +/- 0.0754 |"
 }
