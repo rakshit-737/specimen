@@ -20,7 +20,7 @@ The gate evaluated here is the standalone `triage-ember` model on EMBER raw feat
 | random split, same months and volume | 0.9965 | 0.852 | 0.949 | | | |
 | *upstream EMBER-2018 LightGBM (600k train rows)* | *0.99643* | *0.868* | *0.965* | | | |
 
-<img src="figures/static_temporal.png" width="480" alt="Per-month AUC and detonations saved on the temporal EMBER test months">
+<img src="../figures/static_temporal.png" width="480" alt="Per-month AUC and detonations saved on the temporal EMBER test months">
 
 Under drift the gate is clearly worse than on a random split, mostly in the low-FPR region. "Detonations saved" depends on the malware share of the submissions: it is benign share x 72 % + malware share x 0.6 %, so about 8 % at a 90 % malware mix and 58 % at 20 %.
 
@@ -32,7 +32,7 @@ Under drift the gate is clearly worse than on a random split, mostly in the low-
 | logistic regression | 0.968 | 0.010 | 0.574 | 0.926 | 0.930 |
 | LightGBM (SPECIMEN) | 0.994 | 0.839 (about 7 of 6,756 benign rows define this FPR) | 0.924 | 0.965 | 0.967 |
 
-<img src="figures/static_roc.png" width="420" alt="ROC curves of the three static gates on EMBER">
+<img src="../figures/static_roc.png" width="420" alt="ROC curves of the three static gates on EMBER">
 
 Every gate decision carries TreeSHAP contributions over named features, for example `section.n_rx`, `datadir[2].size` or `imports:CreateToolhelp32Snapshot`. The hand-weighted MVP heuristic is barely better than chance on real PEs.
 
@@ -49,11 +49,11 @@ Authors' temporal split: 37,512 training reports before 2019-08-01, 11,464 later
 | *HMIL behaviour+static (Bošanský et al. 2022)* | *0.945* | | |
 | *HMIL static-only* | *~0.63* | | |
 
-<img src="figures/family_confusion.png" width="440" alt="Confusion matrix of the family model on the temporal test split">
+<img src="../figures/family_confusion.png" width="440" alt="Confusion matrix of the family model on the temporal test split">
 
-The like-for-like comparison with HMIL is behaviour+static: 0.950 against 0.945. On test, behaviour-only is significantly better (McNemar, 159 vs 56 discordant reports, p = 1e-12), but picking it would mean selecting on the test set, so the published shipped number is the lower one. Each prediction lists the tokens that drove it.
+The like-for-like comparison with HMIL is behaviour+static: 0.950 against 0.945. On test, behaviour-only is significantly better (McNemar, 159 vs 56 discordant reports, p ≈ 1.3e-12), but picking it would mean selecting on the test set, so the published shipped number is the lower one. Each prediction lists the tokens that drove it.
 
-**Open set.** In a leave-one-family-out run, the top probability for a held-out family's reports has a median of 0.45-0.79. The shipped abstain threshold is 0.6: known-family coverage 95.9 % at 98.2 % accuracy, but 30 % of unseen-family reports are still forced into a known family. Below the threshold, reports say `unknown (closest: X)`.
+**Open set.** In a leave-one-family-out run, the top probability for a held-out family's reports has a median of 0.45-0.79. The shipped abstain threshold is 0.6, the largest value that keeps at least 95 % known-family coverage. It was picked on the test split itself (not on the validation slice), so these figures are optimistic: known-family coverage 95.9 % at 98.2 % accuracy, but 30 % of unseen-family reports are still forced into a known family. Below the threshold, reports say `unknown (closest: X)`.
 
 ## 3. Do auto-rules from ONE run generalise? `results/rules_avast.json`
 
@@ -67,12 +67,12 @@ For each family and seed (5 seeds), 10 reference runs are drawn from the trainin
 | ladder + synthetic negatives only | 0.372 [0.15, 0.62] | 0.228 | 0.392 | 8.67 % [3.65, 14.8] | 6.2 |
 | ladder + real negatives (v2) | 0.304 [0.07, 0.58] | 0.057 | 0.298 | 0.020 % [0.002, 0.043] | 5.7 |
 | ladder + real negatives, at most 3 rules | 0.227 [0.04, 0.46] | 0.045 | 0.215 | 0.007 % | 2.6 |
-| **shipped (packaged negative corpus)** | **0.303 [0.08, 0.57]** | **0.058** | **0.296** | **0.004 %** [0.001, 0.007] | 5.7 |
+| **shipped (packaged negative corpus, true family excluded)** | **0.303 [0.08, 0.57]** | **0.058** | **0.296** | **0.004 %** [0.001, 0.007] | 5.7 |
 | v2, 5 runs pooled | 0.391 [0.16, 0.64] | 0.265 | 0.350 | 0.056 % | 6.0 per 5-run pool |
 | YARA `pe.imphash()` | 0.081 | 0.000 | 0.073 | 0.025 % | 1.0 |
 | YARA v2 (imphash or rare imports) | 0.104 | 0.018 | 0.097 | 0.071 % | 0.9 |
 
-<img src="figures/rule_generalisation.png" width="520" alt="Sibling recall against cross-family FPR (log scale) per synthesizer, with 95 % CIs">
+<img src="../figures/rule_generalisation.png" width="520" alt="Sibling recall against cross-family FPR (log scale) per synthesizer, with 95 % CIs">
 
 What the ablation shows, compared with the round-2 claim ("roughly doubles recall, 140x fewer FPs"):
 

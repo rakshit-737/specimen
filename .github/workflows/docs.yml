@@ -28,6 +28,27 @@ jobs:
           python scripts/build_demo.py
           git diff --stat -- docs/demo
       - run: mkdocs build --strict
+      - name: Check that every <img src> in the built site resolves
+        run: |
+          python - <<'PY'
+          import re, sys
+          from pathlib import Path
+          from urllib.parse import urljoin
+          site = Path("site").resolve()
+          bad = []
+          for page in site.rglob("*.html"):
+              rel = page.relative_to(site).as_posix()
+              base = "/" + rel
+              for src in re.findall(r'<img[^>]+src="([^"]+)"', page.read_text(encoding="utf-8")):
+                  if src.startswith(("http:", "https:", "data:", "//")):
+                      continue
+                  target = urljoin(base, src.split("#")[0].split("?")[0]).lstrip("/")
+                  if not (site / target).is_file():
+                      bad.append(f"{rel}: {src}")
+          print("
+".join(bad) or "all images resolve")
+          sys.exit(1 if bad else 0)
+          PY
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: site
