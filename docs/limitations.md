@@ -7,7 +7,7 @@
 - **Negatives for rule specificity** are other malware families (a packaged sample of Avast-CTU training runs) plus a small synthetic benign set. Benign false-positive rates are unmeasured; the corpora searched and why none was adopted are listed on [Datasets](datasets.md#benign-behaviour-corpora-searched-round-3).
 - **The EMBER LightGBM gate is standalone** (`triage-ember` on EMBER raw features). `analyze` has no PE-to-EMBER feature extractor and still detonates every PE.
 - **Under temporal drift the gate is weaker**: AUC 0.989 and TPR 0.49 at 0.1 % FPR on Nov-Dec 2018 when trained on Jan-Sep (vs 0.997 / 0.85 on a random split). Detonations saved depend on the malware share of submissions.
-- **Family attribution is closed-set over 10 families**; an abstain threshold marks low-probability reports as `unknown (closest: X)`, but it has not been evaluated on held-out families.
+- **Family attribution is closed-set over 10 families**; in leave-one-family-out tests, 30 % of unseen-family reports still pass the 0.6 abstain threshold (below it, reports say `unknown (closest: X)`). The threshold was picked on the test split, not on a separate validation slice.
 - **MalbehavD-V1 contains exact duplicate sequences** (1,601 distinct of 2,570); random splits, including the published ones, partly measure memorisation. The duplicate-free accuracy is 93.4 %.
 - **The API behaviour scorer is trained on MalbehavD-V1** (Cuckoo API names, 2,570 samples). It only runs on traces with a real call sequence; reduced reports (no call logs) still use the MVP scorer, which is known to transfer poorly (see Benchmarks).
 - No adversarial robustness evaluation of any model.

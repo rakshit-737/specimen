@@ -25,7 +25,7 @@ SPECIMEN is a sample-to-story malware analysis pipeline. It runs an explainable 
 | Question | Dataset | SPECIMEN | Baseline (MVP) | Published reference |
 |---|---|---|---|---|
 | Can a static gate skip detonations safely? | EMBER 2018, **temporal** (train Jan-Sep, test Nov-Dec), 5 subsample seeds | Skips **72 %** of benign and misses **0.6 %** of malware at a 99 %-recall threshold calibrated on October (36 % of all test detonations at EMBER's malware share); ROC AUC **0.989**, TPR **0.49** at 0.1 % FPR. A random split of the same data gives 0.997 / 0.85, so drift costs a lot | Detonate every PE (0 % saved); heuristic AUC 0.560 | Upstream EMBER-2018 LightGBM, 600k rows: AUC 0.9964, TPR 0.868 at 0.1 % FPR |
-| Which family is it? | Avast-CTU CAPEv2, 48,976 reports, temporal split | **95.0 %** [94.6, 95.4] accuracy for the shipped behaviour+static model, chosen on a validation slice (behaviour-only scores 95.9 % on test, McNemar p < 1e-11); 92.5 % on test reports whose behaviour was never seen in training | Jaccard over ATT&CK sets: 87.8 % | HMIL (behaviour+static): 94.5 % |
+| Which family is it? | Avast-CTU CAPEv2, 48,976 reports, temporal split | **95.0 %** [94.6, 95.4] accuracy for the shipped behaviour+static model, chosen on a validation slice (behaviour-only scores 95.9 % on test, McNemar p ≈ 1.3e-12); 92.5 % on test reports whose behaviour was never seen in training | Jaccard over ATT&CK sets: 87.8 % | HMIL (behaviour+static): 94.5 % |
 | Do auto-Sigma rules from **one** run catch later siblings? | Avast-CTU, 9 families x 10 runs x 5 seeds (HarHar has no host actions) | Mean sibling recall **0.30** [0.08, 0.57] at **0.004 %** cross-family FPR for the shipped configuration; the **median family is only 0.06**: Swisyn and Qakbot carry the mean | MVP: 0.17 at 1.8 % FPR | none found for single-run sandbox-to-Sigma |
 | Is the behaviour malicious? | MalbehavD-V1, 2,570 Cuckoo API traces | **96.3 ± 1.1 %** accuracy over 5 random 70/30 splits (paper protocol; 42 % of test rows have an exact duplicate in train). **93.4 ± 2.6 %** on a duplicate-free split. Through the shipped pipeline routing: 96.0 ± 1.3 % | MVP synthetic-trained scorer: 50 % (AUC 0.23) | MalDetConv 96.1 %, MalDy 95.6 % (both random split, duplicates included) |
 
@@ -93,6 +93,9 @@ python -m pytest -q
 
 # trained family model and EMBER gate (too large for git): fetch the release assets
 gh release download v1.0.0 -R rakshit-737/specimen -p 'family_*' -p 'static_*' -D models
+# the round-3 family model used for the committed demo pages is, until the next release, only in the
+# bench run artefact (expires with the artefact retention period):
+# gh run download 37004185054 -R rakshit-737/specimen -n bench-avast -D bench-avast && find bench-avast -name 'family_*' -exec cp {} models/ \;
 
 python -m specimen analyze <your-sample> --trace <recorded-run.json|sysmon.xml> --out out/
 python -m specimen batch <your-report-dir> --out out/batch --workers 4
@@ -183,9 +186,9 @@ Authors' temporal split: 37,512 training reports before 2019-08-01, 11,464 later
 
 <img src="docs/figures/family_confusion.png" width="440" alt="Confusion matrix of the family model on the temporal test split">
 
-The like-for-like comparison with HMIL is behaviour+static: 0.950 against 0.945. On test, behaviour-only is significantly better (McNemar, 159 vs 56 discordant reports, p = 1e-12), but picking it would mean selecting on the test set, so the published shipped number is the lower one. Each prediction lists the tokens that drove it.
+The like-for-like comparison with HMIL is behaviour+static: 0.950 against 0.945. On test, behaviour-only is significantly better (McNemar, 159 vs 56 discordant reports, p ≈ 1.3e-12), but picking it would mean selecting on the test set, so the published shipped number is the lower one. Each prediction lists the tokens that drove it.
 
-**Open set.** In a leave-one-family-out run, the top probability for a held-out family's reports has a median of 0.45-0.79. The shipped abstain threshold is 0.6: known-family coverage 95.9 % at 98.2 % accuracy, but 30 % of unseen-family reports are still forced into a known family. Below the threshold, reports say `unknown (closest: X)`.
+**Open set.** In a leave-one-family-out run, the top probability for a held-out family's reports has a median of 0.45-0.79. The shipped abstain threshold is 0.6, the largest value that keeps at least 95 % known-family coverage. It was picked on the test split itself (not on the validation slice), so these figures are optimistic: known-family coverage 95.9 % at 98.2 % accuracy, but 30 % of unseen-family reports are still forced into a known family. Below the threshold, reports say `unknown (closest: X)`.
 
 ### 3. Do auto-rules from ONE run generalise? `results/rules_avast.json`
 
@@ -199,7 +202,7 @@ For each family and seed (5 seeds), 10 reference runs are drawn from the trainin
 | ladder + synthetic negatives only | 0.372 [0.15, 0.62] | 0.228 | 0.392 | 8.67 % [3.65, 14.8] | 6.2 |
 | ladder + real negatives (v2) | 0.304 [0.07, 0.58] | 0.057 | 0.298 | 0.020 % [0.002, 0.043] | 5.7 |
 | ladder + real negatives, at most 3 rules | 0.227 [0.04, 0.46] | 0.045 | 0.215 | 0.007 % | 2.6 |
-| **shipped (packaged negative corpus)** | **0.303 [0.08, 0.57]** | **0.058** | **0.296** | **0.004 %** [0.001, 0.007] | 5.7 |
+| **shipped (packaged negative corpus, true family excluded)** | **0.303 [0.08, 0.57]** | **0.058** | **0.296** | **0.004 %** [0.001, 0.007] | 5.7 |
 | v2, 5 runs pooled | 0.391 [0.16, 0.64] | 0.265 | 0.350 | 0.056 % | 6.0 per 5-run pool |
 | YARA `pe.imphash()` | 0.081 | 0.000 | 0.073 | 0.025 % | 1.0 |
 | YARA v2 (imphash or rare imports) | 0.104 | 0.018 | 0.097 | 0.071 % | 0.9 |
@@ -277,7 +280,7 @@ Our reproduction falls 2-4 points short of the paper. The likeliest cause is the
 - **Negatives for rule specificity** are other malware families (a packaged sample of Avast-CTU training runs) plus a small synthetic benign set. Benign false-positive rates are unmeasured; the corpora searched and why none was adopted are listed on [Datasets](docs/datasets.md#benign-behaviour-corpora-searched-round-3).
 - **The EMBER LightGBM gate is standalone** (`triage-ember` on EMBER raw features). `analyze` has no PE-to-EMBER feature extractor and still detonates every PE.
 - **Under temporal drift the gate is weaker**: AUC 0.989 and TPR 0.49 at 0.1 % FPR on Nov-Dec 2018 when trained on Jan-Sep (vs 0.997 / 0.85 on a random split). Detonations saved depend on the malware share of submissions.
-- **Family attribution is closed-set over 10 families**; an abstain threshold marks low-probability reports as `unknown (closest: X)`, but it has not been evaluated on held-out families.
+- **Family attribution is closed-set over 10 families**; in leave-one-family-out tests, 30 % of unseen-family reports still pass the 0.6 abstain threshold (below it, reports say `unknown (closest: X)`). The threshold was picked on the test split, not on a separate validation slice.
 - **MalbehavD-V1 contains exact duplicate sequences** (1,601 distinct of 2,570); random splits, including the published ones, partly measure memorisation. The duplicate-free accuracy is 93.4 %.
 - **The API behaviour scorer is trained on MalbehavD-V1** (Cuckoo API names, 2,570 samples). It only runs on traces with a real call sequence; reduced reports (no call logs) still use the MVP scorer, which is known to transfer poorly (see Benchmarks).
 - No adversarial robustness evaluation of any model.
