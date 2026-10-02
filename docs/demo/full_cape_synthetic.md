@@ -13,7 +13,7 @@ score 0.3543 / entropy 0.0
 - few&#95;imports impact +0.60
 
 ## Behavior
-P(malicious)=0.7396 label=suspicious scorer=api-ngram-lr (MalbehavD-V1) | family match **unknown (closest: Zeus)** (p=0.497, avast-ctu-logreg (behaviour-only))
+P(malicious)=0.7396 label=suspicious scorer=api-ngram-lr (MalbehavD-V1) | family match **unknown (closest: Zeus)** (p=0.363, avast-ctu-logreg (behaviour+static))
 
 - writeprocessmemory = 0.3416, impact +0.82
 - createremotethread = 0.4172, impact +0.52
@@ -23,14 +23,14 @@ P(malicious)=0.7396 label=suspicious scorer=api-ngram-lr (MalbehavD-V1) | family
 - deletefilew&gt;ntopenfile = 0.5225, impact +0.14
 
 ### Family evidence
-Top tokens supporting **unknown (closest: Zeus)** (avast-ctu-logreg (behaviour-only)):
+Top tokens supporting **unknown (closest: Zeus)** (avast-ctu-logreg (behaviour+static)):
 
-- tech:T1622 (+0.574)
-- tech:T1055 (+0.454)
-- tactic:defense-evasion (+0.211)
-- file&#95;delete&#95;ext:exe (+0.201)
-- exec:cmd.exe (+0.163)
-- tech:T1070.004 (+0.072)
+- tech:T1055 (+0.433)
+- tech:T1622 (+0.384)
+- tactic:defense-evasion (+0.188)
+- file&#95;delete&#95;ext:exe (+0.185)
+- exec:cmd.exe (+0.145)
+- tech:T1070.004 (+0.115)
 
 ## Timeline
 | t | event | ATT&CK | anomaly |
@@ -145,7 +145,7 @@ Specificity: 0 Sigma candidate(s) dropped because no generalisation rung was spe
   "python": "3.14.3",
   "specimen_version": "1.0.0",
   "execution": "report-only (sandbox report replay; no sample bytes handled)",
-  "report_content_sha256": "ac95fbe52cceb5c22e511c9c61bf174334c5273c2a72d010db6b4d161805103f",
+  "report_content_sha256": "869dd3aec9814f5692e888169a5b6497b94947029587b619eabf627255ac001f",
   "report_sha256": "1c6780cf6a678c2cc7b0d0f74d9677973ae5e1129642ec16cbf156ade159800d",
   "negative_corpus": {
     "packaged": true,

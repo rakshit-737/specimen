@@ -1,73 +1,104 @@
-# Benchmarks
+# Evaluation
 
-All numbers come from `benchmarks/*.py` runs on the public datasets; the raw outputs are committed in [`results/`](https://github.com/rakshit-737/specimen/tree/main/results). Intervals are 95 %: bootstrap percentile intervals over test rows (1,000 resamples; 300 for EMBER AUC), t-intervals of the mean over seeds/folds, or binomial intervals for a single fixed split, as labelled.
+## Methodology
 
-## 1. Static gate on EMBER 2018 (`results/static_ember.json`)
+- Every number comes from a script in `benchmarks/` and a JSON file in [`results/`](https://github.com/rakshit-737/specimen/tree/main/results); see [Reproduce](reproduce.md).
+- **Splits:** Avast-CTU uses the authors' temporal split (train before 2019-08-01). EMBER uses a temporal split (train Jan-Sep 2018, calibrate Oct, test Nov-Dec) plus the earlier one-month random split. MalbehavD uses the paper's random 70/30 split and a duplicate-free split.
+- **Leakage controls:** exact-duplicate analysis (MalbehavD, Mal-API), "novel behaviour" test subsets (Avast-CTU), and model selection on a validation slice rather than on test.
+- **Intervals (95 %):** percentile bootstrap over test rows for single holdouts; Nadeau-Bengio corrected resampled t over repeated splits and folds; Wilson for proportions; a two-level bootstrap (families, units) for rule recall; min-max over 5 seeds for the temporal EMBER runs.
+- **Negative results are kept:** the MVP scorers, the over-general ladder with synthetic negatives, the closed-set family leak, and drift on EMBER.
 
-Held-out stratified 25 % of 56,893 labelled rows; the gate threshold is tuned on a separate validation slice for 99 % malware recall.
+## 1. Static gate on EMBER
 
-| model | ROC AUC (95 % bootstrap CI) | TPR @ 0.1 % FPR | TPR @ 1 % FPR | accuracy | F1 |
+The gate evaluated here is the standalone `triage-ember` model on EMBER raw features; `analyze` does not call it (see Architecture).
+
+**Temporal (round 3, `results/static_ember_temporal.json`, `figures/static_temporal.png`).** Full EMBER-2018 archive downloaded in a GitHub Actions job (pinned SHA-256), vectorised with SPECIMEN's own featuriser, month-stratified subsample; train Jan-Sep, threshold calibrated for 99 % recall on October, test Nov-Dec; 5 subsample seeds (min-max shown).
+
+| protocol | ROC AUC | TPR @ 0.1 % FPR | TPR @ 1 % FPR | detonations saved | malware missed | benign skipped |
+|---|---|---|---|---|---|---|
+| **temporal (SPECIMEN)** | **0.9892** (0.9889-0.9894) | **0.488** (0.466-0.538) | **0.873** (0.869-0.879) | 36.4 % | 0.63 % | 72.2 % |
+| random split, same months and volume | 0.9965 | 0.852 | 0.949 | | | |
+| *upstream EMBER-2018 LightGBM (600k train rows)* | *0.99643* | *0.868* | *0.965* | | | |
+
+<img src="figures/static_temporal.png" width="480" alt="Per-month AUC and detonations saved on the temporal EMBER test months">
+
+Under drift the gate is clearly worse than on a random split, mostly in the low-FPR region. "Detonations saved" depends on the malware share of the submissions: it is benign share x 72 % + malware share x 0.6 %, so about 8 % at a 90 % malware mix and 58 % at 20 %.
+
+**Earlier one-month random split (`results/static_ember.json`).** A stratified 25 % of a 56,893-row prefix (2018-01 only), kept for comparison; this is optimistic about drift.
+
+| model | ROC AUC | TPR @ 0.1 % FPR | TPR @ 1 % FPR | accuracy | F1 |
 |---|---|---|---|---|---|
-| MVP heuristic (ported) | 0.560 [0.551, 0.568] | 0.007 | 0.017 | 0.523 | 0.488 |
-| logistic regression | 0.968 [0.965, 0.971] | 0.010 | 0.574 | 0.926 | 0.930 |
-| **LightGBM (SPECIMEN)** | **0.994 [0.993, 0.995]** | **0.839** | **0.924** | **0.965** | **0.967** |
-| *EMBER paper, LightGBM, 2017 test set* | *0.9991* | *0.930* | *0.982* | | |
+| MVP heuristic (ported) | 0.560 | 0.007 | 0.017 | 0.523 | 0.488 |
+| logistic regression | 0.968 | 0.010 | 0.574 | 0.926 | 0.930 |
+| LightGBM (SPECIMEN) | 0.994 | 0.839 (about 7 of 6,756 benign rows define this FPR) | 0.924 | 0.965 | 0.967 |
 
-| gate policy @ 99 % recall | detonations saved | benign skipped | malware missed |
+<img src="figures/static_roc.png" width="420" alt="ROC curves of the three static gates on EMBER">
+
+Every gate decision carries TreeSHAP contributions over named features, for example `section.n_rx`, `datadir[2].size` or `imports:CreateToolhelp32Snapshot`. The hand-weighted MVP heuristic is barely better than chance on real PEs.
+
+## 2. Family attribution on Avast-CTU CAPEv2: `results/family_avast.json`
+
+Authors' temporal split: 37,512 training reports before 2019-08-01, 11,464 later test reports. 59 % of test reports have a behaviour-token set never seen in training ("novel"). Wilson 95 % CIs. The shipped variant is now chosen on a validation slice (training runs from 2019-06 on), not on test accuracy.
+
+| model | test accuracy [95 % CI] | novel-behaviour accuracy | macro-F1 |
 |---|---|---|---|
-| MVP: detonate every PE | 0 % | 0 % | 0 % |
-| MVP heuristic | 0 % | 0 % | 0 % |
-| logistic regression | 17.4 % | 35.5 % | 1.0 % |
-| **LightGBM, seed 0** | **42.3 %** | **87.8 %** | **1.2 %** |
-| **LightGBM, 5 re-split seeds (mean ± 95 % CI)** | **42.2 ± 1.7 %** | **87.5 ± 3.1 %** | **1.16 ± 0.46 %** |
+| MVP Jaccard over ATT&CK technique sets | 0.878 [0.872, 0.884] | 0.813 | 0.713 |
+| static.pe tokens only | 0.700 [0.692, 0.709] | 0.504 | 0.744 |
+| **behaviour + static tokens (shipped; best on validation, 0.987)** | **0.950 [0.946, 0.954]** | **0.925** | **0.923** |
+| behaviour tokens only | 0.959 [0.955, 0.962] | 0.934 | 0.926 |
+| *HMIL behaviour+static (Bošanský et al. 2022)* | *0.945* | | |
+| *HMIL static-only* | *~0.63* | | |
 
-Across 5 seeds the LightGBM AUC is 0.9947 ± 0.0005. The miss rate at the "99 % recall" threshold varies between 0.6 % and 1.6 % because the threshold is set on a small validation slice.
+<img src="figures/family_confusion.png" width="440" alt="Confusion matrix of the family model on the temporal test split">
 
-![ROC curves of the three static gates](figures/static_roc.png)
+The like-for-like comparison with HMIL is behaviour+static: 0.950 against 0.945. On test, behaviour-only is significantly better (McNemar, 159 vs 56 discordant reports, p = 1e-12), but picking it would mean selecting on the test set, so the published shipped number is the lower one. Each prediction lists the tokens that drove it.
 
-*Caveats:* the archive prefix covers one month (2018-01), so the split is random rather than temporal and optimistic about drift; the model is trained on ~38k rows instead of 600k.
+**Open set.** In a leave-one-family-out run, the top probability for a held-out family's reports has a median of 0.45-0.79. The shipped abstain threshold is 0.6: known-family coverage 95.9 % at 98.2 % accuracy, but 30 % of unseen-family reports are still forced into a known family. Below the threshold, reports say `unknown (closest: X)`.
 
-## 2. Family attribution on Avast-CTU CAPEv2 (`results/family_avast.json`)
+## 3. Do auto-rules from ONE run generalise? `results/rules_avast.json`
 
-The dataset authors' temporal split: 37,512 reports dated before 2019-08-01 for training, 11,464 later reports for testing. A single fixed split, so the interval is a binomial 95 % CI on accuracy.
+For each family and seed (5 seeds), 10 reference runs are drawn from the training split, rules are synthesised from each single run, and they are applied to the later test split. *Sibling recall* is the share of same-family test runs on which any rule fires. *Cross-family FPR* is the same share over other-family test runs. CIs come from a two-level bootstrap over families and units; paired Wilcoxon tests are over the 450 (seed, family, run) units. Per-unit values are in `results/rules_avast_units.csv`.
 
-| model | test accuracy (95 % CI) | macro-F1 |
-|---|---|---|
-| MVP Jaccard over ATT&CK technique sets | 0.878 [0.872, 0.884] | 0.713 |
-| static.pe tokens only | 0.691 [0.682, 0.699] | 0.737 |
-| behaviour + static tokens | 0.950 [0.946, 0.954] | 0.923 |
-| **behaviour tokens only (SPECIMEN)** | **0.959 [0.955, 0.962]** | **0.926** |
-| *HMIL on reduced reports (Bošanský et al.)* | *0.945* | |
+| synthesizer (ablation) | mean recall [95 % CI] | median family | novel-behaviour recall | cross-family FPR [95 % CI] | rules / run |
+|---|---|---|---|---|---|
+| Sigma MVP (exact values, synthetic negatives) | 0.174 [0.03, 0.40] | 0.005 | 0.193 | 1.85 % [0.91, 2.89] | 0.6 |
+| Sigma MVP + real negatives | 0.000 | 0.000 | 0.000 | 0 % | 0.01 |
+| exact values (rung 0) + real negatives | 0.298 [0.07, 0.56] | 0.056 | 0.291 | 0.009 % | 5.7 |
+| ladder + synthetic negatives only | 0.372 [0.15, 0.62] | 0.228 | 0.392 | 8.67 % [3.65, 14.8] | 6.2 |
+| ladder + real negatives (v2) | 0.304 [0.07, 0.58] | 0.057 | 0.298 | 0.020 % [0.002, 0.043] | 5.7 |
+| ladder + real negatives, at most 3 rules | 0.227 [0.04, 0.46] | 0.045 | 0.215 | 0.007 % | 2.6 |
+| **shipped (packaged negative corpus)** | **0.303 [0.08, 0.57]** | **0.058** | **0.296** | **0.004 %** [0.001, 0.007] | 5.7 |
+| v2, 5 runs pooled | 0.391 [0.16, 0.64] | 0.265 | 0.350 | 0.056 % | 6.0 per 5-run pool |
+| YARA `pe.imphash()` | 0.081 | 0.000 | 0.073 | 0.025 % | 1.0 |
+| YARA v2 (imphash or rare imports) | 0.104 | 0.018 | 0.097 | 0.071 % | 0.9 |
 
-![Family confusion matrix](figures/family_confusion.png)
+<img src="figures/rule_generalisation.png" width="520" alt="Sibling recall against cross-family FPR (log scale) per synthesizer, with 95 % CIs">
 
-## 3. Do auto-rules from one run generalise? (`results/rules_avast.json`)
+What the ablation shows, compared with the round-2 claim ("roughly doubles recall, 140x fewer FPs"):
 
-10 reference runs per family from the training split; rules synthesized from each single run are applied to the later test split.
+- **The real negative corpus does most of the work on false positives.** With only synthetic negatives the ladder over-generalises (8.7 % FPR). Given the same real negatives, the MVP's exact-value rules almost never survive, so most of the MVP-vs-v2 gap comes from the negatives, not the ladder.
+- **The ladder adds little over exact values once real negatives are used**: +0.006 recall (Wilcoxon p = 7e-7) at about twice the FPR. That is a much smaller effect than the round-2 headline implied.
+- **The mean hides the spread.** Per family (shipped): Swisyn 0.998, Qakbot 0.93, Lokibot 0.42, njRAT 0.24, Zeus 0.06, Adload 0.04 (n = 5, not estimable), Ursnif 0.02, Trickbot 0.004 and Emotet 0.001. Emotet, Trickbot and Ursnif randomise every artefact that reduced reports record. On Zeus, v2 is worse than the MVP (0.06 vs 0.31).
+- The round-2 single-draw numbers (0.327 recall at 0.016 % FPR) were slightly optimistic; the seeded re-run gives 0.304 at 0.020 % for the same configuration.
 
-| synthesizer | mean sibling recall | mean cross-family FPR | runs with any sibling hit | rules / run |
+## 4. Behavioural detection on MalbehavD-V1: `results/behaviour_malbehavd.json`
+
+Every sample goes through `api_sequence_to_trace`. Intervals over repeated splits and folds use the Nadeau-Bengio corrected resampled t (they were naive t-intervals before round 3 and are now about 1.8-2.7x wider).
+
+| model | seed-0 holdout [bootstrap CI] | 5 x 70/30 (paper protocol) | 5x5-fold CV | 5 x 70/30, duplicate-free |
 |---|---|---|---|---|
-| Sigma, MVP | 0.182 | 2.27 % | 51 % | 0.7 |
-| **Sigma v2 (ladder + negative check)** | **0.327** | **0.016 %** | **79 %** | 6.0 |
-| Sigma v2, 5 runs pooled | 0.416 | 0.065 % | 100 % | 29.6 |
-| YARA `pe.imphash()` | 0.087 | 0.021 % | 23 % | 1.0 |
-| YARA v2 (imphash or rare imports) | 0.083 | 0.002 % | 17 % | 0.9 |
-
-![Rule generalisation](figures/rule_generalisation.png)
-
-Every Sigma and YARA rule the pipeline emits on the bundled fixtures is parsed and converted by pySigma and compiled by yara-python in CI (`tests/test_rule_validation.py`).
-
-## 4. Behavioural detection on MalbehavD-V1 (`results/behaviour_malbehavd.json`)
-
-Every sample goes through `api_sequence_to_trace`. Seed-0 70/30 holdout (as in the dataset paper) with bootstrap CIs, then 5 re-split seeds, then 5-fold CV repeated over 5 seeds (25 folds).
-
-| model | holdout accuracy (95 % CI) | holdout AUC (95 % CI) | 5 seeds x 70/30 accuracy | 5 x 5-fold CV accuracy |
-|---|---|---|---|---|
-| MVP scorer (synthetic-trained, ATT&CK features) | 0.503 [0.468, 0.537] | 0.228 [0.195, 0.259] | 0.502 ± 0.001 | 0.501 ± 0.001 |
-| same 9 ATT&CK features, retrained | 0.754 [0.722, 0.786] | 0.779 [0.749, 0.811] | 0.724 ± 0.028 | 0.715 ± 0.008 |
-| **API uni+bigram TF-IDF + LR (shipped scorer)** | **0.968 [0.955, 0.979]** | **0.991 [0.984, 0.996]** | **0.963 ± 0.006** | **0.962 ± 0.004** |
-| API uni+bigram TF-IDF + LightGBM | 0.966 [0.952, 0.978] | 0.990 [0.983, 0.996] | 0.961 ± 0.009 | 0.963 ± 0.003 |
-| *MalDetConv CNN-BiGRU (published)* | *0.961* | | | |
+| MVP scorer (synthetic-trained, ATT&CK features) | 0.503 [0.468, 0.537] | 0.502 ± 0.002 | 0.501 ± 0.002 | |
+| same 9 ATT&CK features, retrained | 0.754 [0.722, 0.786] | 0.724 ± 0.050 | 0.715 ± 0.020 | 0.723 ± 0.018 |
+| **API uni+bigram tokens + LR (shipped scorer)** | **0.968 [0.955, 0.979]** | **0.963 ± 0.011** | **0.962 ± 0.010** | **0.934 ± 0.026** |
+| API uni+bigram tokens + LightGBM | 0.966 [0.952, 0.978] | 0.961 ± 0.016 | 0.963 ± 0.008 | 0.939 ± 0.012 |
+| *MalDetConv CNN-BiGRU (published, random split)* | *0.961* | | | |
 | *MalDy TF-IDF + XGBoost (as reported there)* | *0.956* | | | |
 
-The seed-0 holdout sits at the upper end of the seed spread; the fairer headline is **~96.2-96.3 %**, on par with (not clearly above) the published deep models, whose single-split numbers fall inside our intervals. The LR model is exported to JSON and evaluated in pure Python inside the pipeline (max deviation from scikit-learn: 2e-16).
+**Duplicate leakage.** The 2,570 rows hold only 1,601 distinct sequences (478 distinct malicious ones); 42 ± 4 % of test rows in a random 70/30 split have an exact copy in train. The LR is 99.5 % accurate on those and 93.9 % on unseen rows. The paper protocol (and the published numbers) therefore include memorised duplicates; the duplicate-free number is the honest one.
+
+**Pipeline path.** The shipped routing now sends traces with at least 5 API calls to the LR (it used to need 20, which sent 24 % of MalbehavD traces to the MVP scorer at 56 % accuracy). End-to-end accuracy through `behaviour_score` is 0.960 ± 0.013. The shipped JSON model deviates from a scikit-learn refit by at most 1.3e-6 (5-decimal rounding).
+
+The MVP's synthetic-trained scorer does not transfer at all: API-only traces trigger almost no ATT&CK-mapped features, so its ranking is inverted.
+
+<!-- round3:repro -->
+

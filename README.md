@@ -25,8 +25,8 @@ SPECIMEN is a sample-to-story malware analysis pipeline. It runs an explainable 
 | Question | Dataset | SPECIMEN | Baseline (MVP) | Published reference |
 |---|---|---|---|---|
 | Can a static gate skip detonations safely? | EMBER 2018, **temporal** (train Jan-Sep, test Nov-Dec), 5 subsample seeds | Skips **72 %** of benign and misses **0.6 %** of malware at a 99 %-recall threshold calibrated on October (36 % of all test detonations at EMBER's malware share); ROC AUC **0.989**, TPR **0.49** at 0.1 % FPR. A random split of the same data gives 0.997 / 0.85, so drift costs a lot | Detonate every PE (0 % saved); heuristic AUC 0.560 | Upstream EMBER-2018 LightGBM, 600k rows: AUC 0.9964, TPR 0.868 at 0.1 % FPR |
-| Which family is it? | Avast-CTU CAPEv2, 48,976 reports, temporal split | **95.9 %** accuracy (macro-F1 0.926) | Jaccard over ATT&CK sets: 87.8 % (macro-F1 0.713) | HMIL: 94.5 % |
-| Do auto-Sigma rules from **one** run catch later siblings? | Avast-CTU, 10 families x 10 runs | Sibling recall **0.33** at **0.016 %** cross-family FPR (0.42 when 5 runs are pooled) | Recall 0.18 at 2.3 % FPR | - (research question from the spec) |
+| Which family is it? | Avast-CTU CAPEv2, 48,976 reports, temporal split | **95.0 %** [94.6, 95.4] accuracy for the shipped behaviour+static model, chosen on a validation slice (behaviour-only scores 95.9 % on test, McNemar p < 1e-11); 92.5 % on test reports whose behaviour was never seen in training | Jaccard over ATT&CK sets: 87.8 % | HMIL (behaviour+static): 94.5 % |
+| Do auto-Sigma rules from **one** run catch later siblings? | Avast-CTU, 9 families x 10 runs x 5 seeds (HarHar has no host actions) | Mean sibling recall **0.30** [0.08, 0.57] at **0.004 %** cross-family FPR for the shipped configuration; the **median family is only 0.06**: Swisyn and Qakbot carry the mean | MVP: 0.17 at 1.8 % FPR | none found for single-run sandbox-to-Sigma |
 | Is the behaviour malicious? | MalbehavD-V1, 2,570 Cuckoo API traces | **96.3 ± 1.1 %** accuracy over 5 random 70/30 splits (paper protocol; 42 % of test rows have an exact duplicate in train). **93.4 ± 2.6 %** on a duplicate-free split. Through the shipped pipeline routing: 96.0 ± 1.3 % | MVP synthetic-trained scorer: 50 % (AUC 0.23) | MalDetConv 96.1 %, MalDy 95.6 % (both random split, duplicates included) |
 
 All numbers come from `benchmarks/*.py` runs, and the raw outputs are committed in [`results/`](results/). The [evaluation section](#evaluation) gives the protocol, the caveats and what did *not* work.
@@ -107,12 +107,12 @@ Example (`specimen report` on the bundled njRAT report, with the trained family 
 {"verdict": {"label": "malicious", "score": 0.9133, "confidence": "medium (behavior-driven)"},
  "static_score": 0.2315,
  "behaviour_scorer": "mvp-synthetic-logreg (ATT&CK features)",
- "family": "njRAT", "family_confidence": 0.984,
+ "family": "njRAT", "family_confidence": 0.821,
  "techniques": ["T1105", "T1547.001"],
  "sigma_rules": 9, "yara": true}
 ```
 
-The bundled fixtures are trimmed to about 8 KB, so they carry fewer behaviour tokens than the full reports the model was evaluated on. The trimmed Lokibot fixture (`avast_lokibot_1.json`) is misattributed as njRAT (0.86); the two Emotet fixtures and the njRAT fixture are attributed correctly.
+The bundled fixtures are trimmed to about 8 KB, so they carry fewer behaviour tokens than the full reports the model was evaluated on. With the round-3 model (behaviour+static, abstain below 0.6) the trimmed Lokibot fixture comes out as `unknown (closest: Lokibot)`; the round-2 model misattributed it as njRAT. The njRAT and Emotet fixtures are attributed correctly. The round-3 family model comes from the `bench` workflow artefact (run 37004185054) and is attached to the next release; the v1.0.0 assets are the older behaviour-only model.
 
 Each report contains the static contributions, the timeline with ATT&CK tags and anomaly scores, the provenance graph as Mermaid, IOCs, the family evidence tokens, ready-to-review Sigma and YARA rules, and the evidence manifest.
 
@@ -170,36 +170,48 @@ Every gate decision carries TreeSHAP contributions over named features, for exam
 
 ### 2. Family attribution on Avast-CTU CAPEv2: `results/family_avast.json`
 
-The split is the dataset authors' temporal one: 37,512 training reports dated before 2019-08-01 and 11,464 later test reports.
+Authors' temporal split: 37,512 training reports before 2019-08-01, 11,464 later test reports. 59 % of test reports have a behaviour-token set never seen in training ("novel"). Wilson 95 % CIs. The shipped variant is now chosen on a validation slice (training runs from 2019-06 on), not on test accuracy.
 
-| model | test accuracy | macro-F1 |
-|---|---|---|
-| MVP Jaccard over ATT&CK technique sets | 0.878 | 0.713 |
-| static.pe tokens only | 0.691 | 0.737 |
-| behaviour + static tokens | 0.950 | 0.923 |
-| **behaviour tokens only (SPECIMEN)** | **0.959** | **0.926** |
-| *HMIL on reduced reports (Bošanský et al.)* | *0.945* | |
-| *HMIL static-only (Bošanský et al.)* | *~0.63* | |
+| model | test accuracy [95 % CI] | novel-behaviour accuracy | macro-F1 |
+|---|---|---|---|
+| MVP Jaccard over ATT&CK technique sets | 0.878 [0.872, 0.884] | 0.813 | 0.713 |
+| static.pe tokens only | 0.700 [0.692, 0.709] | 0.504 | 0.744 |
+| **behaviour + static tokens (shipped; best on validation, 0.987)** | **0.950 [0.946, 0.954]** | **0.925** | **0.923** |
+| behaviour tokens only | 0.959 [0.955, 0.962] | 0.934 | 0.926 |
+| *HMIL behaviour+static (Bošanský et al. 2022)* | *0.945* | | |
+| *HMIL static-only* | *~0.63* | | |
 
 <img src="docs/figures/family_confusion.png" width="440" alt="Confusion matrix of the family model on the temporal test split">
 
-A linear model on normalised, human-readable behaviour tokens matches the published hierarchical multi-instance model, and each prediction lists the tokens that drove it. The result confirms the paper's finding: static features drift badly over time (0.69), and adding them to behaviour tokens slightly *hurts* (0.950 vs 0.959). The shipped model therefore uses behaviour tokens only.
+The like-for-like comparison with HMIL is behaviour+static: 0.950 against 0.945. On test, behaviour-only is significantly better (McNemar, 159 vs 56 discordant reports, p = 1e-12), but picking it would mean selecting on the test set, so the published shipped number is the lower one. Each prediction lists the tokens that drove it.
+
+**Open set.** In a leave-one-family-out run, the top probability for a held-out family's reports has a median of 0.45-0.79. The shipped abstain threshold is 0.6: known-family coverage 95.9 % at 98.2 % accuracy, but 30 % of unseen-family reports are still forced into a known family. Below the threshold, reports say `unknown (closest: X)`.
 
 ### 3. Do auto-rules from ONE run generalise? `results/rules_avast.json`
 
-For each family, 10 reference runs are drawn from the training split and rules are synthesized from each single run. The rules are then applied to the later test split. *Sibling recall* is the share of same-family test runs on which at least one rule fires. *Cross-family FPR* is the share of other-family test runs on which at least one rule fires.
+For each family and seed (5 seeds), 10 reference runs are drawn from the training split, rules are synthesised from each single run, and they are applied to the later test split. *Sibling recall* is the share of same-family test runs on which any rule fires. *Cross-family FPR* is the same share over other-family test runs. CIs come from a two-level bootstrap over families and units; paired Wilcoxon tests are over the 450 (seed, family, run) units. Per-unit values are in `results/rules_avast_units.csv`.
 
-| synthesizer | mean sibling recall | mean cross-family FPR | runs with any sibling hit | rules / run |
-|---|---|---|---|---|
-| Sigma, MVP (exact values, technique-gated) | 0.182 | 2.27 % | 51 % | 0.7 |
-| **Sigma v2 (generalisation ladder + negative check)** | **0.327** | **0.016 %** | **79 %** | 6.0 |
-| Sigma v2, 5 runs pooled | 0.416 | 0.065 % | 100 % | 29.6 |
-| YARA `pe.imphash()` | 0.087 | 0.021 % | 23 % | 1.0 |
-| YARA v2 (imphash or rare imports) | 0.083 | 0.002 % | 17 % | 0.9 |
+| synthesizer (ablation) | mean recall [95 % CI] | median family | novel-behaviour recall | cross-family FPR [95 % CI] | rules / run |
+|---|---|---|---|---|---|
+| Sigma MVP (exact values, synthetic negatives) | 0.174 [0.03, 0.40] | 0.005 | 0.193 | 1.85 % [0.91, 2.89] | 0.6 |
+| Sigma MVP + real negatives | 0.000 | 0.000 | 0.000 | 0 % | 0.01 |
+| exact values (rung 0) + real negatives | 0.298 [0.07, 0.56] | 0.056 | 0.291 | 0.009 % | 5.7 |
+| ladder + synthetic negatives only | 0.372 [0.15, 0.62] | 0.228 | 0.392 | 8.67 % [3.65, 14.8] | 6.2 |
+| ladder + real negatives (v2) | 0.304 [0.07, 0.58] | 0.057 | 0.298 | 0.020 % [0.002, 0.043] | 5.7 |
+| ladder + real negatives, at most 3 rules | 0.227 [0.04, 0.46] | 0.045 | 0.215 | 0.007 % | 2.6 |
+| **shipped (packaged negative corpus)** | **0.303 [0.08, 0.57]** | **0.058** | **0.296** | **0.004 %** [0.001, 0.007] | 5.7 |
+| v2, 5 runs pooled | 0.391 [0.16, 0.64] | 0.265 | 0.350 | 0.056 % | 6.0 per 5-run pool |
+| YARA `pe.imphash()` | 0.081 | 0.000 | 0.073 | 0.025 % | 1.0 |
+| YARA v2 (imphash or rare imports) | 0.104 | 0.018 | 0.097 | 0.071 % | 0.9 |
 
-<img src="docs/figures/rule_generalisation.png" width="520" alt="Sibling recall vs cross-family FPR per synthesizer">
+<img src="docs/figures/rule_generalisation.png" width="520" alt="Sibling recall against cross-family FPR (log scale) per synthesizer, with 95 % CIs">
 
-Rule generalisation varies a lot by family. For Swisyn and Qakbot, one run gives 99.8 % and 97.9 % sibling recall. For Lokibot it gives 49 % (61 % with 5 runs), and for njRAT 36 % (56 % with 5 runs). Emotet, Trickbot and Ursnif randomise every artefact that the reduced reports record, so rules synthesized from one run almost never transfer. HarHar reports contain no process, registry or file-write actions, so no rule can be built from them. The v2 synthesizer roughly doubles recall and cuts cross-family false positives by about 140x compared with the MVP. The negatives are other malware families, not benign software; see [Limitations](#limitations).
+What the ablation shows, compared with the round-2 claim ("roughly doubles recall, 140x fewer FPs"):
+
+- **The real negative corpus does most of the work on false positives.** With only synthetic negatives the ladder over-generalises (8.7 % FPR). Given the same real negatives, the MVP's exact-value rules almost never survive, so most of the MVP-vs-v2 gap comes from the negatives, not the ladder.
+- **The ladder adds little over exact values once real negatives are used**: +0.006 recall (Wilcoxon p = 7e-7) at about twice the FPR. That is a much smaller effect than the round-2 headline implied.
+- **The mean hides the spread.** Per family (shipped): Swisyn 0.998, Qakbot 0.93, Lokibot 0.42, njRAT 0.24, Zeus 0.06, Adload 0.04 (n = 5, not estimable), Ursnif 0.02, Trickbot 0.004 and Emotet 0.001. Emotet, Trickbot and Ursnif randomise every artefact that reduced reports record. On Zeus, v2 is worse than the MVP (0.06 vs 0.31).
+- The round-2 single-draw numbers (0.327 recall at 0.016 % FPR) were slightly optimistic; the seeded re-run gives 0.304 at 0.020 % for the same configuration.
 
 ### 4. Behavioural detection on MalbehavD-V1: `results/behaviour_malbehavd.json`
 

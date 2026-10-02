@@ -1,132 +1,1061 @@
 {
   "benchmark": "rules_avast",
-  "generated": "2026-09-26",
-  "python": "3.14.3",
-  "dataset": "Avast-CTU CAPEv2 reduced reports, temporal split",
+  "generated": "2026-10-02",
+  "python": "3.12.14",
+  "dataset": "Avast-CTU CAPEv2 reduced reports, temporal split (train < 2019-08-01 <= test)",
   "protocol": {
     "refs_per_family": 10,
-    "negatives_for_synthesis": "1500 other-family train runs",
-    "cell_format": "sibling recall / cross-family FPR"
+    "seeds": 5,
+    "families": [
+      "Adload",
+      "Emotet",
+      "HarHar",
+      "Lokibot",
+      "Qakbot",
+      "Swisyn",
+      "Trickbot",
+      "Ursnif",
+      "Zeus",
+      "njRAT"
+    ],
+    "negatives_for_synthesis": "1500 other-family train runs per (seed, family)",
+    "novel_test_share": 0.5898,
+    "ci": "two-level bootstrap (families, units); Wilson for pooled FPR; paired Wilcoxon"
   },
   "summary": [
     {
       "synthesizer": "sigma-mvp",
-      "sibling_recall_mean": 0.1817,
-      "cross_family_fpr_mean": 0.02265,
-      "runs_with_any_hit_on_siblings": 0.511,
-      "rules_per_run": 0.7
+      "sibling_recall_mean": 0.174,
+      "recall_95ci": [
+        0.02689,
+        0.39598
+      ],
+      "sibling_recall_median_family": 0.0046,
+      "novel_behaviour_recall": 0.1927,
+      "novel_recall_95ci": [
+        0.02933,
+        0.43176
+      ],
+      "cross_family_fpr_mean": 0.018492,
+      "fpr_95ci": [
+        0.00914,
+        0.02887
+      ],
+      "fpr_pooled_wilson": [
+        0.01958,
+        0.019834
+      ],
+      "runs_with_any_sibling_hit": 0.422,
+      "rules_per_run": 0.62,
+      "units": 450
     },
     {
-      "synthesizer": "sigma-v2",
-      "sibling_recall_mean": 0.3266,
-      "cross_family_fpr_mean": 0.00016,
-      "runs_with_any_hit_on_siblings": 0.789,
-      "rules_per_run": 5.99
+      "synthesizer": "sigma-mvp + real neg",
+      "sibling_recall_mean": 0.0,
+      "recall_95ci": [
+        0.0,
+        0.0
+      ],
+      "sibling_recall_median_family": 0.0,
+      "novel_behaviour_recall": 0.0,
+      "novel_recall_95ci": [
+        0.0,
+        0.0
+      ],
+      "cross_family_fpr_mean": 0.0,
+      "fpr_95ci": [
+        0.0,
+        0.0
+      ],
+      "fpr_pooled_wilson": [
+        0.0,
+        1e-06
+      ],
+      "runs_with_any_sibling_hit": 0.0,
+      "rules_per_run": 0.01,
+      "units": 450
+    },
+    {
+      "synthesizer": "exact + real neg",
+      "sibling_recall_mean": 0.2977,
+      "recall_95ci": [
+        0.06827,
+        0.56325
+      ],
+      "sibling_recall_median_family": 0.0563,
+      "novel_behaviour_recall": 0.2911,
+      "novel_recall_95ci": [
+        0.05976,
+        0.559
+      ],
+      "cross_family_fpr_mean": 8.6e-05,
+      "fpr_95ci": [
+        1e-05,
+        0.00024
+      ],
+      "fpr_pooled_wilson": [
+        8.6e-05,
+        0.000104
+      ],
+      "runs_with_any_sibling_hit": 0.698,
+      "rules_per_run": 5.69,
+      "units": 450
+    },
+    {
+      "synthesizer": "ladder + synthetic neg",
+      "sibling_recall_mean": 0.3715,
+      "recall_95ci": [
+        0.15098,
+        0.62019
+      ],
+      "sibling_recall_median_family": 0.2278,
+      "novel_behaviour_recall": 0.3919,
+      "novel_recall_95ci": [
+        0.16868,
+        0.63244
+      ],
+      "cross_family_fpr_mean": 0.086668,
+      "fpr_95ci": [
+        0.03652,
+        0.14822
+      ],
+      "fpr_pooled_wilson": [
+        0.089666,
+        0.090189
+      ],
+      "runs_with_any_sibling_hit": 0.798,
+      "rules_per_run": 6.17,
+      "units": 450
+    },
+    {
+      "synthesizer": "ladder + real neg (v2)",
+      "sibling_recall_mean": 0.304,
+      "recall_95ci": [
+        0.07286,
+        0.57758
+      ],
+      "sibling_recall_median_family": 0.0574,
+      "novel_behaviour_recall": 0.2978,
+      "novel_recall_95ci": [
+        0.06592,
+        0.56933
+      ],
+      "cross_family_fpr_mean": 0.000195,
+      "fpr_95ci": [
+        2e-05,
+        0.00043
+      ],
+      "fpr_pooled_wilson": [
+        0.000197,
+        0.000224
+      ],
+      "runs_with_any_sibling_hit": 0.731,
+      "rules_per_run": 5.71,
+      "units": 450
+    },
+    {
+      "synthesizer": "ladder + real neg, k=3",
+      "sibling_recall_mean": 0.2266,
+      "recall_95ci": [
+        0.03872,
+        0.45785
+      ],
+      "sibling_recall_median_family": 0.0447,
+      "novel_behaviour_recall": 0.2148,
+      "novel_recall_95ci": [
+        0.02831,
+        0.44269
+      ],
+      "cross_family_fpr_mean": 7e-05,
+      "fpr_95ci": [
+        1e-05,
+        0.00019
+      ],
+      "fpr_pooled_wilson": [
+        6.6e-05,
+        8.1e-05
+      ],
+      "runs_with_any_sibling_hit": 0.591,
+      "rules_per_run": 2.6,
+      "units": 450
+    },
+    {
+      "synthesizer": "shipped (packaged corpus)",
+      "sibling_recall_mean": 0.3026,
+      "recall_95ci": [
+        0.07549,
+        0.57111
+      ],
+      "sibling_recall_median_family": 0.0576,
+      "novel_behaviour_recall": 0.2964,
+      "novel_recall_95ci": [
+        0.06754,
+        0.56639
+      ],
+      "cross_family_fpr_mean": 3.9e-05,
+      "fpr_95ci": [
+        1e-05,
+        7e-05
+      ],
+      "fpr_pooled_wilson": [
+        3.2e-05,
+        4.4e-05
+      ],
+      "runs_with_any_sibling_hit": 0.733,
+      "rules_per_run": 5.68,
+      "units": 450
+    },
+    {
+      "synthesizer": "v2, 5 runs pooled",
+      "sibling_recall_mean": 0.3909,
+      "recall_95ci": [
+        0.16036,
+        0.63968
+      ],
+      "sibling_recall_median_family": 0.2653,
+      "novel_behaviour_recall": 0.35,
+      "novel_recall_95ci": [
+        0.10374,
+        0.62061
+      ],
+      "cross_family_fpr_mean": 0.000557,
+      "fpr_95ci": [
+        6e-05,
+        0.00126
+      ],
+      "fpr_pooled_wilson": [
+        0.000533,
+        0.000674
+      ],
+      "runs_with_any_sibling_hit": 1.0,
+      "rules_per_run": 5.97,
+      "units": 45
     },
     {
       "synthesizer": "yara-imphash",
-      "sibling_recall_mean": 0.0869,
-      "cross_family_fpr_mean": 0.00021,
-      "runs_with_any_hit_on_siblings": 0.233,
-      "rules_per_run": 1.0
+      "sibling_recall_mean": 0.0813,
+      "recall_95ci": [
+        0.00016,
+        0.22429
+      ],
+      "sibling_recall_median_family": 0.0002,
+      "novel_behaviour_recall": 0.0731,
+      "novel_recall_95ci": [
+        9e-05,
+        0.19856
+      ],
+      "cross_family_fpr_mean": 0.00025,
+      "fpr_95ci": [
+        0.0,
+        0.00073
+      ],
+      "fpr_pooled_wilson": [
+        0.000252,
+        0.000282
+      ],
+      "runs_with_any_sibling_hit": 0.213,
+      "rules_per_run": 0.98,
+      "units": 450
     },
     {
       "synthesizer": "yara-v2",
-      "sibling_recall_mean": 0.0833,
-      "cross_family_fpr_mean": 2e-05,
-      "runs_with_any_hit_on_siblings": 0.167,
-      "rules_per_run": 0.87
+      "sibling_recall_mean": 0.1041,
+      "recall_95ci": [
+        0.00714,
+        0.28625
+      ],
+      "sibling_recall_median_family": 0.0179,
+      "novel_behaviour_recall": 0.097,
+      "novel_recall_95ci": [
+        0.00809,
+        0.26096
+      ],
+      "cross_family_fpr_mean": 0.000707,
+      "fpr_95ci": [
+        4e-05,
+        0.00195
+      ],
+      "fpr_pooled_wilson": [
+        0.000694,
+        0.000743
+      ],
+      "runs_with_any_sibling_hit": 0.269,
+      "rules_per_run": 0.94,
+      "units": 450
+    }
+  ],
+  "paired_tests": [
+    {
+      "a": "sigma-mvp",
+      "b": "ladder + real neg (v2)",
+      "metric": "recall",
+      "mean_diff": 0.13003,
+      "n": 450,
+      "wilcoxon_p": 7.364006170223497e-11
     },
     {
-      "synthesizer": "sigma-v2 (5 runs pooled)",
-      "sibling_recall_mean": 0.4158,
-      "cross_family_fpr_mean": 0.00065,
-      "runs_with_any_hit_on_siblings": 1.0,
-      "rules_per_run": 29.56
+      "a": "sigma-mvp + real neg",
+      "b": "ladder + real neg (v2)",
+      "metric": "recall",
+      "mean_diff": 0.30399,
+      "n": 450,
+      "wilcoxon_p": 9.679120634027161e-56
+    },
+    {
+      "a": "exact + real neg",
+      "b": "ladder + real neg (v2)",
+      "metric": "recall",
+      "mean_diff": 0.00632,
+      "n": 450,
+      "wilcoxon_p": 6.977728290310815e-07
+    },
+    {
+      "a": "ladder + synthetic neg",
+      "b": "ladder + real neg (v2)",
+      "metric": "fpr",
+      "mean_diff": -0.08647,
+      "n": 450,
+      "wilcoxon_p": 4.131350359808666e-52
+    },
+    {
+      "a": "sigma-mvp",
+      "b": "sigma-mvp + real neg",
+      "metric": "fpr",
+      "mean_diff": -0.01849,
+      "n": 450,
+      "wilcoxon_p": 1.0730411389870185e-33
+    },
+    {
+      "a": "ladder + real neg (v2)",
+      "b": "shipped (packaged corpus)",
+      "metric": "recall",
+      "mean_diff": -0.00144,
+      "n": 450,
+      "wilcoxon_p": 0.150037143271617
     }
   ],
   "per_family": [
     {
+      "variant": "sigma-mvp",
       "family": "Adload",
       "n_test": 5,
-      "sigma-mvp": "0.000 / 0.0000",
-      "sigma-v2": "0.040 / 0.0000",
-      "yara-imphash": "0.000 / 0.0000",
-      "yara-v2": "0.060 / 0.0002",
-      "sigma-v2 (5 runs pooled)": "0.200 / 0.0000"
+      "recall": 0.0,
+      "fpr": 0.0,
+      "novel_recall": 0.0
     },
     {
+      "variant": "sigma-mvp",
       "family": "Emotet",
       "n_test": 3529,
-      "sigma-mvp": "0.000 / 0.0115",
-      "sigma-v2": "0.000 / 0.0000",
-      "yara-imphash": "0.000 / 0.0000",
-      "yara-v2": "0.000 / 0.0000",
-      "sigma-v2 (5 runs pooled)": "0.001 / 0.0000"
+      "recall": 0.0,
+      "fpr": 0.003463,
+      "novel_recall": 0.0
     },
     {
+      "variant": "sigma-mvp",
       "family": "Lokibot",
       "n_test": 685,
-      "sigma-mvp": "0.063 / 0.0262",
-      "sigma-v2": "0.492 / 0.0000",
-      "yara-imphash": "0.000 / 0.0000",
-      "yara-v2": "0.000 / 0.0000",
-      "sigma-v2 (5 runs pooled)": "0.613 / 0.0000"
+      "recall": 0.0209,
+      "fpr": 0.01127,
+      "novel_recall": 0.0215
     },
     {
+      "variant": "sigma-mvp",
       "family": "Qakbot",
       "n_test": 393,
-      "sigma-mvp": "0.987 / 0.0221",
-      "sigma-v2": "0.979 / 0.0001",
-      "yara-imphash": "0.000 / 0.0000",
-      "yara-v2": "0.000 / 0.0000",
-      "sigma-v2 (5 runs pooled)": "0.992 / 0.0005"
+      "recall": 0.9873,
+      "fpr": 0.026014,
+      "novel_recall": 0.9873
     },
     {
+      "variant": "sigma-mvp",
       "family": "Swisyn",
       "n_test": 4258,
-      "sigma-mvp": "0.000 / 0.0000",
-      "sigma-v2": "0.998 / 0.0000",
-      "yara-imphash": "0.685 / 0.0000",
-      "yara-v2": "0.686 / 0.0000",
-      "sigma-v2 (5 runs pooled)": "0.998 / 0.0000"
+      "recall": 0.0,
+      "fpr": 0.0,
+      "novel_recall": 0.0
     },
     {
+      "variant": "sigma-mvp",
       "family": "Trickbot",
       "n_test": 1336,
-      "sigma-mvp": "0.007 / 0.0397",
-      "sigma-v2": "0.007 / 0.0001",
-      "yara-imphash": "0.000 / 0.0000",
-      "yara-v2": "0.000 / 0.0000",
-      "sigma-v2 (5 runs pooled)": "0.008 / 0.0001"
+      "recall": 0.0046,
+      "fpr": 0.024716,
+      "novel_recall": 0.006
     },
     {
+      "variant": "sigma-mvp",
       "family": "Ursnif",
       "n_test": 502,
-      "sigma-mvp": "0.002 / 0.0301",
-      "sigma-v2": "0.021 / 0.0000",
-      "yara-imphash": "0.000 / 0.0000",
-      "yara-v2": "0.000 / 0.0000",
-      "sigma-v2 (5 runs pooled)": "0.044 / 0.0000"
+      "recall": 0.0017,
+      "fpr": 0.029613,
+      "novel_recall": 0.0017
     },
     {
+      "variant": "sigma-mvp",
       "family": "Zeus",
       "n_test": 144,
-      "sigma-mvp": "0.291 / 0.0410",
-      "sigma-v2": "0.041 / 0.0000",
-      "yara-imphash": "0.003 / 0.0000",
-      "yara-v2": "0.002 / 0.0000",
-      "sigma-v2 (5 runs pooled)": "0.326 / 0.0002"
+      "recall": 0.3128,
+      "fpr": 0.043993,
+      "novel_recall": 0.4579
     },
     {
+      "variant": "sigma-mvp",
       "family": "njRAT",
       "n_test": 543,
-      "sigma-mvp": "0.285 / 0.0331",
-      "sigma-v2": "0.361 / 0.0012",
-      "yara-imphash": "0.095 / 0.0018",
-      "yara-v2": "0.002 / 0.0000",
-      "sigma-v2 (5 runs pooled)": "0.560 / 0.0050"
+      "recall": 0.2384,
+      "fpr": 0.027358,
+      "novel_recall": 0.2598
+    },
+    {
+      "variant": "sigma-mvp + real neg",
+      "family": "Adload",
+      "n_test": 5,
+      "recall": 0.0,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "sigma-mvp + real neg",
+      "family": "Emotet",
+      "n_test": 3529,
+      "recall": 0.0,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "sigma-mvp + real neg",
+      "family": "Lokibot",
+      "n_test": 685,
+      "recall": 0.0,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "sigma-mvp + real neg",
+      "family": "Qakbot",
+      "n_test": 393,
+      "recall": 0.0,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "sigma-mvp + real neg",
+      "family": "Swisyn",
+      "n_test": 4258,
+      "recall": 0.0,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "sigma-mvp + real neg",
+      "family": "Trickbot",
+      "n_test": 1336,
+      "recall": 0.0,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "sigma-mvp + real neg",
+      "family": "Ursnif",
+      "n_test": 502,
+      "recall": 0.0,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "sigma-mvp + real neg",
+      "family": "Zeus",
+      "n_test": 144,
+      "recall": 0.0,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "sigma-mvp + real neg",
+      "family": "njRAT",
+      "n_test": 543,
+      "recall": 0.0,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "exact + real neg",
+      "family": "Adload",
+      "n_test": 5,
+      "recall": 0.044,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "exact + real neg",
+      "family": "Emotet",
+      "n_test": 3529,
+      "recall": 0.0004,
+      "fpr": 0.0,
+      "novel_recall": 0.0004
+    },
+    {
+      "variant": "exact + real neg",
+      "family": "Lokibot",
+      "n_test": 685,
+      "recall": 0.4175,
+      "fpr": 1.9e-05,
+      "novel_recall": 0.4325
+    },
+    {
+      "variant": "exact + real neg",
+      "family": "Qakbot",
+      "n_test": 393,
+      "recall": 0.9376,
+      "fpr": 1.8e-05,
+      "novel_recall": 0.9376
+    },
+    {
+      "variant": "exact + real neg",
+      "family": "Swisyn",
+      "n_test": 4258,
+      "recall": 0.9976,
+      "fpr": 0.0,
+      "novel_recall": 0.9758
+    },
+    {
+      "variant": "exact + real neg",
+      "family": "Trickbot",
+      "n_test": 1336,
+      "recall": 0.0046,
+      "fpr": 4.1e-05,
+      "novel_recall": 0.006
+    },
+    {
+      "variant": "exact + real neg",
+      "family": "Ursnif",
+      "n_test": 502,
+      "recall": 0.0067,
+      "fpr": 0.0,
+      "novel_recall": 0.0067
+    },
+    {
+      "variant": "exact + real neg",
+      "family": "Zeus",
+      "n_test": 144,
+      "recall": 0.0563,
+      "fpr": 0.00059,
+      "novel_recall": 0.0369
+    },
+    {
+      "variant": "exact + real neg",
+      "family": "njRAT",
+      "n_test": 543,
+      "recall": 0.2146,
+      "fpr": 0.000106,
+      "novel_recall": 0.2242
+    },
+    {
+      "variant": "ladder + synthetic neg",
+      "family": "Adload",
+      "n_test": 5,
+      "recall": 0.044,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "ladder + synthetic neg",
+      "family": "Emotet",
+      "n_test": 3529,
+      "recall": 0.179,
+      "fpr": 0.014702,
+      "novel_recall": 0.1825
+    },
+    {
+      "variant": "ladder + synthetic neg",
+      "family": "Lokibot",
+      "n_test": 685,
+      "recall": 0.4141,
+      "fpr": 0.017443,
+      "novel_recall": 0.4282
+    },
+    {
+      "variant": "ladder + synthetic neg",
+      "family": "Qakbot",
+      "n_test": 393,
+      "recall": 0.9925,
+      "fpr": 0.296521,
+      "novel_recall": 0.9925
+    },
+    {
+      "variant": "ladder + synthetic neg",
+      "family": "Swisyn",
+      "n_test": 4258,
+      "recall": 0.9976,
+      "fpr": 0.071724,
+      "novel_recall": 0.9765
+    },
+    {
+      "variant": "ladder + synthetic neg",
+      "family": "Trickbot",
+      "n_test": 1336,
+      "recall": 0.0151,
+      "fpr": 0.054392,
+      "novel_recall": 0.0209
+    },
+    {
+      "variant": "ladder + synthetic neg",
+      "family": "Ursnif",
+      "n_test": 502,
+      "recall": 0.0241,
+      "fpr": 0.054968,
+      "novel_recall": 0.0242
+    },
+    {
+      "variant": "ladder + synthetic neg",
+      "family": "Zeus",
+      "n_test": 144,
+      "recall": 0.2278,
+      "fpr": 0.111235,
+      "novel_recall": 0.4452
+    },
+    {
+      "variant": "ladder + synthetic neg",
+      "family": "njRAT",
+      "n_test": 543,
+      "recall": 0.4491,
+      "fpr": 0.159024,
+      "novel_recall": 0.4569
+    },
+    {
+      "variant": "ladder + real neg (v2)",
+      "family": "Adload",
+      "n_test": 5,
+      "recall": 0.044,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "ladder + real neg (v2)",
+      "family": "Emotet",
+      "n_test": 3529,
+      "recall": 0.0009,
+      "fpr": 5.5e-05,
+      "novel_recall": 0.0009
+    },
+    {
+      "variant": "ladder + real neg (v2)",
+      "family": "Lokibot",
+      "n_test": 685,
+      "recall": 0.4181,
+      "fpr": 2.4e-05,
+      "novel_recall": 0.4332
+    },
+    {
+      "variant": "ladder + real neg (v2)",
+      "family": "Qakbot",
+      "n_test": 393,
+      "recall": 0.9623,
+      "fpr": 7e-05,
+      "novel_recall": 0.9623
+    },
+    {
+      "variant": "ladder + real neg (v2)",
+      "family": "Swisyn",
+      "n_test": 4258,
+      "recall": 0.9976,
+      "fpr": 0.0,
+      "novel_recall": 0.976
+    },
+    {
+      "variant": "ladder + real neg (v2)",
+      "family": "Trickbot",
+      "n_test": 1336,
+      "recall": 0.0044,
+      "fpr": 6.3e-05,
+      "novel_recall": 0.0058
+    },
+    {
+      "variant": "ladder + real neg (v2)",
+      "family": "Ursnif",
+      "n_test": 502,
+      "recall": 0.0239,
+      "fpr": 0.0,
+      "novel_recall": 0.024
+    },
+    {
+      "variant": "ladder + real neg (v2)",
+      "family": "Zeus",
+      "n_test": 144,
+      "recall": 0.0574,
+      "fpr": 0.000693,
+      "novel_recall": 0.0397
+    },
+    {
+      "variant": "ladder + real neg (v2)",
+      "family": "njRAT",
+      "n_test": 543,
+      "recall": 0.2273,
+      "fpr": 0.000852,
+      "novel_recall": 0.2384
+    },
+    {
+      "variant": "ladder + real neg, k=3",
+      "family": "Adload",
+      "n_test": 5,
+      "recall": 0.044,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "ladder + real neg, k=3",
+      "family": "Emotet",
+      "n_test": 3529,
+      "recall": 0.0009,
+      "fpr": 5.5e-05,
+      "novel_recall": 0.0009
+    },
+    {
+      "variant": "ladder + real neg, k=3",
+      "family": "Lokibot",
+      "n_test": 685,
+      "recall": 0.2347,
+      "fpr": 1.3e-05,
+      "novel_recall": 0.243
+    },
+    {
+      "variant": "ladder + real neg, k=3",
+      "family": "Qakbot",
+      "n_test": 393,
+      "recall": 0.6356,
+      "fpr": 0.0,
+      "novel_recall": 0.6356
+    },
+    {
+      "variant": "ladder + real neg, k=3",
+      "family": "Swisyn",
+      "n_test": 4258,
+      "recall": 0.9955,
+      "fpr": 0.0,
+      "novel_recall": 0.9581
+    },
+    {
+      "variant": "ladder + real neg, k=3",
+      "family": "Trickbot",
+      "n_test": 1336,
+      "recall": 0.002,
+      "fpr": 5.9e-05,
+      "novel_recall": 0.0027
+    },
+    {
+      "variant": "ladder + real neg, k=3",
+      "family": "Ursnif",
+      "n_test": 502,
+      "recall": 0.0198,
+      "fpr": 0.0,
+      "novel_recall": 0.0198
+    },
+    {
+      "variant": "ladder + real neg, k=3",
+      "family": "Zeus",
+      "n_test": 144,
+      "recall": 0.0447,
+      "fpr": 1.4e-05,
+      "novel_recall": 0.0083
+    },
+    {
+      "variant": "ladder + real neg, k=3",
+      "family": "njRAT",
+      "n_test": 543,
+      "recall": 0.0627,
+      "fpr": 0.000491,
+      "novel_recall": 0.0649
+    },
+    {
+      "variant": "shipped (packaged corpus)",
+      "family": "Adload",
+      "n_test": 5,
+      "recall": 0.044,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "shipped (packaged corpus)",
+      "family": "Emotet",
+      "n_test": 3529,
+      "recall": 0.001,
+      "fpr": 0.000121,
+      "novel_recall": 0.001
+    },
+    {
+      "variant": "shipped (packaged corpus)",
+      "family": "Lokibot",
+      "n_test": 685,
+      "recall": 0.4183,
+      "fpr": 7e-06,
+      "novel_recall": 0.4334
+    },
+    {
+      "variant": "shipped (packaged corpus)",
+      "family": "Qakbot",
+      "n_test": 393,
+      "recall": 0.9317,
+      "fpr": 9e-06,
+      "novel_recall": 0.9317
+    },
+    {
+      "variant": "shipped (packaged corpus)",
+      "family": "Swisyn",
+      "n_test": 4258,
+      "recall": 0.9976,
+      "fpr": 0.0,
+      "novel_recall": 0.9761
+    },
+    {
+      "variant": "shipped (packaged corpus)",
+      "family": "Trickbot",
+      "n_test": 1336,
+      "recall": 0.0044,
+      "fpr": 3.8e-05,
+      "novel_recall": 0.0058
+    },
+    {
+      "variant": "shipped (packaged corpus)",
+      "family": "Ursnif",
+      "n_test": 502,
+      "recall": 0.0239,
+      "fpr": 1.6e-05,
+      "novel_recall": 0.024
+    },
+    {
+      "variant": "shipped (packaged corpus)",
+      "family": "Zeus",
+      "n_test": 144,
+      "recall": 0.0576,
+      "fpr": 3.2e-05,
+      "novel_recall": 0.0397
+    },
+    {
+      "variant": "shipped (packaged corpus)",
+      "family": "njRAT",
+      "n_test": 543,
+      "recall": 0.2444,
+      "fpr": 0.000126,
+      "novel_recall": 0.2565
+    },
+    {
+      "variant": "v2, 5 runs pooled",
+      "family": "Adload",
+      "n_test": 5,
+      "recall": 0.2,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "v2, 5 runs pooled",
+      "family": "Emotet",
+      "n_test": 3529,
+      "recall": 0.0019,
+      "fpr": 0.000101,
+      "novel_recall": 0.002
+    },
+    {
+      "variant": "v2, 5 runs pooled",
+      "family": "Lokibot",
+      "n_test": 685,
+      "recall": 0.6181,
+      "fpr": 0.000148,
+      "novel_recall": 0.6404
+    },
+    {
+      "variant": "v2, 5 runs pooled",
+      "family": "Qakbot",
+      "n_test": 393,
+      "recall": 0.9924,
+      "fpr": 0.000163,
+      "novel_recall": 0.9924
+    },
+    {
+      "variant": "v2, 5 runs pooled",
+      "family": "Swisyn",
+      "n_test": 4258,
+      "recall": 0.9977,
+      "fpr": 0.0,
+      "novel_recall": 0.9769
+    },
+    {
+      "variant": "v2, 5 runs pooled",
+      "family": "Trickbot",
+      "n_test": 1336,
+      "recall": 0.0082,
+      "fpr": 0.000217,
+      "novel_recall": 0.0106
+    },
+    {
+      "variant": "v2, 5 runs pooled",
+      "family": "Ursnif",
+      "n_test": 502,
+      "recall": 0.0438,
+      "fpr": 0.0,
+      "novel_recall": 0.0439
+    },
+    {
+      "variant": "v2, 5 runs pooled",
+      "family": "Zeus",
+      "n_test": 144,
+      "recall": 0.2653,
+      "fpr": 0.001784,
+      "novel_recall": 0.0724
+    },
+    {
+      "variant": "v2, 5 runs pooled",
+      "family": "njRAT",
+      "n_test": 543,
+      "recall": 0.3908,
+      "fpr": 0.0026,
+      "novel_recall": 0.411
+    },
+    {
+      "variant": "yara-imphash",
+      "family": "Adload",
+      "n_test": 5,
+      "recall": 0.0,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "yara-imphash",
+      "family": "Emotet",
+      "n_test": 3529,
+      "recall": 0.0,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "yara-imphash",
+      "family": "Lokibot",
+      "n_test": 685,
+      "recall": 0.0009,
+      "fpr": 0.000271,
+      "novel_recall": 0.0008
+    },
+    {
+      "variant": "yara-imphash",
+      "family": "Qakbot",
+      "n_test": 393,
+      "recall": 0.0002,
+      "fpr": 0.0,
+      "novel_recall": 0.0002
+    },
+    {
+      "variant": "yara-imphash",
+      "family": "Swisyn",
+      "n_test": 4258,
+      "recall": 0.6303,
+      "fpr": 0.0,
+      "novel_recall": 0.5572
+    },
+    {
+      "variant": "yara-imphash",
+      "family": "Trickbot",
+      "n_test": 1336,
+      "recall": 0.0001,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "yara-imphash",
+      "family": "Ursnif",
+      "n_test": 502,
+      "recall": 0.0,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "yara-imphash",
+      "family": "Zeus",
+      "n_test": 144,
+      "recall": 0.0008,
+      "fpr": 9e-06,
+      "novel_recall": 0.0003
+    },
+    {
+      "variant": "yara-imphash",
+      "family": "njRAT",
+      "n_test": 543,
+      "recall": 0.0997,
+      "fpr": 0.001967,
+      "novel_recall": 0.0989
+    },
+    {
+      "variant": "yara-v2",
+      "family": "Adload",
+      "n_test": 5,
+      "recall": 0.032,
+      "fpr": 4.7e-05,
+      "novel_recall": 0.04
+    },
+    {
+      "variant": "yara-v2",
+      "family": "Emotet",
+      "n_test": 3529,
+      "recall": 0.0,
+      "fpr": 5e-06,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "yara-v2",
+      "family": "Lokibot",
+      "n_test": 685,
+      "recall": 0.0197,
+      "fpr": 0.000147,
+      "novel_recall": 0.0178
+    },
+    {
+      "variant": "yara-v2",
+      "family": "Qakbot",
+      "n_test": 393,
+      "recall": 0.0002,
+      "fpr": 2e-06,
+      "novel_recall": 0.0002
+    },
+    {
+      "variant": "yara-v2",
+      "family": "Swisyn",
+      "n_test": 4258,
+      "recall": 0.8153,
+      "fpr": 0.0,
+      "novel_recall": 0.7349
+    },
+    {
+      "variant": "yara-v2",
+      "family": "Trickbot",
+      "n_test": 1336,
+      "recall": 0.0179,
+      "fpr": 0.004568,
+      "novel_recall": 0.025
+    },
+    {
+      "variant": "yara-v2",
+      "family": "Ursnif",
+      "n_test": 502,
+      "recall": 0.0048,
+      "fpr": 0.000478,
+      "novel_recall": 0.0048
+    },
+    {
+      "variant": "yara-v2",
+      "family": "Zeus",
+      "n_test": 144,
+      "recall": 0.0029,
+      "fpr": 5.8e-05,
+      "novel_recall": 0.0031
+    },
+    {
+      "variant": "yara-v2",
+      "family": "njRAT",
+      "n_test": 543,
+      "recall": 0.0437,
+      "fpr": 0.001062,
+      "novel_recall": 0.0472
     }
   ],
-  "markdown": "| synthesizer | sibling_recall_mean | cross_family_fpr_mean | runs_with_any_hit_on_siblings | rules_per_run |\n|---|---|---|---|---|\n| sigma-mvp | 0.1817 | 0.02265 | 0.511 | 0.7 |\n| sigma-v2 | 0.3266 | 0.00016 | 0.789 | 5.99 |\n| yara-imphash | 0.0869 | 0.00021 | 0.233 | 1.0 |\n| yara-v2 | 0.0833 | 2e-05 | 0.167 | 0.87 |\n| sigma-v2 (5 runs pooled) | 0.4158 | 0.00065 | 1.0 | 29.56 |\n\n| family | n_test | sigma-mvp | sigma-v2 | yara-imphash | yara-v2 | sigma-v2 (5 runs pooled) |\n|---|---|---|---|---|---|---|\n| Adload | 5 | 0.000 / 0.0000 | 0.040 / 0.0000 | 0.000 / 0.0000 | 0.060 / 0.0002 | 0.200 / 0.0000 |\n| Emotet | 3529 | 0.000 / 0.0115 | 0.000 / 0.0000 | 0.000 / 0.0000 | 0.000 / 0.0000 | 0.001 / 0.0000 |\n| Lokibot | 685 | 0.063 / 0.0262 | 0.492 / 0.0000 | 0.000 / 0.0000 | 0.000 / 0.0000 | 0.613 / 0.0000 |\n| Qakbot | 393 | 0.987 / 0.0221 | 0.979 / 0.0001 | 0.000 / 0.0000 | 0.000 / 0.0000 | 0.992 / 0.0005 |\n| Swisyn | 4258 | 0.000 / 0.0000 | 0.998 / 0.0000 | 0.685 / 0.0000 | 0.686 / 0.0000 | 0.998 / 0.0000 |\n| Trickbot | 1336 | 0.007 / 0.0397 | 0.007 / 0.0001 | 0.000 / 0.0000 | 0.000 / 0.0000 | 0.008 / 0.0001 |\n| Ursnif | 502 | 0.002 / 0.0301 | 0.021 / 0.0000 | 0.000 / 0.0000 | 0.000 / 0.0000 | 0.044 / 0.0000 |\n| Zeus | 144 | 0.291 / 0.0410 | 0.041 / 0.0000 | 0.003 / 0.0000 | 0.002 / 0.0000 | 0.326 / 0.0002 |\n| njRAT | 543 | 0.285 / 0.0331 | 0.361 / 0.0012 | 0.095 / 0.0018 | 0.002 / 0.0000 | 0.560 / 0.0050 |"
+  "units_file": "results/rules_avast_units.csv",
+  "markdown": "| synthesizer | sibling_recall_mean | recall_95ci | sibling_recall_median_family | novel_behaviour_recall | cross_family_fpr_mean | fpr_95ci | rules_per_run |\n|---|---|---|---|---|---|---|---|\n| sigma-mvp | 0.174 | [0.02689, 0.39598] | 0.0046 | 0.1927 | 0.018492 | [0.00914, 0.02887] | 0.62 |\n| sigma-mvp + real neg | 0.0 | [0.0, 0.0] | 0.0 | 0.0 | 0.0 | [0.0, 0.0] | 0.01 |\n| exact + real neg | 0.2977 | [0.06827, 0.56325] | 0.0563 | 0.2911 | 8.6e-05 | [1e-05, 0.00024] | 5.69 |\n| ladder + synthetic neg | 0.3715 | [0.15098, 0.62019] | 0.2278 | 0.3919 | 0.086668 | [0.03652, 0.14822] | 6.17 |\n| ladder + real neg (v2) | 0.304 | [0.07286, 0.57758] | 0.0574 | 0.2978 | 0.000195 | [2e-05, 0.00043] | 5.71 |\n| ladder + real neg, k=3 | 0.2266 | [0.03872, 0.45785] | 0.0447 | 0.2148 | 7e-05 | [1e-05, 0.00019] | 2.6 |\n| shipped (packaged corpus) | 0.3026 | [0.07549, 0.57111] | 0.0576 | 0.2964 | 3.9e-05 | [1e-05, 7e-05] | 5.68 |\n| v2, 5 runs pooled | 0.3909 | [0.16036, 0.63968] | 0.2653 | 0.35 | 0.000557 | [6e-05, 0.00126] | 5.97 |\n| yara-imphash | 0.0813 | [0.00016, 0.22429] | 0.0002 | 0.0731 | 0.00025 | [0.0, 0.00073] | 0.98 |\n| yara-v2 | 0.1041 | [0.00714, 0.28625] | 0.0179 | 0.097 | 0.000707 | [4e-05, 0.00195] | 0.94 |"
 }

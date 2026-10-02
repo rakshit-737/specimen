@@ -12,7 +12,7 @@ score 0.2315 / entropy 6.78
 - pe&#95;executable impact +0.80
 
 ## Behavior
-P(malicious)=0.9133 label=malicious scorer=mvp-synthetic-logreg (ATT&CK features) | family match **njRAT** (p=0.984, avast-ctu-logreg (behaviour-only))
+P(malicious)=0.9133 label=malicious scorer=mvp-synthetic-logreg (ATT&CK features) | family match **njRAT** (p=0.821, avast-ctu-logreg (behaviour+static))
 
 - n&#95;drop = 1.0986, impact +2.76
 - n&#95;persist = 0.6931, impact +1.18
@@ -20,14 +20,14 @@ P(malicious)=0.9133 label=malicious scorer=mvp-synthetic-logreg (ATT&CK features
 - frac&#95;suspicious = 0.0139, impact +0.02
 
 ### Family evidence
-Top tokens supporting **njRAT** (avast-ctu-logreg (behaviour-only)):
+Top tokens supporting **njRAT** (avast-ctu-logreg (behaviour+static)):
 
-- exec:regasm.exe (+0.413)
-- tech:T1547.001 (+0.277)
-- reg&#95;open&#95;parent:hklm\system\currentcontrolset\control\networkprovider (+0.270)
-- reg&#95;open:hklm\system\currentcontrolset\control\networkprovider\hworder (+0.269)
-- tactic:persistence (+0.243)
-- tactic:command-and-control (+0.239)
+- tech:T1105 (+0.230)
+- tactic:command-and-control (+0.225)
+- tech:T1547.001 (+0.214)
+- tactic:persistence (+0.200)
+- exec:regasm.exe (+0.147)
+- file&#95;read:\device\ksecdd (+0.136)
 
 ## Timeline
 | t | event | ATT&CK | anomaly |
@@ -419,7 +419,7 @@ Specificity: 3 Sigma candidate(s) dropped because no generalisation rung was spe
   "python": "3.14.3",
   "specimen_version": "1.0.0",
   "execution": "report-only (sandbox report replay; no sample bytes handled)",
-  "report_content_sha256": "e0adff1d683c7bb5b85c1f4d41c45d2faf8b7a936112e48c6bce733ada7e95f8",
+  "report_content_sha256": "d19ff7e27c6157256c347458cc7f58743e260481d1e8ff0c885073a7937fc423",
   "report_sha256": "2434c0af980a3a712b4ead907d2bdcd79682c37ce7c6c6a973f87c50d0698391",
   "sample_sha256_note": "not present in the (reduced) report; rule names use the report hash",
   "negative_corpus": {

@@ -13,7 +13,7 @@ score 0.53 / entropy 7.86
 - pe&#95;executable impact +0.80
 
 ## Behavior
-P(malicious)=0.5685 label=suspicious scorer=mvp-synthetic-logreg (ATT&CK features) | family match **Emotet** (p=0.999, avast-ctu-logreg (behaviour-only))
+P(malicious)=0.5685 label=suspicious scorer=mvp-synthetic-logreg (ATT&CK features) | family match **Emotet** (p=0.999, avast-ctu-logreg (behaviour+static))
 
 - n&#95;drop = 0.6931, impact +1.74
 - frac&#95;suspicious = 0.0702, impact +0.11
@@ -21,14 +21,14 @@ P(malicious)=0.5685 label=suspicious scorer=mvp-synthetic-logreg (ATT&CK feature
 - n&#95;delete = 1.6094, impact +0.00
 
 ### Family evidence
-Top tokens supporting **Emotet** (avast-ctu-logreg (behaviour-only)):
+Top tokens supporting **Emotet** (avast-ctu-logreg (behaviour+static)):
 
-- mutex&#95;create:global\i#&lt;hex&gt; (+0.622)
-- mutex&#95;create:global\m#&lt;hex&gt; (+0.622)
-- exec:&lt;hex&gt;.exe (+0.515)
-- file&#95;delete&#95;ext:exe (+0.476)
-- file&#95;delete:%temp%\&lt;hex&gt;.exe (+0.369)
-- tactic:defense-evasion (+0.321)
+- mutex&#95;create:global\i#&lt;hex&gt; (+0.485)
+- mutex&#95;create:global\m#&lt;hex&gt; (+0.485)
+- file&#95;delete&#95;ext:exe (+0.332)
+- exec:&lt;hex&gt;.exe (+0.329)
+- tactic:defense-evasion (+0.289)
+- dll:gdi32.dll (+0.243)
 
 ## Timeline
 | t | event | ATT&CK | anomaly |
@@ -252,7 +252,7 @@ Specificity: 0 Sigma candidate(s) dropped because no generalisation rung was spe
   "python": "3.14.3",
   "specimen_version": "1.0.0",
   "execution": "report-only (sandbox report replay; no sample bytes handled)",
-  "report_content_sha256": "12a30e325c854bb1ce23d991e36f97973f27cf6985726f5c097814b1321aa0db",
+  "report_content_sha256": "8c2aa80827956464c7957b0387bc518fb83963be687aec344d9f1f3963c3a6a7",
   "report_sha256": "febb79941f669497555e27d0547f2bdaf46bae8f2be10720fab2b851610eea60",
   "sample_sha256_note": "not present in the (reduced) report; rule names use the report hash",
   "negative_corpus": {

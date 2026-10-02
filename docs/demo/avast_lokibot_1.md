@@ -13,7 +13,7 @@ score 0.3363 / entropy 7.46
 - high&#95;section&#95;entropy impact +0.52
 
 ## Behavior
-P(malicious)=0.9201 label=malicious scorer=mvp-synthetic-logreg (ATT&CK features) | family match **njRAT** (p=0.858, avast-ctu-logreg (behaviour-only))
+P(malicious)=0.9201 label=malicious scorer=mvp-synthetic-logreg (ATT&CK features) | family match **unknown (closest: Lokibot)** (p=0.514, avast-ctu-logreg (behaviour+static))
 
 - n&#95;drop = 1.0986, impact +2.76
 - n&#95;persist = 0.6931, impact +1.18
@@ -22,14 +22,14 @@ P(malicious)=0.9201 label=malicious scorer=mvp-synthetic-logreg (ATT&CK features
 - n&#95;delete = 1.0986, impact +0.00
 
 ### Family evidence
-Top tokens supporting **njRAT** (avast-ctu-logreg (behaviour-only)):
+Top tokens supporting **unknown (closest: Lokibot)** (avast-ctu-logreg (behaviour+static)):
 
-- tech:T1547.001 (+0.283)
-- reg&#95;open&#95;parent:hklm\system\currentcontrolset\control\networkprovider (+0.276)
-- reg&#95;open:hklm\system\currentcontrolset\control\networkprovider\hworder (+0.275)
-- tactic:persistence (+0.248)
-- tactic:command-and-control (+0.244)
-- tech:T1105 (+0.238)
+- pe&#95;year:2019 (+0.218)
+- file&#95;read&#95;dir:%system% (+0.139)
+- reg&#95;open:hklm\software\microsoft\windows\currentversion\sidebyside (+0.124)
+- dll:winmm.dll (+0.106)
+- reg&#95;open:hklm\software\microsoft\oleaut (+0.104)
+- reg&#95;open&#95;parent:hklm\software\microsoft (+0.096)
 
 ## Timeline
 | t | event | ATT&CK | anomaly |
@@ -203,16 +203,6 @@ rule SPECIMEN_3783825d9e86
     condition:
         uint16(0) == 0x5A4D and (
         pe.imphash() == "afcdf79be1557326c854b6e20cb900a7"
-        or (
-            pe.imports("wsock32.dll", "inet_ntoa") +
-            pe.imports("mpr.dll", "WNetAddConnection2W") +
-            pe.imports("mpr.dll", "WNetCancelConnection2W") +
-            pe.imports("wsock32.dll", "htons") +
-            pe.imports("wsock32.dll", "ioctlsocket") +
-            pe.imports("wsock32.dll", "ntohs") +
-            pe.imports("wsock32.dll", "recvfrom") +
-            pe.imports("wsock32.dll", "setsockopt")
-        ) >= 6
         )
 }
 
@@ -254,7 +244,45 @@ level: medium
 
 ```
 
-## Sigma 3 - registry_set
+## Sigma 3 - file_event
+```yaml
+title: 'SPECIMEN auto - file_event pattern'
+status: experimental
+description: Auto-synthesized from one sandbox run of 3783825d9e860c78; generalisation rung 0; zero hits on the negative corpus at synthesis time. Review before deploy.
+author: SPECIMEN
+tags:
+    - attack.t1070.004
+logsource:
+    product: windows
+    category: file_event
+detection:
+    selection:
+        TargetFilename: 'C:\\Users\\*\\AppData\\Roaming\\BF783B\\BCDB0B.lck'
+    condition: selection
+level: medium
+
+```
+
+## Sigma 4 - file_event
+```yaml
+title: 'SPECIMEN auto - file_event pattern'
+status: experimental
+description: Auto-synthesized from one sandbox run of 3783825d9e860c78; generalisation rung 0; zero hits on the negative corpus at synthesis time. Review before deploy.
+author: SPECIMEN
+tags:
+    - attack.t1105
+logsource:
+    product: windows
+    category: file_event
+detection:
+    selection:
+        TargetFilename: 'C:\\Users\\*\\AppData\\Roaming\\BF783B\\BCDB0B.exe'
+    condition: selection
+level: medium
+
+```
+
+## Sigma 5 - registry_set
 ```yaml
 title: 'SPECIMEN auto - registry_set pattern'
 status: experimental
@@ -273,7 +301,7 @@ level: medium
 
 ```
 
-## Sigma 4 - registry_set
+## Sigma 6 - registry_set
 ```yaml
 title: 'SPECIMEN auto - registry_set pattern'
 status: experimental
@@ -290,7 +318,7 @@ level: medium
 
 ```
 
-Specificity: 3 Sigma candidate(s) dropped because no generalisation rung was specific enough.
+Specificity: 1 Sigma candidate(s) dropped because no generalisation rung was specific enough.
 
 ## Evidence manifest
 ```json
@@ -301,12 +329,12 @@ Specificity: 3 Sigma candidate(s) dropped because no generalisation rung was spe
   "python": "3.14.3",
   "specimen_version": "1.0.0",
   "execution": "report-only (sandbox report replay; no sample bytes handled)",
-  "report_content_sha256": "5620d0296e1f2d67677bd6aaa8c9ea5a560c0702904c3bc5b2633b83bc59ad7c",
+  "report_content_sha256": "2bc9951606ba6bf22eebd18388473a9aaa1be4dbf86b78926aef294371dd37e9",
   "report_sha256": "3783825d9e860c7860aa20c4eb521338ec5c03e21cbcc3efd5ac4533a6ebc8cb",
   "sample_sha256_note": "not present in the (reduced) report; rule names use the report hash",
   "negative_corpus": {
     "packaged": true,
-    "excluded_family": "njRAT"
+    "excluded_family": "Lokibot"
   }
 }
 ```
