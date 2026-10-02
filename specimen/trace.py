@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from .hashing import sha256_bytes
+from .hashing import read_capped, sha256_bytes
 from .models import EVENT_TYPES, Event, Trace
 
 MAX_EVENTS = 100_000
@@ -51,4 +51,4 @@ def parse_trace(raw: bytes) -> Trace:
 
 
 def load_trace(path: str | Path) -> Trace:
-    return parse_trace(Path(path).read_bytes())
+    return parse_trace(read_capped(path))

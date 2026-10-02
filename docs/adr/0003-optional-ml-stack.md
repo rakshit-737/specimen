@@ -24,7 +24,7 @@ scikit-learn and LightGBM.
 
 ## Consequences
 
-- CI runs the core suite on 3.10-3.13 without ML dependencies, plus an ML
+- CI runs the core suite on 3.10-3.14 without ML dependencies, plus an ML
   job. Tests that need downloaded data are marked `realdata` and skip
   cleanly.
 - Hashing uses CRC32 buckets instead of scikit-learn's `FeatureHasher`,

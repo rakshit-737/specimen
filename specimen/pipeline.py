@@ -12,7 +12,7 @@ from .adapters.cape import cape_to_trace, static_pe
 from .adapters.sysmon import sysmon_to_trace
 from .corpus import synthetic_corpus
 from .detect import blobs, synthesize_sigma, synthesize_yara_pe
-from .hashing import sha256_bytes, sha256_file
+from .hashing import read_capped, sha256_bytes, sha256_file
 from .models import Detections, Sample, Trace
 from .negatives import import_prevalence, negative_blob
 from .provenance import map_technique, reconstruct
@@ -122,7 +122,7 @@ def run(sample_path: str | Path, trace_path: str | Path | None = None,
     trace = graph = behavior = None
     timeline: list = []
     if (static.detonate or force_detonate) and trace_path:
-        raw = Path(trace_path).read_bytes()
+        raw = read_capped(trace_path)
         doc = None
         if is_sysmon(raw):
             trace = sysmon_to_trace(raw, run_id=Path(trace_path).stem, sample_sha256=sample.sha256)
@@ -179,7 +179,7 @@ def run_report(report_path: str | Path, negatives: list[dict[str, str]] | None =
         Avast-CTU negative corpus (minus the predicted family) and rank YARA
         imports by its prevalence table.
     :returns: the report dict (see :func:`specimen.report.build_report`)."""
-    raw = Path(report_path).read_bytes()
+    raw = read_capped(report_path)
     doc = json.loads(raw)
     trace = cape_to_trace(doc, run_id=Path(report_path).stem, raw=raw)
     pe = static_pe(doc)

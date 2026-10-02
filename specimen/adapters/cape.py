@@ -20,7 +20,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from ..hashing import sha256_bytes
+from ..hashing import read_capped, sha256_bytes
 from ..models import Event, Trace
 
 MAX_STR = 512
@@ -267,7 +267,7 @@ def cape_to_trace(report: dict[str, Any], run_id: str | None = None, raw: bytes 
 
 
 def load_cape(path: str | Path) -> Trace:
-    raw = Path(path).read_bytes()
+    raw = read_capped(path)
     try:
         doc = json.loads(raw)
     except json.JSONDecodeError as e:
