@@ -45,8 +45,7 @@ jobs:
                   target = urljoin(base, src.split("#")[0].split("?")[0]).lstrip("/")
                   if not (site / target).is_file():
                       bad.append(f"{rel}: {src}")
-          print("
-".join(bad) or "all images resolve")
+          print(chr(10).join(bad) or "all images resolve")
           sys.exit(1 if bad else 0)
           PY
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
