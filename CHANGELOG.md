@@ -6,6 +6,12 @@ uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-02
+
+### Changed
+- Rules headline uses the non-oracle seeded 0.020 % FPR; the oracle 0.004 % row is labelled as such; THREAT_MODEL updated.
+- Static-gate headline states that `analyze` still detonates every PE.
+
 ### Added
 - Temporal EMBER-2018 evaluation in GitHub Actions (train Jan-Sep, calibrate Oct, test Nov-Dec, 5 seeds): AUC 0.989, TPR 0.49 at 0.1 % FPR. Worse than the earlier random-split 0.994 / 0.84, and published as such.
 - Mal-API-2019 cross-dataset transfer, a reproduction of Li et al. 2024, Oliveira within-dataset results and a MalDetConv reproduction (`results/api_cross.json`, `results/repro_maldetconv.json`).

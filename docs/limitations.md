@@ -10,6 +10,7 @@
 - **Family attribution is closed-set over 10 families**; in leave-one-family-out tests, 30 % of unseen-family reports still pass the 0.6 abstain threshold (below it, reports say `unknown (closest: X)`). The threshold was picked on the test split, not on a separate validation slice.
 - **MalbehavD-V1 contains exact duplicate sequences** (1,601 distinct of 2,570); random splits, including the published ones, partly measure memorisation. The duplicate-free accuracy is 93.4 %.
 - **The API behaviour scorer is trained on MalbehavD-V1** (Cuckoo API names, 2,570 samples). It only runs on traces with a real call sequence; reduced reports (no call logs) still use the MVP scorer, which is known to transfer poorly (see Benchmarks).
+- **Known gaps at v1.1.0.** The rules FPR row with the *predicted*-family exclusion (what `analyze` does) is not yet measured; 0.004 % is the oracle true-family setting and 0.020 % the seeded headline. The Li et al. 2024 reproduction uses unigram TF-IDF + SVD with default hyperparameters (no grid search, likely the ~4-point gap to the paper's 0.68), while SPECIMEN uses uni+bigram LR, so that comparison mixes features and model. The round-3 family model is a `bench` artefact, not a release asset; `gh release download v1.0.0` still fetches the older behaviour-only model. Docs dependencies are unpinned. CITATION.cff omits Oliveira 2019 and Li et al. 2024. About 75 public functions lack docstrings. No Speakeasy benign-FPR adapter yet.
 - No adversarial robustness evaluation of any model.
 
 ## Roadmap
