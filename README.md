@@ -232,7 +232,32 @@ Every sample goes through `api_sequence_to_trace`. Intervals over repeated split
 
 The MVP's synthetic-trained scorer does not transfer at all: API-only traces trigger almost no ATT&CK-mapped features, so its ranking is inverted.
 
-<!-- round3:repro -->
+### 5. Paper reproductions: paper vs reproduction vs SPECIMEN
+
+**MalDetConv (Maniriho et al. 2022) on MalbehavD-V1** (`results/repro_maldetconv.json`, `benchmarks/repro_maldetconv.py`). Re-implemented in PyTorch from the paper's text: embedding, 2x Conv1D+MaxPool, BiGRU, dense ReLU with dropout 0.2, sigmoid output; Keras-style pre-padding and truncation to n calls; random 70/30 split; 10 seeds. The paper gives the layer sizes only as an image, so the sizes used (64 filters, kernel 3, 64 GRU units, lr 1e-3, batch 32, 20 epochs) are guesses and are recorded in the file. SPECIMEN's LR is trained on the same truncated sequences and the same splits.
+
+| n calls | paper (Table 3) | our reproduction | SPECIMEN LR | reproduction, duplicate-free | SPECIMEN LR, duplicate-free |
+|---|---|---|---|---|---|
+| 20 | 0.938 | 0.915 ± 0.018 | 0.944 ± 0.008 | 0.863 ± 0.017 | 0.919 ± 0.019 |
+| 40 | 0.940 | 0.914 ± 0.035 | 0.953 ± 0.010 | 0.869 ± 0.020 | 0.933 ± 0.022 |
+| 60 | 0.952 | 0.920 ± 0.021 | 0.958 ± 0.011 | 0.872 ± 0.024 | 0.939 ± 0.016 |
+| 80 | 0.955 | 0.925 ± 0.016 | 0.959 ± 0.011 | 0.878 ± 0.038 | 0.940 ± 0.019 |
+| 100 | 0.961 | 0.923 ± 0.016 | 0.957 ± 0.009 | 0.877 ± 0.028 | 0.938 ± 0.020 |
+
+Our reproduction falls 2-4 points short of the paper. The likeliest cause is the unstated layer sizes and training schedule. On a duplicate-free split the CNN-BiGRU loses about 5 points while the n-gram LR loses about 2.
+
+**Li et al. 2024 on Mal-API-2019** (`results/api_cross.json`). 8-class family classification, TF-IDF with 5-fold CV (the grid ranges and PCA size are not stated, so defaults are used):
+
+| model | paper (Table I) | reproduction, all rows | reproduction, duplicate-free |
+|---|---|---|---|
+| Random Forest | 0.68 | 0.637 ± 0.008 | 0.605 ± 0.015 |
+| XGBoost | 0.68 | 0.632 ± 0.015 | 0.602 ± 0.017 |
+| KNN | 0.54 | 0.569 ± 0.014 | 0.535 ± 0.013 |
+| MLP | 0.56 | 0.619 ± 0.015 | 0.590 ± 0.017 |
+| **SPECIMEN uni+bigram LR** | - | **0.666 ± 0.010** | **0.639 ± 0.014** |
+
+**Cross-dataset.** The shipped MalbehavD-trained scorer, applied unchanged to Mal-API-2019 (all malware), flags 71.6 % [70.5, 72.6] of sequences at p >= 0.5 but only 40.1 % at the "malicious" cut-off of 0.8, so it transfers only partly. Within Oliveira (integer-coded calls, duplicate-free, 5-fold), the n-gram LR reaches a balanced accuracy of 0.913 ± 0.025 and an AUC of 0.982. Cross-dataset transfer to Oliveira is not possible because the re-host has no API-name table.
+
 
 ## Prior art and how SPECIMEN differs
 
