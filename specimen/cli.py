@@ -99,7 +99,6 @@ def _dispatch(ap: argparse.ArgumentParser, args: argparse.Namespace) -> int:
         print(f"{done}/{len(res)} jobs done, ledger: {args.out / 'jobs.jsonl'}")
         return 0 if done == len(res) else 1
     if args.cmd == "triage-ember":
-        from .ml.ember import StaticModel, vectorize
         from .pipeline import models_dir
         md = models_dir()
         missing = [f for f in ("static_lgbm.txt", "static_meta.json") if not (md / f).exists()]
@@ -108,6 +107,7 @@ def _dispatch(ap: argparse.ArgumentParser, args: argparse.Namespace) -> int:
                   f"Train it with benchmarks/bench_static.py or fetch the release assets: {RELEASE_HINT}",
                   file=sys.stderr)
             return 1
+        from .ml.ember import StaticModel, vectorize
         model = StaticModel.load(md)
         for line in args.features.read_text(encoding="utf-8").splitlines():
             if not line.strip():

@@ -10,7 +10,7 @@ samples/
 *.exe
 *.dll
 *.zip
-data/
+/data/
 models/*
 !specimen/data/*.json
 *.chunks.json
