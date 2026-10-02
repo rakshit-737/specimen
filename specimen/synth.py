@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 
+from .escape import hex_or, sigma_literal, yaml_sq, yara_str
 from .models import Detections, Event, StaticVerdict, Trace
 from .provenance import map_technique
 from .static_triage import PACKER_MARKERS, SUSPICIOUS_APIS, SUSPICIOUS_TOKENS
@@ -12,7 +13,7 @@ GENERIC = re.compile(r"^(kernel32|user32|ntdll|advapi32|msvcrt)\.dll$|^This prog
 
 
 def _yara_escape(s: str) -> str:
-    return s.replace("\\", "\\\\").replace('"', '\\"')
+    return yara_str(s)
 
 
 def pick_yara_strings(verdict: StaticVerdict, benign_blobs: list[bytes], k: int = 6) -> list[str]:
@@ -42,7 +43,7 @@ def yara_rule(name: str, sha256: str, strings: list[str]) -> str | None:
     body = "\n".join(f'        $s{i} = "{_yara_escape(s)}" ascii wide' for i, s in enumerate(strings))
     need = max(1, (len(strings) + 1) // 2)
     return (f"rule {name}\n{{\n    meta:\n        author = \"SPECIMEN (auto)\"\n"
-            f"        sample_sha256 = \"{sha256}\"\n        confidence = \"auto-generated; review before deploy\"\n"
+            f"        sample_sha256 = \"{hex_or(sha256, 64, 'unknown')}\"\n        confidence = \"auto-generated; review before deploy\"\n"
             f"    strings:\n{body}\n    condition:\n        {need} of ($s*)\n}}\n")
 
 
@@ -87,9 +88,10 @@ def sigma_rules(trace: Trace, sha256: str) -> list[tuple[str, str, dict[str, str
             continue
         seen.add(key)
         tech = map_technique(ev)[0]
-        sel_yaml = "\n".join(f"        {k}: '{v}'" for k, v in sel.items())
-        text = (f"title: SPECIMEN auto - {tech} via {ev.image}\nstatus: experimental\n"
-                f"description: Auto-synthesized from run of {sha256[:16]}; review before deploy\n"
+        sel_yaml = "\n".join(f"        {k}: {yaml_sq(sigma_literal(v))}" for k, v in sel.items())
+        title = yaml_sq(f"SPECIMEN auto - {tech} via {ev.image}")
+        text = (f"title: {title}\nstatus: experimental\n"
+                f"description: Auto-synthesized from run of {hex_or(sha256, 64, 'unknown')[:16]}; review before deploy\n"
                 f"tags:\n    - attack.{tech.lower()}\nlogsource:\n    product: windows\n    category: {cat}\n"
                 f"detection:\n    selection:\n{sel_yaml}\n    condition: selection\nlevel: medium\n")
         out.append((cat, tech, sel, text))

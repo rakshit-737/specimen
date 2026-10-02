@@ -39,7 +39,8 @@ def parse_trace(raw: bytes) -> Trace:
                 ts=float(e["ts"]), type=e["type"], pid=int(e["pid"]),
                 image=str(e["image"]),
                 ppid=int(e["ppid"]) if e.get("ppid") is not None else None,
-                target=e.get("target"), cmdline=e.get("cmdline"),
+                target=None if e.get("target") is None else str(e["target"]),
+                cmdline=None if e.get("cmdline") is None else str(e["cmdline"]),
                 extra={k: v for k, v in e.items() if k not in known},
             ))
         except (KeyError, TypeError, ValueError) as ex:

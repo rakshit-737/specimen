@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 
+from .escape import mermaid_label
 from .models import Edge, Event, Node, TimelineEntry, Trace
 
 LOLBINS = ("powershell.exe", "cmd.exe", "wscript.exe", "mshta.exe", "rundll32.exe",
@@ -138,11 +139,17 @@ class ProvenanceGraph:
         ids = {nid: f"n{i}" for i, nid in enumerate(self.nodes)}
         lines = ["flowchart LR"]
         for nid, n in self.nodes.items():
-            label = n.label.replace('"', "'")[:60]
-            lines.append(f'  {ids[nid]}["{n.kind}: {label}"]')
+            lines.append(f'  {ids[nid]}["{n.kind}: {mermaid_label(n.label)}"]')
         for e in self.edges:
             lines.append(f'  {ids[e.src]} -->|"{e.relation}"| {ids[e.dst]}')
         return "\n".join(lines)
+
+
+def _pid(v: object) -> int:
+    try:
+        return int(str(v)) if str(v).lstrip("-").isascii() else -1
+    except ValueError:
+        return -1
 
 
 _REL = {
@@ -177,12 +184,12 @@ def reconstruct(trace: Trace, include_benign_apis: bool = False
             continue
         src = proc(ev.pid, ev.image)
         if ev.type == "process_create":
-            child_pid = int(ev.extra.get("child_pid", -1))
+            child_pid = _pid(ev.extra.get("child_pid", -1))
             dst = proc(child_pid, ev.target or "?")
             g.edges.append(Edge(src, dst, "spawned", ev.ts))
             desc = f"{ev.image} spawned {ev.target}" + (f" `{ev.cmdline}`" if ev.cmdline else "")
         elif ev.type == "process_inject":
-            tpid = int(ev.extra.get("target_pid", -1))
+            tpid = _pid(ev.extra.get("target_pid", -1))
             dst = proc(tpid, ev.target or "?")
             g.edges.append(Edge(src, dst, "injected", ev.ts))
             desc = f"{ev.image} injected into {ev.target}"

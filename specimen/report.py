@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from . import __version__
+from .escape import md_text
 from .hashing import sha256_bytes
 from .models import BehaviorScore, Detections, Sample, StaticVerdict, TimelineEntry, Trace, to_dict
 from .provenance import ProvenanceGraph
@@ -67,31 +68,65 @@ def build_report(sample: Sample, static: StaticVerdict, trace: Trace | None,
     return rep
 
 
+def _fam_score(b: dict[str, Any]) -> str:
+    model = str(b.get("family_model") or "")
+    if model.startswith("avast"):
+        return f"p={b['family_similarity']}, {model}"
+    return f"jaccard {b['family_similarity']}"
+
+
+def _tok(c: Any) -> str:
+    if isinstance(c, dict):
+        return f"{c.get('feature', c)} (weight {c.get('impact', c.get('weight', ''))})"
+    if isinstance(c, (list, tuple)) and len(c) == 2 and isinstance(c[1], (int, float)):
+        return f"{c[0]} ({c[1]:+.3f})"
+    return str(c)
+
+
+def _specificity(d: dict[str, Any]) -> str:
+    parts = []
+    if d["yara_fp_hits"]:
+        parts.append(f"YARA rule hit {len(d['yara_fp_hits'])} benign blob(s)")
+    for x in d["sigma_fp_hits"]:
+        k, _, v = str(x).partition(":")
+        if k == "rejected_nonspecific":
+            parts.append(f"{v} Sigma candidate(s) dropped because no generalisation rung was specific enough")
+        else:
+            parts.append(f"Sigma candidate {md_text(k)} dropped (hit benign trace {md_text(v)})")
+    return "; ".join(parts) + "."
+
+
 def render_markdown(rep: dict[str, Any]) -> str:
+    """Human-readable Markdown report; every report-derived string is escaped and IOCs are defanged."""
     v = rep["verdict"]
-    L = [f"# SPECIMEN report - `{rep['sample']['sha256'][:16]}`", "",
+    L = [f"# SPECIMEN report - `{str(rep['sample']['sha256'])[:16]}`", "",
          f"**Verdict:** {v['label']} (score {v['score']}, confidence {v['confidence']})  ",
          f"**Detonated:** {'yes (recorded trace replay)' if rep['detonated'] else 'no - static gate triaged out'}", "",
          "## Static triage", f"score {rep['static']['score']} / entropy {rep['static']['entropy']}", ""]
-    L += [f"- `{r['feature']}` impact {r['impact']:+.2f}" for r in rep["static"]["top_reasons"]] or ["- no suspicious static features"]
+    L += [f"- {md_text(r['feature'])} impact {r['impact']:+.2f}" for r in rep["static"]["top_reasons"]] or ["- no suspicious static features"]
     if rep["behavior"]:
         b = rep["behavior"]
         L += ["", "## Behavior", f"P(malicious)={b['probability']} label={b['label']} scorer={b.get('scorer', '')}"
-              + (f" | family match **{b['family']}** (jaccard {b['family_similarity']})" if b["family"] else "")]
-        L += [f"- `{c['feature']}`={c['value']} impact {c['impact']:+.2f}" for c in b["contributions"][:6]]
+              + (f" | family match **{md_text(b['family'])}** ({_fam_score(b)})" if b["family"] else "")]
+        L += [f"- {md_text(c['feature'])} = {c['value']}, impact {c['impact']:+.2f}" for c in b["contributions"][:6]]
+        if b.get("family_evidence"):
+            L += ["", "### Family evidence", f"Top tokens supporting **{md_text(b['family'])}** ({md_text(b.get('family_model', ''))}):"]
+            L += [f"- {md_text(_tok(c))}" for c in b["family_evidence"]]
     if rep["timeline"]:
         L += ["", "## Timeline", "| t | event | ATT&CK | anomaly |", "|---|---|---|---|"]
-        L += [f"| {t['ts']:.2f} | {t['description'].replace('|', '/')} | {t['technique'] or ''} {t['tactic'] or ''} | {t['anomaly']} |"
+        L += [f"| {t['ts']:.2f} | {md_text(t['description'])} | {t['technique'] or ''} {t['tactic'] or ''} | {t['anomaly']} |"
               for t in rep["timeline"]]
     if rep["graph"]:
         L += ["", "## Provenance graph", "```mermaid", rep["graph"]["mermaid"], "```"]
-    L += ["", "## IOCs"] + [f"- **{k}**: {', '.join(vals)}" for k, vals in rep["iocs"].items() if vals]
+    L += ["", "## IOCs (defanged)"] + [f"- **{k}**: {', '.join(md_text(x) for x in vals)}"
+                                        for k, vals in rep["iocs"].items() if vals]
     d = rep["detections"]
     if d["yara"]:
         L += ["", "## YARA", "```yara", d["yara"], "```"]
-    for s in d["sigma"]:
-        L += ["", "## Sigma", "```yaml", s, "```"]
+    for i, s in enumerate(d["sigma"], 1):
+        cat = next((ln.split(":", 1)[1].strip() for ln in s.splitlines() if ln.strip().startswith("category:")), "")
+        L += ["", f"## Sigma {i} - {cat}", "```yaml", s, "```"]
     if d["yara_fp_hits"] or d["sigma_fp_hits"]:
-        L += ["", f"Specificity: YARA FP {d['yara_fp_hits']}; dropped Sigma {d['sigma_fp_hits']}"]
+        L += ["", "Specificity: " + _specificity(d)]
     L += ["", "## Evidence manifest", "```json", json.dumps(rep["manifest"], indent=2), "```", ""]
     return "\n".join(L)

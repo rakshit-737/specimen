@@ -134,7 +134,7 @@ def _from_calls(report: dict[str, Any], sample_image: str) -> list[Event]:
             if low in _INJECT_APIS:
                 tpid = _first(a, "processid", "process_identifier", "pid")
                 evs.append(Event(ts, "process_inject", pid, image, target=f"pid {tpid}" if tpid else "unknown",
-                                 extra={"api": api, "target_pid": int(tpid) if tpid.isdigit() else -1}))
+                                 extra={"api": api, "target_pid": int(tpid) if tpid.isascii() and tpid.isdigit() else -1}))
             elif low in _REG_SET_APIS:
                 evs.append(Event(ts, "registry_set", pid, image,
                                  target=_first(a, "fullname", "regkey", "keyname", "valuename") or "?",
@@ -236,7 +236,14 @@ def _from_network(report: dict[str, Any], sample_image: str, start: float) -> li
 def cape_to_trace(report: dict[str, Any], run_id: str | None = None, raw: bytes | None = None) -> Trace:
     if not isinstance(report, dict) or not isinstance(report.get("behavior", {}), dict):
         raise CapeFormatError("not a CAPE/Cuckoo report object")
-    target = ((report.get("target") or {}).get("file") or {}) if isinstance(report.get("target"), dict) else {}
+    """Convert a CAPE/Cuckoo report (full call log or reduced summary) into a :class:`Trace`.
+
+    :param report: parsed JSON report; unknown shapes are ignored, not raised on.
+    :param run_id: run identifier (defaults to the report's ``info.id``).
+    :param raw: original bytes, hashed into ``Trace.source_sha256``.
+    :raises CapeFormatError: if the object is not a report or has no behaviour.
+    """
+    target = _dict(_dict(report.get("target")).get("file"))
     sha = _s(target.get("sha256"))
     sample_image = _s(target.get("name")) or "sample.exe"
     events = _from_calls(report, sample_image)

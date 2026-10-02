@@ -30,6 +30,8 @@ from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
 from functools import lru_cache
 
+from .escape import hex_or, sigma_value, yaml_sq, yara_str
+
 # Sigma logsource categories and the field each line represents
 CATEGORIES = {
     "process_creation": ("Image", "CommandLine"),
@@ -46,10 +48,18 @@ _SID = re.compile(r"(?i)s-1-5-21(-\d+)+")
 _GUID = re.compile(r"(?i)\{?[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\}?")
 _HEXNUM = re.compile(r"(?i)(?<![a-z])(?=[0-9a-f]*\d)[0-9a-f]{4,}(?![a-z])|\d+")
 _STARS = re.compile(r"\*{2,}")
-_GENERIC_PREFIX = re.compile(r"(?i)^(\*\\)?(c:\\users\\\*\\appdata\\(local|roaming)(\\temp)?|c:\\users\\\*|"
-                             r"c:\\windows(\\(system32|syswow64))?|c:\\programdata|hk(ey_)?(current_user|"
-                             r"local_machine|lm|cu)\\software(\\microsoft\\windows\\currentversion)?|"
-                             r"hkey_users\\\*\\software)")
+# Prefixes that carry no family-specific signal; literal_len() ignores them,
+# so a rule needs MIN_LITERAL characters *beyond* e.g. a hive root.
+_GENERIC_PREFIX = re.compile(
+    r"(?i)^(\*\\)?("
+    r"c:\\users\\\*\\appdata\\(local|roaming|locallow)(\\temp)?|c:\\users\\\*|"
+    r"c:\\windows\\microsoft\.net\\framework(64)?(\\\*)?|"
+    r"c:\\windows(\\(system32|syswow64|temp))?|c:\\program files( \(x86\))?|c:\\programdata|"
+    r"\\device\\[^\\]+|"
+    r"hk(ey_)?(current_user|local_machine|lm|cu|users|cr|classes_root)(\\\*)?"
+    r"(\\software(\\classes\\local settings(\\software\\microsoft\\windows\\shell\\muicache)?|"
+    r"\\microsoft\\windows\\currentversion|\\microsoft\\windows nt\\currentversion|\\wow6432node)?)?"
+    r")")
 
 
 def image_of(cmdline: str, target: str) -> str:
@@ -111,8 +121,8 @@ def ladder(value: str, kind: str) -> list[str]:
             if pd:
                 rungs.append(_tidy(f"{pd}\\*\\{b}"))
                 rungs.append(_tidy(f"{pd}\\*\\*.{ext}" if ext else f"{pd}\\*\\*"))
-    elif kind == "key":
-        d = ntpath.dirname(v1)
+    elif kind == "key":  # registry keys: only "\\" separates (a "/" can be part of a value name)
+        d = v1.rsplit("\\", 1)[0] if "\\" in v1 else ""
         if d:
             rungs.append(_tidy(d + "\\*"))
     out: list[str] = []
@@ -157,11 +167,14 @@ class SigmaRule:
         return bool(text) and to_regex(self.line_pattern).search(text) is not None
 
     def to_sigma(self, sha256: str, title: str | None = None, technique: str | None = None) -> str:
-        sel = "\n".join(f"        {f}: '{p}'" for f, p in self.fields)
-        tags = f"tags:\n    - attack.{technique.lower()}\n" if technique else ""
-        return (f"title: {title or 'SPECIMEN auto - ' + self.category + ' pattern'}\n"
+        """Sigma YAML for this rule; every value is escaped (Sigma wildcards + YAML quoting)."""
+        sel = "\n".join(f"        {f}: {yaml_sq(sigma_value(p))}" for f, p in self.fields)
+        tech = re.sub(r"[^a-z0-9.]", "", (technique or "").lower())
+        tags = f"tags:\n    - attack.{tech}\n" if tech else ""
+        sha = hex_or(sha256, 64, "unknown")
+        return (f"title: {yaml_sq(title or 'SPECIMEN auto - ' + self.category + ' pattern')}\n"
                 f"status: experimental\n"
-                f"description: Auto-synthesized from one sandbox run of {sha256[:16]}; generalisation rung "
+                f"description: Auto-synthesized from one sandbox run of {sha[:16]}; generalisation rung "
                 f"{self.rung}; zero hits on the negative corpus at synthesis time. Review before deploy.\n"
                 f"author: SPECIMEN\n{tags}logsource:\n    product: windows\n    category: {self.category}\n"
                 f"detection:\n    selection:\n{sel}\n    condition: selection\nlevel: medium\n")
@@ -261,12 +274,19 @@ class YaraPeRule:
         case = case or {}
         conds = []
         if self.imphash:
-            conds.append(f'pe.imphash() == "{self.imphash}"')
+            if hex_or(self.imphash, 32):
+                conds.append(f'pe.imphash() == "{hex_or(self.imphash, 32)}"')
         if self.imports:
-            s = " +\n            ".join(f'pe.imports("{d}", "{case.get(f, f)}")' for d, f in self.imports)
+            s = " +\n            ".join(f'pe.imports("{yara_str(d)}", "{yara_str(case.get(f, f))}")' for d, f in self.imports)
             conds.append(f"(\n            {s}\n        ) >= {self.need}")
+        if not conds:
+            return ""
+        name = re.sub(r"[^A-Za-z0-9_]", "_", name)
+        if not name[:1].isalpha():
+            name = "r_" + name
+        sha = hex_or(sha256, 64, "unknown")
         return (f'import "pe"\n\nrule {name}\n{{\n    meta:\n        author = "SPECIMEN (auto)"\n'
-                f'        sample_sha256 = "{sha256}"\n        confidence = "auto-generated; review before deploy"\n'
+                f'        sample_sha256 = "{sha}"\n        confidence = "auto-generated; review before deploy"\n'
                 f"    condition:\n        uint16(0) == 0x5A4D and (\n        "
                 + "\n        or ".join(conds) + "\n        )\n}\n")
 

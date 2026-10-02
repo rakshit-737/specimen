@@ -14,6 +14,7 @@ from .corpus import synthetic_corpus
 from .detect import blobs, synthesize_sigma, synthesize_yara_pe
 from .hashing import sha256_bytes, sha256_file
 from .models import Detections, Sample, Trace
+from .negatives import import_prevalence, negative_blob
 from .provenance import map_technique, reconstruct
 from .report import build_report
 from .scoring import event_anomaly, score
@@ -159,12 +160,20 @@ def _attach_family(behavior: Any, trace: Trace, stoks: list[str]) -> None:
     behavior.family_evidence = fm.explain(toks, fm.classes[i], k=6)
 
 
-def run_report(report_path: str | Path, negatives: list[dict[str, str]] | None = None) -> dict[str, Any]:
+def run_report(report_path: str | Path, negatives: list[dict[str, str]] | None = None,
+               use_packaged_negatives: bool = True) -> dict[str, Any]:
     """Report-only analysis of a CAPE/Cuckoo JSON report (no sample bytes).
 
     Static gate from the report's PE metadata, provenance + timeline from the
     behaviour, family attribution (trained model if available), and
-    specificity-checked Sigma (behaviour) + YARA (PE metadata) rules."""
+    specificity-checked Sigma (behaviour) + YARA (PE metadata) rules.
+
+    :param report_path: CAPE/Cuckoo JSON report.
+    :param negatives: extra negative blobs (see :func:`specimen.detect.blobs`).
+    :param use_packaged_negatives: also check rules against the packaged
+        Avast-CTU negative corpus (minus the predicted family) and rank YARA
+        imports by its prevalence table.
+    :returns: the report dict (see :func:`specimen.report.build_report`)."""
     raw = Path(report_path).read_bytes()
     doc = json.loads(raw)
     trace = cape_to_trace(doc, run_id=Path(report_path).stem, raw=raw)
@@ -176,18 +185,27 @@ def run_report(report_path: str | Path, negatives: list[dict[str, str]] | None =
     stoks = static_tokens(pe)
     _attach_family(behavior, trace, stoks)
     benign = [blobs([[e.type, e.target or "", e.cmdline or ""] for e in t.events]) for t in _benign_traces()]
-    negs = benign + list(negatives or [])
+    own = behavior.family if behavior is not None and getattr(behavior, "family_model", "").startswith("avast") else None
+    real = negative_blob(own) if use_packaged_negatives else None
+    negs = benign + ([real] if real else []) + list(negatives or [])
     events = [[e.type, e.target or "", e.cmdline or ""] for e in trace.events]
     sig = synthesize_sigma(events, negs)
     techs = {(e.target or e.cmdline or "").lower(): map_technique(e)[0] for e in trace.events}
     sigma_text = [r.to_sigma(sha, technique=techs.get(r.source.lower())) for r in sig.rules]
-    yr = synthesize_yara_pe(stoks, [])
+    yr = synthesize_yara_pe(stoks, [], import_prevalence(own) if use_packaged_negatives else None)
     case = {str(f.get("name", "")).lower(): str(f.get("name", ""))
             for d in pe.get("imports") or [] if isinstance(d, dict)
             for f in d.get("imports") or [] if isinstance(f, dict)}
-    yara = yr.to_yara(f"SPECIMEN_{sha[:12]}", sha, case) if yr else None
+    yara = (yr.to_yara(f"SPECIMEN_{sha[:12]}", sha, case) or None) if yr else None
     det = Detections(yara, sigma_text, [], [f"rejected_nonspecific:{sig.rejected_nonspecific}"])
     rep = build_report(sample, static, trace, graph, timeline, behavior, det)
     rep["manifest"]["execution"] = "report-only (sandbox report replay; no sample bytes handled)"
     rep["manifest"]["report_sha256"] = sha256_bytes(raw)
+    if not trace.sample_sha256:  # reduced report without target hash: do not label the report hash as the sample's
+        rep["manifest"]["sample_sha256"] = None
+        rep["manifest"]["sample_sha256_note"] = "not present in the (reduced) report; rule names use the report hash"
+    rep["manifest"]["negative_corpus"] = {"packaged": bool(real), "excluded_family": own}
+    am = api_model()
+    if am is not None and rep["behavior"] and str(rep["behavior"].get("scorer", "")).startswith("api-ngram"):
+        rep["manifest"]["behaviour_model"] = am.meta.get("model_file")
     return rep
