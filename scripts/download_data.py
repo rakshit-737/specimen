@@ -30,11 +30,20 @@ AVAST_URL = ("https://drive.usercontent.google.com/download?"
 AVAST_SIZE = 592_988_050
 EMBER_URL = "https://ember.elastic.co/ember_dataset_2018_2.tar.bz2"
 MALBEHAVD = "https://raw.githubusercontent.com/mpasco/MalbehavD-V1/main/"
+# Mal-API-2019 (Catak et al., MIT licence), pinned to the upstream commit's blob
+MALAPI_URL = "https://raw.githubusercontent.com/ocatak/malware_api_class/master/mal-api-2019.zip"
+MALAPI_LABELS = "https://raw.githubusercontent.com/ocatak/malware_api_class/master/labels.csv"
+# Oliveira (2019) API-call sequences, integer-coded; re-hosted copy (see docs/datasets.md for provenance)
+OLIVEIRA_URL = ("https://raw.githubusercontent.com/Hellcake/malware-detection/HEAD/"
+                "dynamic_api_call_sequence_per_malware_100_0_306.csv")
 # pinned hashes of fully-downloaded files (prefix downloads are hashed locally)
 KNOWN = {
     "avast_cape/Public_Avast_CTU_CAPEv2_Dataset_Small.zip":
         "1ea1706019547d0fa2a268ce783725d6090bb3acf992726d08f4637c46531433",
     "malbehavd/MalBehavD-V1-dataset.csv": "1e39c43a014e9b4ee56766ad6bb367ffe8ec4316eb0be75eb182c3b2d15f6364",
+    "malapi/mal-api-2019.zip": "39dd74d325344047172700c47881daac859e48d40c90de65849036928230ff52",
+    "oliveira/dynamic_api_call_sequence_per_malware_100_0_306.csv":
+        "11005ff6f5007bfee7d60bd0dc2e787f4e77b46f3b0a3d09424421c5339a8406",
     # 120 MB prefix (default --ember-mb)
     "ember/ember_dataset_2018_2.tar.bz2@120": "c1637eaa021ee7d4a534e22c3208907ba0c40e2f3baa59b413fadfbd3d34bf65",
 }
@@ -43,7 +52,7 @@ KNOWN = {
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--dest", type=Path, default=Path(os.environ.get("SPECIMEN_DATA", "data")))
-    ap.add_argument("--only", default="malbehavd,avast,ember")
+    ap.add_argument("--only", default="malbehavd,avast,ember,malapi,oliveira")
     ap.add_argument("--ember-mb", type=int, default=120, help="MB prefix of the EMBER tar.bz2 to fetch")
     ap.add_argument("--avast-mb", type=int, default=0, help="0 = full reduced archive; >0 = prefix only")
     ap.add_argument("--workers", type=int, default=6)
@@ -55,9 +64,12 @@ def main(argv: list[str] | None = None) -> int:
         bad = 0
         for line in sums.read_text().splitlines():
             h, rel = line.split(maxsplit=1)
-            ok = sha256_file(dest / rel) == h
+            actual = sha256_file(dest / rel) if (dest / rel).exists() else "missing"
+            key = f"{rel}@{a.ember_mb}" if rel.startswith("ember/") else rel
+            pin = KNOWN.get(key)
+            ok = actual == h and (pin is None or pin == actual)
             bad += not ok
-            print(("OK  " if ok else "BAD ") + rel)
+            print(("OK  " if ok else "BAD ") + rel + ("" if pin else "  (no pin; checked against SHA256SUMS only)"))
         return 1 if bad else 0
     only = set(a.only.split(","))
     files: list[Path] = []
@@ -68,6 +80,11 @@ def main(argv: list[str] | None = None) -> int:
         mb = a.avast_mb * 1024 * 1024 if a.avast_mb else None
         files.append(download(AVAST_URL, dest / "avast_cape" / "Public_Avast_CTU_CAPEv2_Dataset_Small.zip",
                               max_bytes=mb, workers=a.workers))
+    if "malapi" in only:
+        files.append(download(MALAPI_URL, dest / "malapi" / "mal-api-2019.zip", workers=1))
+        files.append(download(MALAPI_LABELS, dest / "malapi" / "labels.csv", workers=1))
+    if "oliveira" in only:
+        files.append(download(OLIVEIRA_URL, dest / "oliveira" / OLIVEIRA_URL.rsplit("/", 1)[1], workers=1))
     if "ember" in only:
         files.append(download(EMBER_URL, dest / "ember" / "ember_dataset_2018_2.tar.bz2",
                               max_bytes=a.ember_mb * 1024 * 1024, workers=a.workers))
@@ -79,12 +96,18 @@ def main(argv: list[str] | None = None) -> int:
             lines[rel] = h
     for f in files:
         rel = f.relative_to(dest).as_posix()
-        lines[rel] = sha256_file(f)
+        h = sha256_file(f)
         key = f"{rel}@{a.ember_mb}" if rel.startswith("ember/") else rel
-        if KNOWN.get(key) and KNOWN[key] != lines[rel]:
-            print(f"ERROR: {rel} sha256 {lines[rel]} differs from pinned {KNOWN[key]}", file=sys.stderr)
+        if KNOWN.get(key) and KNOWN[key] != h:
+            bad = f.with_name(f.name + ".bad")
+            f.replace(bad)
+            lines.pop(rel, None)
+            print(f"ERROR: {rel} sha256 {h} differs from pinned {KNOWN[key]}; quarantined as {bad.name}",
+                  file=sys.stderr)
             mismatched += 1
-        elif KNOWN.get(key):
+            continue
+        lines[rel] = h
+        if KNOWN.get(key):
             print(f"  pinned sha256 OK: {rel}")
     sums.write_text("".join(f"{h}  {r}\n" for r, h in sorted(lines.items())))
     print(f"wrote {sums}")
