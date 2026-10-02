@@ -4,6 +4,23 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project
 uses [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- Temporal EMBER-2018 evaluation in GitHub Actions (train Jan-Sep, calibrate Oct, test Nov-Dec, 5 seeds): AUC 0.989, TPR 0.49 at 0.1 % FPR. Worse than the earlier random-split 0.994 / 0.84, and published as such.
+- Mal-API-2019 cross-dataset transfer, a reproduction of Li et al. 2024, Oliveira within-dataset results and a MalDetConv reproduction (`results/api_cross.json`, `results/repro_maldetconv.json`).
+- Duplicate-free MalbehavD protocol (93.4 %, against 96.3 % on random splits) and pipeline-path accuracy.
+- Seeded rule benchmark with ablations, family variant chosen on a validation slice, and an open-set abstain threshold.
+- Manual `bench` workflow; CI runs the README quickstart, a wheel test, pip-audit and py3.10-3.14.
+- Docs: How it works, Reproduce, the benign-corpus search, a hero screenshot, and repo templates plus CITATION.cff.
+
+### Fixed
+- The API behaviour model ships as package data (pip installs used to fall back to the MVP scorer).
+- Untrusted strings are escaped in Sigma, YARA and Markdown, Sigma wildcards are emitted correctly, and inputs over 512 MB are refused.
+- Samples over 50 MB are hashed in full. Downloads are verified against pinned hashes and mismatches quarantined.
+- IOC defanging no longer touches technique IDs or numbers.
+- CIs over repeated splits use the Nadeau-Bengio correction.
+
 ## [1.0.0] - 2026-09-26
 
 Closes the feasible roadmap gaps and adds docs, container image and releases.
