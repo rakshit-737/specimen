@@ -34,9 +34,24 @@ DETONATE_THRESHOLD = 0.35
 
 
 def load_sample(path: str | Path) -> tuple[Sample, bytes]:
+    """Hash the *whole* file (streaming) and read at most ``MAX_BYTES`` for analysis.
+
+    :param path: sample path; the file is only read, never executed.
+    :returns: the sample record (full-file SHA-256/MD5/size) and the analysed prefix.
+    """
     p = Path(path)
-    data = p.read_bytes()[:MAX_BYTES]
-    return Sample(str(p), hashlib.sha256(data).hexdigest(), hashlib.md5(data).hexdigest(), len(data)), data
+    sha, md5 = hashlib.sha256(), hashlib.md5(usedforsecurity=False)
+    with open(p, "rb") as f:
+        data = f.read(MAX_BYTES)
+        sha.update(data)
+        md5.update(data)
+        size = len(data)
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            sha.update(chunk)
+            md5.update(chunk)
+            size += len(chunk)
+    return Sample(str(p), sha.hexdigest(), md5.hexdigest(), size,
+                  len(data) if size > len(data) else None), data
 
 
 def shannon_entropy(data: bytes) -> float:

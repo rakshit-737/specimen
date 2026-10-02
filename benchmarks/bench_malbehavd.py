@@ -95,7 +95,7 @@ def main() -> int:
     model = ApiBehaviourModel(dict(zip(vocab, vec.idf_.astype(float))), dict(zip(vocab, lr.coef_[0].astype(float))),
                               float(lr.intercept_[0]), {"trained_on": "MalbehavD-V1", "n_train": int(len(y)),
                                                         "features": "API uni+bigram sublinear TF-IDF", "C": 10})
-    model.save(ROOT / "models")
+    model.save(ROOT / "specimen" / "data")
     ref = lr.predict_proba(X[:200])[:, 1]
     mine = np.asarray([model.proba(rows[i][2]) for i in range(200)])
     print(f"pure-Python export max |diff| vs sklearn: {np.abs(ref - mine).max():.2e}")

@@ -17,6 +17,7 @@ class Sample:
     sha256: str
     md5: str
     size: int
+    analysed_bytes: int | None = None   # < size when the file was truncated for analysis
 
 
 @dataclass

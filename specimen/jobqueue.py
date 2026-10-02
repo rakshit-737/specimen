@@ -9,6 +9,7 @@ without changing the ledger format (see docs/adr/0004-job-queue.md).
 from __future__ import annotations
 
 import json
+import multiprocessing
 import time
 from collections.abc import Iterable
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -63,7 +64,7 @@ def run_batch(inputs: Iterable[Path], out: Path, workers: int = 2) -> list[dict[
             lg.flush()
         for jid, p in todo:
             log({"job_id": jid, "path": str(p), "status": "queued", "ts": time.time()})
-        with ProcessPoolExecutor(max_workers=workers) as ex:
+        with ProcessPoolExecutor(max_workers=workers, mp_context=multiprocessing.get_context("spawn")) as ex:
             futs = {ex.submit(_job, str(p), str(out)): (jid, p) for jid, p in todo}
             for fut in as_completed(futs):
                 jid, p = futs[fut]

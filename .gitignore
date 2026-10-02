@@ -12,7 +12,7 @@ samples/
 *.zip
 data/
 models/*
-!models/api_behaviour.json
+!specimen/data/*.json
 *.chunks.json
 .venv/
 .ruff_cache/

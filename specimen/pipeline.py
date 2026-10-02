@@ -12,7 +12,7 @@ from .adapters.cape import cape_to_trace, static_pe
 from .adapters.sysmon import sysmon_to_trace
 from .corpus import synthetic_corpus
 from .detect import blobs, synthesize_sigma, synthesize_yara_pe
-from .hashing import sha256_bytes
+from .hashing import sha256_bytes, sha256_file
 from .models import Detections, Sample, Trace
 from .provenance import map_technique, reconstruct
 from .report import build_report
@@ -30,8 +30,20 @@ DEFAULT_BENIGN_BLOBS = [
 ]
 
 
+PACKAGED_MODELS = Path(__file__).resolve().parent / "data"
+
+
 def models_dir() -> Path:
+    """Directory holding the optional trained models (family, EMBER gate).
+
+    ``$SPECIMEN_MODELS`` if set, otherwise ``./models``. The API behaviour
+    scorer ships inside the package and does not depend on this directory."""
     return Path(os.environ.get("SPECIMEN_MODELS", "models"))
+
+
+def model_file_info(path: Path) -> dict[str, str]:
+    """Path and SHA-256 of a loaded model file (recorded in the report manifest)."""
+    return {"path": str(path), "sha256": sha256_file(path)}
 
 
 @lru_cache(maxsize=1)
@@ -51,12 +63,19 @@ def family_model() -> Any | None:
 
 @lru_cache(maxsize=1)
 def api_model() -> Any | None:
-    """The real-data API n-gram behaviour scorer (pure Python), if trained."""
-    p = models_dir()
-    if not (p / "api_behaviour.json").exists():
-        return None
-    from .api_behaviour import ApiBehaviourModel
-    return ApiBehaviourModel.load(p)
+    """The real-data API n-gram behaviour scorer (pure Python).
+
+    Loaded from ``$SPECIMEN_MODELS`` only when that variable is set *and*
+    holds a copy; otherwise the copy packaged in ``specimen/data`` (never a
+    file from the current working directory)."""
+    from .api_behaviour import MODEL_FILE, ApiBehaviourModel
+    env = os.environ.get("SPECIMEN_MODELS")
+    for p in ([Path(env)] if env else []) + [PACKAGED_MODELS]:
+        if (p / MODEL_FILE).exists():
+            m = ApiBehaviourModel.load(p)
+            m.meta = {**m.meta, "model_file": model_file_info(p / MODEL_FILE)}
+            return m
+    return None
 
 
 def behaviour_score(trace: Trace) -> Any:

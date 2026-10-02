@@ -58,9 +58,9 @@ def test_roundtrip_and_short_traces(tmp_path):
     assert s is not None and s.scorer.startswith("api-ngram-lr") and s.contributions
 
 
-@pytest.mark.skipif(not (ROOT / "models" / "api_behaviour.json").exists(), reason="model not trained")
+@pytest.mark.skipif(not (ROOT / "specimen" / "data" / "api_behaviour.json").exists(), reason="model not trained")
 def test_shipped_model_separates_injection_from_idle():
-    m = ApiBehaviourModel.load(ROOT / "models")
+    m = ApiBehaviourModel.load(ROOT / "specimen" / "data")
     assert m.meta.get("trained_on") == "MalbehavD-V1"
     assert len(m.idf) > 100
     p = m.proba(["NtOpenProcess", "NtAllocateVirtualMemory", "WriteProcessMemory", "CreateRemoteThread"] * 10)
