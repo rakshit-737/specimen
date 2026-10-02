@@ -142,6 +142,9 @@ def run(sample_path: str | Path, trace_path: str | Path | None = None,
     return build_report(sample, static, trace, graph, timeline, behavior, det)
 
 
+DEFAULT_ABSTAIN = 0.5  # used when the model file predates the open-set calibration
+
+
 def _attach_family(behavior: Any, trace: Trace, stoks: list[str]) -> None:
     fm = family_model()
     if behavior is None:
@@ -154,10 +157,12 @@ def _attach_family(behavior: Any, trace: Trace, stoks: list[str]) -> None:
     toks = behavior_tokens(trace) + (stoks if fm.uses_static else [])
     probs = fm.proba([toks])[0]
     i = int(probs.argmax())
-    behavior.family = fm.classes[i]
+    tau = float(fm.meta.get("abstain_below", DEFAULT_ABSTAIN))
     behavior.family_similarity = round(float(probs[i]), 3)
     behavior.family_model = f"avast-ctu-logreg ({fm.meta.get('variant', 'behaviour+static')})"
     behavior.family_evidence = fm.explain(toks, fm.classes[i], k=6)
+    # closed-set model: below the open-set threshold report "unknown" rather than force a family
+    behavior.family = fm.classes[i] if probs[i] >= tau else f"unknown (closest: {fm.classes[i]})"
 
 
 def run_report(report_path: str | Path, negatives: list[dict[str, str]] | None = None,
@@ -185,7 +190,9 @@ def run_report(report_path: str | Path, negatives: list[dict[str, str]] | None =
     stoks = static_tokens(pe)
     _attach_family(behavior, trace, stoks)
     benign = [blobs([[e.type, e.target or "", e.cmdline or ""] for e in t.events]) for t in _benign_traces()]
-    own = behavior.family if behavior is not None and getattr(behavior, "family_model", "").startswith("avast") else None
+    own = None
+    if behavior is not None and str(getattr(behavior, "family_model", "")).startswith("avast"):
+        own = str(behavior.family).removeprefix("unknown (closest: ").rstrip(")")
     real = negative_blob(own) if use_packaged_negatives else None
     negs = benign + ([real] if real else []) + list(negatives or [])
     events = [[e.type, e.target or "", e.cmdline or ""] for e in trace.events]

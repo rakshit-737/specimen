@@ -44,9 +44,17 @@ class FamilyModel:
         return "static" in self.meta.get("tokens", ["behaviour", "static"])
 
     @classmethod
-    def fit(cls, docs: Sequence[Sequence[str]], labels: Sequence[str], C: float = 10.0) -> FamilyModel:
+    def fit(cls, docs: Sequence[Sequence[str]], labels: Sequence[str], C: float = 10.0,
+            max_iter: int = 300) -> FamilyModel:
+        """Fit hashed-token multinomial logistic regression.
+
+        :param docs: token lists (behaviour and/or static tokens).
+        :param labels: family names.
+        :param C: inverse regularisation strength.
+        :param max_iter: lbfgs iterations.
+        """
         X = hash_tokens(docs)
-        lr = LogisticRegression(C=C, max_iter=300, solver="lbfgs")
+        lr = LogisticRegression(C=C, max_iter=max_iter, solver="lbfgs")
         lr.fit(X, list(labels))
         coef, icpt = lr.coef_, lr.intercept_
         if coef.shape[0] == 1:  # binary: softmax([0, z]) == sigmoid(z)

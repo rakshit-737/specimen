@@ -223,15 +223,26 @@ class SynthesisResult:
 
 
 def synthesize_sigma(events: Iterable[Sequence[str]], negatives: Sequence[dict[str, str]],
-                     max_rules: int = MAX_RULES, max_neg_hits: int = 0) -> SynthesisResult:
+                     max_rules: int = MAX_RULES, max_neg_hits: int = 0, max_rung: int | None = None) -> SynthesisResult:
     """Pick, per candidate action, the most general rung with <= ``max_neg_hits``
-    matches in ``negatives`` (per-category blobs of negative traces)."""
+    matches in ``negatives`` (per-category blobs of negative traces).
+
+    :param events: ``[type, target, cmdline]`` rows of one run.
+    :param negatives: per-category blobs (see :func:`blobs`); a merged blob of
+        many traces is equivalent when ``max_neg_hits == 0``.
+    :param max_rules: rule budget per run (most general rules first).
+    :param max_rung: if set, only rungs ``<= max_rung`` are considered
+        (``0`` = exact values only; used for the ablation).
+    :returns: chosen rules and counts of candidates / rejected candidates.
+    """
     res = SynthesisResult()
     chosen: dict[str, SigmaRule] = {}
     for lad in candidates(events):
         res.candidates += 1
         best = None
         for rule in lad:  # rungs are not strictly nested, so test each one
+            if max_rung is not None and rule.rung > max_rung:
+                continue
             if not _literal_ok(rule):
                 continue
             hits = 0

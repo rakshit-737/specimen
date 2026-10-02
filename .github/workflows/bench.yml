@@ -1,0 +1,98 @@
+name: bench
+# Full-data benchmarks run here, never on a laptop (shared-machine rule).
+# Results, figures and model files are uploaded as artefacts; only the small
+# result files are committed afterwards.
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: "rules | family | static-temporal | avast (rules+family) | all"
+        default: all
+        type: string
+      seeds:
+        description: "seeds for the rule benchmark / temporal EMBER"
+        default: "5"
+        type: string
+permissions:
+  contents: read
+env:
+  SPECIMEN_DATA: ${{ github.workspace }}/../specimen-data
+  PYTHONUNBUFFERED: "1"
+jobs:
+  avast:
+    if: contains(fromJSON('["rules","family","avast","all"]'), inputs.suite)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[ml]"
+      - name: Restore Avast-CTU data + token cache
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.SPECIMEN_DATA }}
+          # keyed on the pinned archive hash and the cache format
+          key: avast-1ea1706019547d0f-cache-v1
+      - name: Download (pinned SHA-256) and build the token cache
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          for i in 1 2 3; do python scripts/download_data.py --only avast --dest "$SPECIMEN_DATA" && break; sleep 60; done
+          python scripts/download_data.py --dest "$SPECIMEN_DATA" --verify
+          python -c "from specimen.ml.avast import build_cache; build_cache(workers=4)"
+          rm -f "$SPECIMEN_DATA/avast_cape/"*.zip
+      - name: Rule benchmark
+        if: contains(fromJSON('["rules","avast","all"]'), inputs.suite)
+        run: python benchmarks/bench_rules.py --seeds "${{ inputs.seeds }}"
+      - name: Family benchmark
+        if: contains(fromJSON('["family","avast","all"]'), inputs.suite)
+        run: python benchmarks/bench_family.py
+      - name: Sanity-check result ranges
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          for f in pathlib.Path("results").glob("*_avast.json"):
+              d = json.loads(f.read_text())
+              print(f.name, d.get("generated"))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bench-avast
+          path: |
+            results/
+            docs/figures/
+            models/family_*
+  static-temporal:
+    if: contains(fromJSON('["static-temporal","all"]'), inputs.suite)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: sudo apt-get update && sudo apt-get install -y lbzip2
+      - run: pip install -e ".[ml]"
+      - name: Download the official EMBER-2018 archive and check its pinned prefix
+        run: |
+          mkdir -p "$SPECIMEN_DATA/ember"
+          f="$SPECIMEN_DATA/ember/ember_dataset_2018_2.tar.bz2"
+          curl -fL --retry 5 --retry-delay 30 -o "$f" https://ember.elastic.co/ember_dataset_2018_2.tar.bz2
+          ls -l "$f"
+          # first 120 MiB must match the prefix hash pinned in scripts/download_data.py
+          test "$(head -c 125829120 "$f" | sha256sum | cut -d' ' -f1)" = c1637eaa021ee7d4a534e22c3208907ba0c40e2f3baa59b413fadfbd3d34bf65
+          sha256sum "$f" | tee ember_full.sha256
+      - run: python benchmarks/bench_static_temporal.py --seeds "${{ inputs.seeds }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bench-static-temporal
+          path: |
+            results/static_ember_temporal.json
+            docs/figures/static_temporal.png
+            ember_full.sha256

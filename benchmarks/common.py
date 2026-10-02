@@ -95,3 +95,28 @@ def mean_ci(vals: list[float]) -> str:
     from scipy import stats
     h = stats.t.ppf(0.975, len(a) - 1) * a.std(ddof=1) / np.sqrt(len(a))
     return f"{a.mean():.4f} +/- {h:.4f}"
+
+
+def mean_ci_nb(vals: list[float], n_train: int, n_test: int) -> str:
+    """mean +/- 95 % Nadeau-Bengio corrected resampled-t half-width.
+
+    Repeated splits/folds share training data, so the naive t-interval is too
+    narrow; the corrected variance is ``s^2 * (1/J + n_test/n_train)``."""
+    a = np.asarray(vals, dtype=float)
+    if len(a) < 2:
+        return f"{a.mean():.4f}"
+    from scipy import stats
+    var = a.var(ddof=1) * (1 / len(a) + n_test / n_train)
+    h = stats.t.ppf(0.975, len(a) - 1) * np.sqrt(var)
+    return f"{a.mean():.4f} +/- {h:.4f}"
+
+
+def wilson(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
+    """Wilson score 95 % interval for a binomial proportion."""
+    if n == 0:
+        return float("nan"), float("nan")
+    p = k / n
+    d = 1 + z * z / n
+    c = (p + z * z / (2 * n)) / d
+    h = z * np.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / d
+    return round(float(max(0.0, c - h)), 6), round(float(min(1.0, c + h)), 6)

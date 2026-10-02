@@ -14,17 +14,31 @@ split as in the dataset paper, plus 5-fold CV):
 
 Published: MalDetConv (CNN-BiGRU) 96.10 % accuracy, MalDy (TF-IDF+XGBoost)
 95.59 % on the same dataset with a 70/30 split (Maniriho et al. 2022).
+
+Protocols reported side by side:
+
+* ``paper``     - random stratified 70/30 on all 2,570 rows (the paper's
+                  protocol; 42-45 % of test rows have an exact duplicate
+                  sequence in train);
+* ``dedup``     - one row per distinct API sequence (1,601 rows) before a
+                  stratified 70/30 split, so no test sequence is seen in train;
+* ``pipeline``  - the shipped routing: traces shorter than
+                  ``api_behaviour.MIN_CALLS`` go to the MVP scorer.
+
+Intervals over repeated splits/folds use the Nadeau-Bengio correction.
 """
 from __future__ import annotations
 
+import hashlib
+
 import numpy as np
-from common import ROOT, binary_metrics, bootstrap_ci, md_table, mean_ci, write_result
+from common import ROOT, binary_metrics, bootstrap_ci, md_table, mean_ci_nb, write_result
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold, train_test_split
 
 from specimen.adapters.api_seq import api_sequence_to_trace
-from specimen.api_behaviour import ApiBehaviourModel, ngrams
+from specimen.api_behaviour import MIN_CALLS, ApiBehaviourModel, ngrams
 from specimen.datasets import iter_malbehavd
 from specimen.scoring import featurize, score
 
@@ -77,7 +91,9 @@ def main() -> int:
             accs.append(m["accuracy"])
             aucs.append(m["roc_auc"])
             f1s.append(m["f1"])
-        seeds.append({"model": n, "accuracy": mean_ci(accs), "roc_auc": mean_ci(aucs), "f1": mean_ci(f1s)})
+        nt = int(round(0.3 * len(y)))
+        seeds.append({"model": n, "accuracy": mean_ci_nb(accs, len(y) - nt, nt), "roc_auc": mean_ci_nb(aucs, len(y) - nt, nt),
+                      "f1": mean_ci_nb(f1s, len(y) - nt, nt), "accuracy_sd": round(float(np.std(accs, ddof=1)), 4)})
         print(seeds[-1])
         accs, aucs = [], []
         for sd in SEEDS:
@@ -85,8 +101,56 @@ def main() -> int:
                 m = binary_metrics(y[fte], fit_predict(n, ftr, fte, docs, F, y, mvp))
                 accs.append(m["accuracy"])
                 aucs.append(m["roc_auc"])
-        cv.append({"model": n, "cv_accuracy": mean_ci(accs), "cv_roc_auc": mean_ci(aucs)})
+        cv.append({"model": n, "cv_accuracy": mean_ci_nb(accs, len(y) * 4 // 5, len(y) // 5),
+                   "cv_roc_auc": mean_ci_nb(aucs, len(y) * 4 // 5, len(y) // 5)})
         print(cv[-1])
+    # duplicate-aware protocols
+    key = [hashlib.sha256("".join(a).encode()).hexdigest() for _, _, a in rows]
+    first: dict[str, int] = {}
+    for i, k in enumerate(key):
+        first.setdefault(k, i)
+    uniq = np.asarray(sorted(first.values()))
+    dup_stats = {"rows": int(len(y)), "distinct_sequences": int(len(uniq)),
+                 "rows_in_duplicate_groups": int(sum(key.count(k) > 1 for k in key)),
+                 "distinct_malicious": int(y[uniq].sum())}
+    seen_in_train, seen_acc, unseen_acc = [], [], []
+    dedup, pipe = [], []
+    for sd in SEEDS:
+        str_, ste = train_test_split(idx, test_size=0.3, stratify=y, random_state=sd)
+        trk = {key[i] for i in str_}
+        seen = np.asarray([key[i] in trk for i in ste])
+        s_lr = fit_predict("api-ngram-lr", str_, ste, docs, F, y, mvp)
+        pred = (s_lr >= 0.5) == (y[ste] == 1)
+        seen_in_train.append(float(seen.mean()))
+        seen_acc.append(float(pred[seen].mean()))
+        unseen_acc.append(float(pred[~seen].mean()))
+        # shipped routing: short traces -> MVP scorer
+        short = np.asarray([len(rows[i][2]) < MIN_CALLS for i in ste])
+        routed = np.where(short, mvp[ste], s_lr)
+        pipe.append(binary_metrics(y[ste], routed))
+    for n in ("api-ngram-lr", "api-ngram-lgbm", "attack-features"):
+        accs, aucs = [], []
+        for sd in SEEDS:
+            dtr, dte = train_test_split(uniq, test_size=0.3, stratify=y[uniq], random_state=sd)
+            m = binary_metrics(y[dte], fit_predict(n, dtr, dte, docs, F, y, mvp))
+            accs.append(m["accuracy"])
+            aucs.append(m["roc_auc"])
+        nt = int(round(0.3 * len(uniq)))
+        dedup.append({"model": n, "accuracy": mean_ci_nb(accs, len(uniq) - nt, nt),
+                      "roc_auc": mean_ci_nb(aucs, len(uniq) - nt, nt)})
+        print("dedup", dedup[-1])
+    nt = int(round(0.3 * len(y)))
+    leakage = {**dup_stats,
+               "test_rows_with_exact_duplicate_in_train": mean_ci_nb(seen_in_train, len(y) - nt, nt),
+               "lr_accuracy_on_seen_rows": mean_ci_nb(seen_acc, len(y) - nt, nt),
+               "lr_accuracy_on_unseen_rows": mean_ci_nb(unseen_acc, len(y) - nt, nt)}
+    pipeline_path = {"min_calls": MIN_CALLS,
+                     "short_trace_share": round(float(np.mean([len(a) < MIN_CALLS for _, _, a in rows])), 4),
+                     "accuracy": mean_ci_nb([p["accuracy"] for p in pipe], len(y) - nt, nt),
+                     "recall_at_0.5": mean_ci_nb([p["recall"] for p in pipe], len(y) - nt, nt),
+                     "roc_auc": mean_ci_nb([p["roc_auc"] for p in pipe], len(y) - nt, nt)}
+    print("leakage", leakage)
+    print("pipeline", pipeline_path)
     # ship the pipeline scorer: TF-IDF + LR on all rows, exported as pure-Python JSON
     vec = TfidfVectorizer(analyzer=lambda d: d, min_df=2, sublinear_tf=True)
     X = vec.fit_transform(docs)
@@ -96,18 +160,24 @@ def main() -> int:
                               float(lr.intercept_[0]), {"trained_on": "MalbehavD-V1", "n_train": int(len(y)),
                                                         "features": "API uni+bigram sublinear TF-IDF", "C": 10})
     model.save(ROOT / "specimen" / "data")
-    ref = lr.predict_proba(X[:200])[:, 1]
-    mine = np.asarray([model.proba(rows[i][2]) for i in range(200)])
-    print(f"pure-Python export max |diff| vs sklearn: {np.abs(ref - mine).max():.2e}")
+    shipped = ApiBehaviourModel.load(ROOT / "specimen" / "data")  # parity of the *saved* (rounded) model
+    ref = lr.predict_proba(X)[:, 1]
+    mine = np.asarray([shipped.proba(r[2]) for r in rows])
+    parity = float(np.abs(ref - mine).max())
+    print(f"shipped JSON max |diff| vs sklearn over all rows: {parity:.2e}")
     published = [{"model": "MalDetConv CNN-BiGRU (Maniriho et al. 2022)", "accuracy": 0.961, "f1": 0.9602},
                  {"model": "MalDy TF-IDF + XGBoost (as reported there)", "accuracy": 0.9559, "f1": "-"}]
     write_result("behaviour_malbehavd", {
         "dataset": {"name": "MalbehavD-V1", "samples": int(len(y)), "malicious": int(y.sum()),
                     "split": "70/30 stratified (seed 0, bootstrap 95% CI) + 5 seeds x 70/30 + 5 seeds x 5-fold CV"},
         "holdout": holdout, "seeds_70_30": seeds, "cv": cv, "published": published,
+        "dedup_70_30": dedup, "duplicate_leakage": leakage, "pipeline_path": pipeline_path,
+        "shipped_model_max_abs_diff_vs_sklearn": float(f"{parity:.2e}"),
+        "ci_method": "Nadeau-Bengio corrected resampled t (repeated splits/folds); percentile bootstrap (seed-0 holdout)",
         "markdown": md_table(holdout + published, ["model", "roc_auc", "roc_auc_95ci", "accuracy", "accuracy_95ci", "f1"])
         + "\n\n" + md_table(seeds, ["model", "accuracy", "roc_auc", "f1"])
-        + "\n\n" + md_table(cv, ["model", "cv_accuracy", "cv_roc_auc"]),
+        + "\n\n" + md_table(cv, ["model", "cv_accuracy", "cv_roc_auc"])
+        + 2 * chr(10) + md_table(dedup, ["model", "accuracy", "roc_auc"]),
     })
     return 0
 
