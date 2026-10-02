@@ -9,15 +9,26 @@
 ## Static triage
 score 0.53 / entropy 7.86
 
-- `high_section_entropy` impact +1.32
-- `pe_executable` impact +0.80
+- high&#95;section&#95;entropy impact +1.32
+- pe&#95;executable impact +0.80
 
 ## Behavior
-P(malicious)=0.5685 label=suspicious scorer=mvp-synthetic-logreg (ATT&CK features) | family match **Emotet** (jaccard 0.999)
-- `n_drop`=0.6931 impact +1.74
-- `frac_suspicious`=0.0702 impact +0.11
-- `n_file_write`=0.6931 impact -0.02
-- `n_delete`=1.6094 impact +0.00
+P(malicious)=0.5685 label=suspicious scorer=mvp-synthetic-logreg (ATT&CK features) | family match **Emotet** (p=0.999, avast-ctu-logreg (behaviour-only))
+
+- n&#95;drop = 0.6931, impact +1.74
+- frac&#95;suspicious = 0.0702, impact +0.11
+- n&#95;file&#95;write = 0.6931, impact -0.02
+- n&#95;delete = 1.6094, impact +0.00
+
+### Family evidence
+Top tokens supporting **Emotet** (avast-ctu-logreg (behaviour-only)):
+
+- mutex&#95;create:global\i#&lt;hex&gt; (+0.622)
+- mutex&#95;create:global\m#&lt;hex&gt; (+0.622)
+- exec:&lt;hex&gt;.exe (+0.515)
+- file&#95;delete&#95;ext:exe (+0.476)
+- file&#95;delete:%temp%\&lt;hex&gt;.exe (+0.369)
+- tactic:defense-evasion (+0.321)
 
 ## Timeline
 | t | event | ATT&CK | anomaly |
@@ -26,7 +37,7 @@ P(malicious)=0.5685 label=suspicious scorer=mvp-synthetic-logreg (ATT&CK feature
 | 0.00 | sample.exe created PEM938 |   | 1.0 |
 | 0.00 | sample.exe created Global\I5C3A8244 |   | 1.0 |
 | 0.00 | sample.exe created Global\M5C3A8244 |   | 1.0 |
-| 0.01 | sample.exe spawned DF4FD49DC53618D7F3A1.exe `"C:\Users\comp\AppData\Local\Temp\DF4FD49DC53618D7F3A1.exe"` |   | 1.0 |
+| 0.01 | sample.exe spawned DF4FD49DC53618D7F3A1.exe &#96;"C:\Users\comp\AppData\Local\Temp\DF4FD49DC53618D7F3A1.exe"&#96; |   | 1.0 |
 | 0.01 | sample.exe read C:\Windows\Globalization\Sorting\sortdefault.nls |   | 0.0 |
 | 0.01 | sample.exe read C:\Users\comp\AppData\Local\Temp\DF4FD49DC53618D7F3A1.exe |   | 0.0 |
 | 0.01 | sample.exe read \Device\KsecDD |   | 0.0 |
@@ -49,24 +60,24 @@ P(malicious)=0.5685 label=suspicious scorer=mvp-synthetic-logreg (ATT&CK feature
 | 0.03 | sample.exe deleted C:\Users\comp\AppData\Local\Microsoft\Windows\iproppass.exe | T1070.004 defense-evasion | 1.0 |
 | 0.03 | sample.exe deleted C:\Users\comp\AppData\Local\Microsoft\Windows\spcmachine.exe | T1070.004 defense-evasion | 1.0 |
 | 0.03 | sample.exe deleted C:\Users\comp\AppData\Local\Temp\DF4FD49DC53618D7F3A1.exe | T1070.004 defense-evasion | 1.0 |
-| 0.03 | sample.exe read HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\FileSystem\Win31FileSystem |   | 1.0 |
+| 0.03 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\FileSystem\Win31FileSystem |   | 1.0 |
 | 0.03 | sample.exe read DisableUserModeCallbackFilter |   | 1.0 |
-| 0.03 | sample.exe read HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Nls\CustomLocale\en-US |   | 1.0 |
-| 0.03 | sample.exe read HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Nls\ExtendedLocale\en-US |   | 1.0 |
-| 0.03 | sample.exe read HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Nls\Sorting\Versions\00060101.00060101 |   | 1.0 |
-| 0.03 | sample.exe read HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\GRE_Initialize\DisableMetaFiles |   | 1.0 |
-| 0.03 | sample.exe read HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\NoFileFolderConnection |   | 1.0 |
-| 0.04 | sample.exe read HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoPropertiesMyComputer |   | 1.0 |
-| 0.04 | sample.exe read HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoPropertiesRecycleBin |   | 1.0 |
-| 0.04 | sample.exe read HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoControlPanel |   | 1.0 |
-| 0.04 | sample.exe read HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoSetFolders |   | 1.0 |
-| 0.04 | sample.exe read HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoInternetIcon |   | 1.0 |
-| 0.04 | sample.exe read HKEY_CURRENT_USER |   | 1.0 |
-| 0.04 | sample.exe read HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem |   | 1.0 |
-| 0.04 | sample.exe read HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Nls\CustomLocale |   | 1.0 |
-| 0.04 | sample.exe read HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Nls\ExtendedLocale |   | 1.0 |
-| 0.04 | sample.exe read HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\GRE_Initialize |   | 1.0 |
-| 0.04 | sample.exe read HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\SideBySide |   | 1.0 |
+| 0.03 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\Nls\CustomLocale\en-US |   | 1.0 |
+| 0.03 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\Nls\ExtendedLocale\en-US |   | 1.0 |
+| 0.03 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\Nls\Sorting\Versions\00060101.00060101 |   | 1.0 |
+| 0.03 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\GRE&#95;Initialize\DisableMetaFiles |   | 1.0 |
+| 0.03 | sample.exe read HKEY&#95;CURRENT&#95;USER\Software\Microsoft\Windows\CurrentVersion\Explorer\NoFileFolderConnection |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoPropertiesMyComputer |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoPropertiesRecycleBin |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoControlPanel |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoSetFolders |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoInternetIcon |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;CURRENT&#95;USER |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\System\CurrentControlSet\Control\Nls\CustomLocale |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\System\CurrentControlSet\Control\Nls\ExtendedLocale |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\Software\Microsoft\Windows NT\CurrentVersion\GRE&#95;Initialize |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\Software\Microsoft\Windows\CurrentVersion\SideBySide |   | 1.0 |
 
 ## Provenance graph
 ```mermaid
@@ -82,8 +93,8 @@ flowchart LR
   n8["file: \Device\KsecDD"]
   n9["file: C:\Windows\SysWOW64\shell32.dll"]
   n10["file: C:\"]
-  n11["file: C:\Users\comp\AppData\Local\Microsoft\Windows\Caches\cversio"]
-  n12["file: C:\Users\comp\AppData\Local\Microsoft\Windows\Caches\{AFBF9F"]
+  n11["file: C:\Users\comp\AppData\Local\M~\Windows\Caches\cversions.1.db"]
+  n12["file: C:\Users\comp\AppData\Local\M~D9).1.ver0x0000000000000003.db"]
   n13["file: C:\Users\desktop.ini"]
   n14["file: C:\Users"]
   n15["file: C:\Users\comp"]
@@ -98,24 +109,24 @@ flowchart LR
   n24["file: C:\Users\comp\AppData\Local\spcmachine\spcmachine.exe"]
   n25["file: C:\Users\comp\AppData\Local\Microsoft\Windows\iproppass.exe"]
   n26["file: C:\Users\comp\AppData\Local\Microsoft\Windows\spcmachine.exe"]
-  n27["registry: HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\FileSystem\W"]
+  n27["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~rol\FileSystem\Win31FileSystem"]
   n28["registry: DisableUserModeCallbackFilter"]
-  n29["registry: HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Nls\CustomLo"]
-  n30["registry: HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Nls\Extended"]
-  n31["registry: HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Nls\Sorting\"]
-  n32["registry: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVers"]
-  n33["registry: HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\"]
-  n34["registry: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion"]
-  n35["registry: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion"]
-  n36["registry: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion"]
-  n37["registry: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion"]
-  n38["registry: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion"]
+  n29["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~Control\Nls\CustomLocale\en-US"]
+  n30["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~ntrol\Nls\ExtendedLocale\en-US"]
+  n31["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~ing\Versions\00060101.00060101"]
+  n32["registry: HKEY_LOCAL_MACHINE\SOFTWARE\M~RE_Initialize\DisableMetaFiles"]
+  n33["registry: HKEY_CURRENT_USER\Software\Mi~xplorer\NoFileFolderConnection"]
+  n34["registry: HKEY_LOCAL_MACHINE\SOFTWARE\M~xplorer\NoPropertiesMyComputer"]
+  n35["registry: HKEY_LOCAL_MACHINE\SOFTWARE\M~xplorer\NoPropertiesRecycleBin"]
+  n36["registry: HKEY_LOCAL_MACHINE\SOFTWARE\M~licies\Explorer\NoControlPanel"]
+  n37["registry: HKEY_LOCAL_MACHINE\SOFTWARE\M~Policies\Explorer\NoSetFolders"]
+  n38["registry: HKEY_LOCAL_MACHINE\SOFTWARE\M~licies\Explorer\NoInternetIcon"]
   n39["registry: HKEY_CURRENT_USER"]
-  n40["registry: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSyst"]
-  n41["registry: HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Nls\Cust"]
-  n42["registry: HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Nls\Exte"]
-  n43["registry: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVers"]
-  n44["registry: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion"]
+  n40["registry: HKEY_LOCAL_MACHINE\SYSTEM\Cur~tControlSet\Control\FileSystem"]
+  n41["registry: HKEY_LOCAL_MACHINE\System\Cur~olSet\Control\Nls\CustomLocale"]
+  n42["registry: HKEY_LOCAL_MACHINE\System\Cur~Set\Control\Nls\ExtendedLocale"]
+  n43["registry: HKEY_LOCAL_MACHINE\Software\M~\CurrentVersion\GRE_Initialize"]
+  n44["registry: HKEY_LOCAL_MACHINE\Software\M~dows\CurrentVersion\SideBySide"]
   n0 -->|"created"| n1
   n0 -->|"created"| n2
   n0 -->|"created"| n3
@@ -163,42 +174,42 @@ flowchart LR
   n0 -->|"read"| n44
 ```
 
-## IOCs
+## IOCs (defanged)
 - **dropped_files**: C:\Users\comp\AppData\Local\iproppass\iproppass.exe
 
 ## YARA
 ```yara
 import "pe"
 
-rule SPECIMEN_70bc0ccbf006
+rule SPECIMEN_febb79941f66
 {
     meta:
         author = "SPECIMEN (auto)"
-        sample_sha256 = "70bc0ccbf0064ea50ee57f3848d3e741ab8ef89926812d7c8107e9061acacbc6"
+        sample_sha256 = "febb79941f669497555e27d0547f2bdaf46bae8f2be10720fab2b851610eea60"
         confidence = "auto-generated; review before deploy"
     condition:
         uint16(0) == 0x5A4D and (
         pe.imphash() == "4dea8baa82ea91fb7bfd7710f9db1c8b"
         or (
-            pe.imports("advapi32.dll", "EnumServicesStatusW") +
             pe.imports("advapi32.dll", "EqualPrefixSid") +
             pe.imports("advapi32.dll", "GetWindowsAccountDomainSid") +
-            pe.imports("advapi32.dll", "LookupPrivilegeNameW") +
             pe.imports("advapi32.dll", "SetSecurityAccessMask") +
-            pe.imports("gdi32.dll", "GdiSetBatchLimit") +
-            pe.imports("gdi32.dll", "GetBrushOrgEx") +
-            pe.imports("gdi32.dll", "GetCharWidth32A")
+            pe.imports("gdi32.dll", "GetCharWidth32A") +
+            pe.imports("ntdll.dll", "strspn") +
+            pe.imports("user32.dll", "EnumWindowStationsA") +
+            pe.imports("gdi32.dll", "GetCharWidthA") +
+            pe.imports("gdi32.dll", "GdiSetBatchLimit")
         ) >= 6
         )
 }
 
 ```
 
-## Sigma
+## Sigma 1 - file_event
 ```yaml
-title: SPECIMEN auto - file_event pattern
+title: 'SPECIMEN auto - file_event pattern'
 status: experimental
-description: Auto-synthesized from one sandbox run of 70bc0ccbf0064ea5; generalisation rung 2; zero hits on the negative corpus at synthesis time. Review before deploy.
+description: Auto-synthesized from one sandbox run of febb79941f669497; generalisation rung 2; zero hits on the negative corpus at synthesis time. Review before deploy.
 author: SPECIMEN
 tags:
     - attack.t1105
@@ -207,41 +218,46 @@ logsource:
     category: file_event
 detection:
     selection:
-        TargetFilename: 'C:\Users\*\AppData\Local\*\iproppass.exe'
+        TargetFilename: 'C:\\Users\\*\\AppData\\Local\\*\\iproppass.exe'
     condition: selection
 level: medium
 
 ```
 
-## Sigma
+## Sigma 2 - process_creation
 ```yaml
-title: SPECIMEN auto - process_creation pattern
+title: 'SPECIMEN auto - process_creation pattern'
 status: experimental
-description: Auto-synthesized from one sandbox run of 70bc0ccbf0064ea5; generalisation rung 0; zero hits on the negative corpus at synthesis time. Review before deploy.
+description: Auto-synthesized from one sandbox run of febb79941f669497; generalisation rung 0; zero hits on the negative corpus at synthesis time. Review before deploy.
 author: SPECIMEN
 logsource:
     product: windows
     category: process_creation
 detection:
     selection:
-        Image: 'C:\Users\*\AppData\Local\Temp\DF4FD49DC53618D7F3A1.exe'
+        Image: 'C:\\Users\\*\\AppData\\Local\\Temp\\DF4FD49DC53618D7F3A1.exe'
     condition: selection
 level: medium
 
 ```
 
-Specificity: YARA FP []; dropped Sigma ['rejected_nonspecific:0']
+Specificity: 0 Sigma candidate(s) dropped because no generalisation rung was specific enough.
 
 ## Evidence manifest
 ```json
 {
-  "sample_sha256": "70bc0ccbf0064ea50ee57f3848d3e741ab8ef89926812d7c8107e9061acacbc6",
-  "trace_sha256": "70bc0ccbf0064ea50ee57f3848d3e741ab8ef89926812d7c8107e9061acacbc6",
+  "sample_sha256": null,
+  "trace_sha256": "febb79941f669497555e27d0547f2bdaf46bae8f2be10720fab2b851610eea60",
   "trace_run_id": "avast_emotet_1",
   "python": "3.14.3",
   "specimen_version": "1.0.0",
   "execution": "report-only (sandbox report replay; no sample bytes handled)",
-  "report_content_sha256": "f10087462bb5bb2a64f6cb828822ec72a608d55d01b359f80b63ec4c0bdaba53",
-  "report_sha256": "70bc0ccbf0064ea50ee57f3848d3e741ab8ef89926812d7c8107e9061acacbc6"
+  "report_content_sha256": "12a30e325c854bb1ce23d991e36f97973f27cf6985726f5c097814b1321aa0db",
+  "report_sha256": "febb79941f669497555e27d0547f2bdaf46bae8f2be10720fab2b851610eea60",
+  "sample_sha256_note": "not present in the (reduced) report; rule names use the report hash",
+  "negative_corpus": {
+    "packaged": true,
+    "excluded_family": "Emotet"
+  }
 }
 ```

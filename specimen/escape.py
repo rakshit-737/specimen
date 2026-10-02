@@ -65,7 +65,8 @@ def hex_or(s: str, n: int, fallback: str = "") -> str:
     return s if (_HEX32 if n == 32 else _HEX64).match(s) else fallback
 
 
-_TLD_DOT = re.compile(r"(?<=[A-Za-z0-9-])\.(?=(?:[A-Za-z]{2,24}|\d{1,3})(?:[/:\s'\"`)\],;]|$))")
+_TLD_DOT = re.compile(r"(?<=[A-Za-z0-9-])\.(?=(?:[A-Za-z]{2,24})(?:[/:\s'\"`)\],;]|$))")
+_IPV4 = re.compile(r"(?<![\w.])(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?![\w.])")
 _SAFE_EXT = {"exe", "dll", "sys", "bat", "cmd", "com", "scr", "ps1", "vbs", "js", "tmp", "dat", "txt", "log",
              "ini", "lnk", "db", "xml", "json", "bin", "jpg", "png", "zip", "msi", "inf", "cpl", "ocx", "drv",
              "php", "html", "htm", "asp", "aspx", "jsp", "cgi", "url", "vbe", "wsf", "hta", "mui", "nls", "manifest"}
@@ -81,6 +82,7 @@ def defang(s: str) -> str:
     def dot(m: re.Match[str]) -> str:
         tail = re.match(r"[A-Za-z]+", s[m.end():])
         return "." if tail and tail.group().lower() in _SAFE_EXT else "[.]"
+    s = _IPV4.sub(lambda m: "[.]".join(m.groups()), s)
     return _TLD_DOT.sub(dot, s)
 
 

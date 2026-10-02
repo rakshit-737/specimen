@@ -9,26 +9,27 @@
 ## Static triage
 score 0.525 / entropy 3.1224
 
-- `token:powershell -enc` impact +1.00
-- `pe_executable` impact +0.80
-- `embedded_urls` impact +0.30
+- token:powershell -enc impact +1.00
+- pe&#95;executable impact +0.80
+- embedded&#95;urls impact +0.30
 
 ## Behavior
 P(malicious)=0.98 label=malicious scorer=mvp-synthetic-logreg (ATT&CK features) | family match **sim-persist-loader** (jaccard 0.714)
-- `n_drop`=0.6931 impact +1.74
-- `n_inject`=0.6931 impact +1.34
-- `n_persist`=0.6931 impact +1.18
-- `frac_suspicious`=0.5 impact +0.80
-- `n_exec_script`=0.6931 impact +0.51
-- `n_c2`=1.0986 impact -0.10
+
+- n&#95;drop = 0.6931, impact +1.74
+- n&#95;inject = 0.6931, impact +1.34
+- n&#95;persist = 0.6931, impact +1.18
+- frac&#95;suspicious = 0.5, impact +0.80
+- n&#95;exec&#95;script = 0.6931, impact +0.51
+- n&#95;c2 = 1.0986, impact -0.10
 
 ## Timeline
 | t | event | ATT&CK | anomaly |
 |---|---|---|---|
-| 0.00 | C:\Windows\explorer.exe spawned C:\Users\lab\Desktop\sample.exe `"C:\Users\lab\Desktop\sample.exe"` |   | 1.0 |
-| 1.15 | C:\Users\lab\Desktop\sample.exe spawned C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe `powershell.exe -nop -w hidden -enc SQBFAFgA` | T1059.001 execution | 1.0 |
-| 1.90 | C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe resolved update.example.invalid | T1071.004 command-and-control | 0.451 |
-| 2.30 | C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe connected 203.0.113.10:443 | T1071 command-and-control | 0.58 |
+| 0.00 | C:\Windows\explorer.exe spawned C:\Users\lab\Desktop\sample.exe &#96;"C:\Users\lab\Desktop\sample.exe"&#96; |   | 1.0 |
+| 1.15 | C:\Users\lab\Desktop\sample.exe spawned C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe &#96;powershell.exe -nop -w hidden -enc SQBFAFgA&#96; | T1059.001 execution | 1.0 |
+| 1.90 | C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe resolved update.example[.]invalid | T1071.004 command-and-control | 0.451 |
+| 2.30 | C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe connected 203[.]0[.]113[.]10:443 | T1071 command-and-control | 0.58 |
 | 2.90 | C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe wrote C:\Users\lab\AppData\Roaming\svcupd.exe | T1105 command-and-control | 0.537 |
 | 3.50 | C:\Users\lab\Desktop\sample.exe set HKU\S-1-5-21-1\Software\Microsoft\Windows\CurrentVersion\Run\svcupd | T1547.001 persistence | 1.0 |
 | 3.90 | C:\Users\lab\Desktop\sample.exe injected into pid 900 | T1055 defense-evasion | 1.0 |
@@ -39,11 +40,11 @@ P(malicious)=0.98 label=malicious scorer=mvp-synthetic-logreg (ATT&CK features) 
 flowchart LR
   n0["process: C:\Windows\explorer.exe (3100)"]
   n1["process: C:\Users\lab\Desktop\sample.exe (4200)"]
-  n2["process: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe (4"]
-  n3["domain: update.example.invalid"]
-  n4["network: 203.0.113.10:443"]
+  n2["process: C:\Windows\System32\WindowsPo~ell\v1.0\powershell.exe (4300)"]
+  n3["domain: update.example[.]invalid"]
+  n4["network: 203[.]0[.]113[.]10:443"]
   n5["file: C:\Users\lab\AppData\Roaming\svcupd.exe"]
-  n6["registry: HKU\S-1-5-21-1\Software\Microsoft\Windows\CurrentVersion\Run"]
+  n6["registry: HKU\S-1-5-21-1\Software\Micro~dows\CurrentVersion\Run\svcupd"]
   n7["process: pid 900 (-1)"]
   n8["file: C:\Users\lab\Desktop\sample.exe"]
   n0 -->|"spawned"| n1
@@ -56,11 +57,11 @@ flowchart LR
   n1 -->|"deleted"| n8
 ```
 
-## IOCs
-- **urls**: http://203.0.113.10/a
-- **ips**: 203.0.113.10
-- **network**: 203.0.113.10:443
-- **domains**: update.example.invalid
+## IOCs (defanged)
+- **urls**: hxxp://203[.]0[.]113[.]10/a
+- **ips**: 203[.]0[.]113[.]10
+- **network**: 203[.]0[.]113[.]10:443
+- **domains**: update.example[.]invalid
 - **dropped_files**: C:\Users\lab\AppData\Roaming\svcupd.exe
 - **registry**: HKU\S-1-5-21-1\Software\Microsoft\Windows\CurrentVersion\Run\svcupd
 
@@ -80,9 +81,9 @@ rule SPECIMEN_61fcc54b4c13
 
 ```
 
-## Sigma
+## Sigma 1 - process_creation
 ```yaml
-title: SPECIMEN auto - T1059.001 via C:\Users\lab\Desktop\sample.exe
+title: 'SPECIMEN auto - T1059.001 via C:\Users\lab\Desktop\sample.exe'
 status: experimental
 description: Auto-synthesized from run of 61fcc54b4c1356ac; review before deploy
 tags:
@@ -92,16 +93,16 @@ logsource:
     category: process_creation
 detection:
     selection:
-        Image|endswith: '\C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe'
+        Image|endswith: '\\C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe'
         CommandLine|contains: '-nop'
     condition: selection
 level: medium
 
 ```
 
-## Sigma
+## Sigma 2 - registry_set
 ```yaml
-title: SPECIMEN auto - T1547.001 via C:\Users\lab\Desktop\sample.exe
+title: 'SPECIMEN auto - T1547.001 via C:\Users\lab\Desktop\sample.exe'
 status: experimental
 description: Auto-synthesized from run of 61fcc54b4c1356ac; review before deploy
 tags:
@@ -111,15 +112,15 @@ logsource:
     category: registry_set
 detection:
     selection:
-        TargetObject|contains: '\CurrentVersion\Run\'
+        TargetObject|contains: '\\CurrentVersion\\Run\\'
     condition: selection
 level: medium
 
 ```
 
-## Sigma
+## Sigma 3 - create_remote_thread
 ```yaml
-title: SPECIMEN auto - T1055 via C:\Users\lab\Desktop\sample.exe
+title: 'SPECIMEN auto - T1055 via C:\Users\lab\Desktop\sample.exe'
 status: experimental
 description: Auto-synthesized from run of 61fcc54b4c1356ac; review before deploy
 tags:
@@ -129,7 +130,7 @@ logsource:
     category: create_remote_thread
 detection:
     selection:
-        TargetImage|endswith: '\pid 900'
+        TargetImage|endswith: '\\pid 900'
     condition: selection
 level: medium
 
@@ -144,6 +145,6 @@ level: medium
   "python": "3.14.3",
   "specimen_version": "1.0.0",
   "execution": "trace-replay (no live detonation)",
-  "report_content_sha256": "37a263c2371ad5519ca901a76b4817f7822ba82c34e307b519dd1b1d9c9e7419"
+  "report_content_sha256": "c74391d6fe2d800d1a8f1d2d72c9ea6ba558b383eb5250a91fb5d1ad22ac60c2"
 }
 ```

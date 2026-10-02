@@ -9,36 +9,47 @@
 ## Static triage
 score 0.2315 / entropy 6.78
 
-- `pe_executable` impact +0.80
+- pe&#95;executable impact +0.80
 
 ## Behavior
-P(malicious)=0.9133 label=malicious scorer=mvp-synthetic-logreg (ATT&CK features) | family match **njRAT** (jaccard 0.984)
-- `n_drop`=1.0986 impact +2.76
-- `n_persist`=0.6931 impact +1.18
-- `n_file_write`=1.6094 impact -0.04
-- `frac_suspicious`=0.0139 impact +0.02
+P(malicious)=0.9133 label=malicious scorer=mvp-synthetic-logreg (ATT&CK features) | family match **njRAT** (p=0.984, avast-ctu-logreg (behaviour-only))
+
+- n&#95;drop = 1.0986, impact +2.76
+- n&#95;persist = 0.6931, impact +1.18
+- n&#95;file&#95;write = 1.6094, impact -0.04
+- frac&#95;suspicious = 0.0139, impact +0.02
+
+### Family evidence
+Top tokens supporting **njRAT** (avast-ctu-logreg (behaviour-only)):
+
+- exec:regasm.exe (+0.413)
+- tech:T1547.001 (+0.277)
+- reg&#95;open&#95;parent:hklm\system\currentcontrolset\control\networkprovider (+0.270)
+- reg&#95;open:hklm\system\currentcontrolset\control\networkprovider\hworder (+0.269)
+- tactic:persistence (+0.243)
+- tactic:command-and-control (+0.239)
 
 ## Timeline
 | t | event | ATT&CK | anomaly |
 |---|---|---|---|
 | 0.00 | sample.exe created bitsperf |   | 1.0 |
-| 0.00 | sample.exe created Global\CLR_CASOFF_MUTEX |   | 1.0 |
+| 0.00 | sample.exe created Global\CLR&#95;CASOFF&#95;MUTEX |   | 1.0 |
 | 0.00 | sample.exe created 10e93180d6481ad63a77c2b255d40864 |   | 1.0 |
 | 0.00 | sample.exe created Global\.net clr networking |   | 1.0 |
-| 0.01 | sample.exe spawned RegAsm.exe `"C:\Windows\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe"` |   | 1.0 |
-| 0.01 | sample.exe spawned netsh `netsh firewall add allowedprogram "C:\Windows\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe" "RegAsm.exe" ENABLE` |   | 1.0 |
+| 0.01 | sample.exe spawned RegAsm.exe &#96;"C:\Windows\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe"&#96; |   | 1.0 |
+| 0.01 | sample.exe spawned netsh &#96;netsh firewall add allowedprogram "C:\Windows\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe" "RegAsm.exe" ENABLE&#96; |   | 1.0 |
 | 0.01 | sample.exe read C:\Windows\WindowsShell.Manifest |   | 0.0 |
 | 0.01 | sample.exe read \Device\KsecDD |   | 0.0 |
 | 0.01 | sample.exe read C:\Users\comp\AppData\Local\Temp\83DFFD621EFA44CF1A60.exe |   | 0.0 |
 | 0.01 | sample.exe read C:\Windows\Globalization\Sorting\sortdefault.nls |   | 0.0 |
-| 0.01 | sample.exe read C:\Windows\System32\UxTheme.dll.Config |   | 0.0 |
+| 0.01 | sample.exe read C:\Windows\System32\UxTheme.dll[.]Config |   | 0.0 |
 | 0.01 | sample.exe read C:\Windows\System32\uxtheme.dll |   | 0.0 |
 | 0.01 | sample.exe read C:\Users\comp\service\svchost.exe |   | 0.0 |
 | 0.01 | sample.exe read C:\Users\comp\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\Host Process for Windows Services.url |   | 0.0 |
 | 0.01 | sample.exe read C:\Users\comp\service\Host Process for Windows Services.vbs |   | 0.0 |
-| 0.02 | sample.exe read C:\Windows\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe.config |   | 0.0 |
+| 0.02 | sample.exe read C:\Windows\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe[.]config |   | 0.0 |
 | 0.02 | sample.exe read C:\Windows\Microsoft.NET\Framework\v2.0.50727\mscorwks.dll |   | 0.0 |
-| 0.02 | sample.exe read C:\Windows\winsxs\x86_microsoft.vc80.crt_1fc8b3b9a1e18e3b_8.0.50727.4940_none_d08cc06a442b34fc\msvcr80.dll |   | 0.0 |
+| 0.02 | sample.exe read C:\Windows\winsxs\x86&#95;microsoft.vc80.crt&#95;1fc8b3b9a1e18e3b&#95;8.0.50727.4940&#95;none&#95;d08cc06a442b34fc\msvcr80.dll |   | 0.0 |
 | 0.02 | sample.exe read C:\Users |   | 0.0 |
 | 0.02 | sample.exe read C:\Users\comp |   | 0.0 |
 | 0.02 | sample.exe read C:\Users\comp\AppData |   | 0.0 |
@@ -49,38 +60,38 @@ P(malicious)=0.9133 label=malicious scorer=mvp-synthetic-logreg (ATT&CK features
 | 0.03 | sample.exe wrote C:\Users\comp\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\Host Process for Windows Services.url | T1547.001 persistence | 0.537 |
 | 0.03 | sample.exe wrote C:\Users\comp\service\Host Process for Windows Services.vbs | T1105 command-and-control | 0.537 |
 | 0.03 | sample.exe wrote \Device\Http\Communication |   | 0.237 |
-| 0.03 | sample.exe set HKEY_CURRENT_USER\di |   | 1.0 |
-| 0.03 | sample.exe set HKEY_CURRENT_USER\Environment\SEE_MASK_NOZONECHECKS |   | 1.0 |
-| 0.03 | sample.exe set HKEY_CURRENT_USER\Software\10e93180d6481ad63a77c2b255d40864 |   | 1.0 |
-| 0.03 | sample.exe set HKEY_CURRENT_USER\Software\10e93180d6481ad63a77c2b255d40864\[kl] |   | 1.0 |
-| 0.03 | sample.exe set HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\LanguageList |   | 1.0 |
-| 0.03 | sample.exe set HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-100 |   | 1.0 |
-| 0.04 | sample.exe set HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-101 |   | 1.0 |
-| 0.04 | sample.exe set HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-103 |   | 1.0 |
-| 0.04 | sample.exe set HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-102 |   | 1.0 |
-| 0.04 | sample.exe set HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\napipsec.dll,-1 |   | 1.0 |
-| 0.04 | sample.exe set HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\napipsec.dll,-2 |   | 1.0 |
-| 0.04 | sample.exe set HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\napipsec.dll,-4 |   | 1.0 |
-| 0.04 | sample.exe read HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Internet Settings\DisableImprovedZoneCheck |   | 1.0 |
-| 0.04 | sample.exe read HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Security_HKLM_only |   | 1.0 |
+| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER\di |   | 1.0 |
+| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER\Environment\SEE&#95;MASK&#95;NOZONECHECKS |   | 1.0 |
+| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER\Software\10e93180d6481ad63a77c2b255d40864 |   | 1.0 |
+| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER\Software\10e93180d6481ad63a77c2b255d40864\[kl] |   | 1.0 |
+| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\LanguageList |   | 1.0 |
+| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-100 |   | 1.0 |
+| 0.04 | sample.exe set HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-101 |   | 1.0 |
+| 0.04 | sample.exe set HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-103 |   | 1.0 |
+| 0.04 | sample.exe set HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-102 |   | 1.0 |
+| 0.04 | sample.exe set HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\napipsec.dll,-1 |   | 1.0 |
+| 0.04 | sample.exe set HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\napipsec.dll,-2 |   | 1.0 |
+| 0.04 | sample.exe set HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\napipsec.dll,-4 |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Internet Settings\DisableImprovedZoneCheck |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Security&#95;HKLM&#95;only |   | 1.0 |
 | 0.04 | sample.exe read DisableUserModeCallbackFilter |   | 1.0 |
-| 0.04 | sample.exe read HKEY_CURRENT_USER\Control Panel\Mouse\SwapMouseButtons |   | 1.0 |
-| 0.04 | sample.exe read HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Nls\CustomLocale\en-US |   | 1.0 |
-| 0.05 | sample.exe read HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Nls\ExtendedLocale\en-US |   | 1.0 |
-| 0.05 | sample.exe read HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Nls\Sorting\Versions\00060101.00060101 |   | 1.0 |
-| 0.05 | sample.exe read HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Nls\Locale\00000409 |   | 1.0 |
-| 0.05 | sample.exe read HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Nls\Language Groups\1 |   | 1.0 |
-| 0.05 | sample.exe read HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Lsa\AccessProviders\MartaExtension |   | 1.0 |
-| 0.05 | sample.exe read HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\GRE_Initialize\DisableMetaFiles |   | 1.0 |
-| 0.05 | sample.exe read HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\InstallRoot |   | 1.0 |
-| 0.05 | sample.exe read HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\SideBySide |   | 1.0 |
-| 0.05 | sample.exe read HKEY_LOCAL_MACHINE\system\CurrentControlSet\control\NetworkProvider\HwOrder |   | 1.0 |
-| 0.06 | sample.exe read HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\OLEAUT |   | 1.0 |
-| 0.06 | sample.exe read HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Internet Settings |   | 1.0 |
-| 0.06 | sample.exe read HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings |   | 1.0 |
-| 0.06 | sample.exe read HKEY_CURRENT_USER\Control Panel\Mouse |   | 1.0 |
-| 0.06 | sample.exe read HKEY_CURRENT_USER\Software\AutoIt v3\AutoIt |   | 1.0 |
-| 0.06 | sample.exe read HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Nls\CustomLocale |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;CURRENT&#95;USER\Control Panel\Mouse\SwapMouseButtons |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\Nls\CustomLocale\en-US |   | 1.0 |
+| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\Nls\ExtendedLocale\en-US |   | 1.0 |
+| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\Nls\Sorting\Versions\00060101.00060101 |   | 1.0 |
+| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\Nls\Locale\00000409 |   | 1.0 |
+| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\Nls\Language Groups\1 |   | 1.0 |
+| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\Lsa\AccessProviders\MartaExtension |   | 1.0 |
+| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\GRE&#95;Initialize\DisableMetaFiles |   | 1.0 |
+| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\InstallRoot |   | 1.0 |
+| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\Software\Microsoft\Windows\CurrentVersion\SideBySide |   | 1.0 |
+| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\system\CurrentControlSet\control\NetworkProvider\HwOrder |   | 1.0 |
+| 0.06 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Microsoft\OLEAUT |   | 1.0 |
+| 0.06 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\Software\Microsoft\Windows\CurrentVersion\Internet Settings |   | 1.0 |
+| 0.06 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings |   | 1.0 |
+| 0.06 | sample.exe read HKEY&#95;CURRENT&#95;USER\Control Panel\Mouse |   | 1.0 |
+| 0.06 | sample.exe read HKEY&#95;CURRENT&#95;USER\Software\AutoIt v3\AutoIt |   | 1.0 |
+| 0.06 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\System\CurrentControlSet\Control\Nls\CustomLocale |   | 1.0 |
 
 ## Provenance graph
 ```mermaid
@@ -96,53 +107,53 @@ flowchart LR
   n8["file: \Device\KsecDD"]
   n9["file: C:\Users\comp\AppData\Local\Temp\83DFFD621EFA44CF1A60.exe"]
   n10["file: C:\Windows\Globalization\Sorting\sortdefault.nls"]
-  n11["file: C:\Windows\System32\UxTheme.dll.Config"]
+  n11["file: C:\Windows\System32\UxTheme.dll[.]Config"]
   n12["file: C:\Windows\System32\uxtheme.dll"]
   n13["file: C:\Users\comp\service\svchost.exe"]
-  n14["file: C:\Users\comp\AppData\Roaming\Microsoft\Windows\Start Menu\P"]
+  n14["file: C:\Users\comp\AppData\Roaming~ocess for Windows Services.url"]
   n15["file: C:\Users\comp\service\Host Process for Windows Services.vbs"]
-  n16["file: C:\Windows\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe.con"]
+  n16["file: C:\Windows\Microsoft.NET\Fram~k\v2.0.50727\RegAsm.exe[.]config"]
   n17["file: C:\Windows\Microsoft.NET\Framework\v2.0.50727\mscorwks.dll"]
-  n18["file: C:\Windows\winsxs\x86_microsoft.vc80.crt_1fc8b3b9a1e18e3b_8."]
+  n18["file: C:\Windows\winsxs\x86_microso~e_d08cc06a442b34fc\msvcr80.dll"]
   n19["file: C:\Users"]
   n20["file: C:\Users\comp"]
   n21["file: C:\Users\comp\AppData"]
   n22["file: C:\Users\comp\AppData\Local"]
   n23["file: C:\Users\comp\AppData\Local\Temp"]
-  n24["file: C:\Users\comp\AppData\Local\Temp\83DFFD621EFA44CF1A60.exe.Lo"]
+  n24["file: C:\Users\comp\AppData\Local\T~3DFFD621EFA44CF1A60.exe.Local\"]
   n25["file: \Device\Http\Communication"]
   n26["registry: HKEY_CURRENT_USER\di"]
   n27["registry: HKEY_CURRENT_USER\Environment\SEE_MASK_NOZONECHECKS"]
   n28["registry: HKEY_CURRENT_USER\Software\10e93180d6481ad63a77c2b255d40864"]
-  n29["registry: HKEY_CURRENT_USER\Software\10e93180d6481ad63a77c2b255d40864\"]
-  n30["registry: HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6"]
-  n31["registry: HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6"]
-  n32["registry: HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6"]
-  n33["registry: HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6"]
-  n34["registry: HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6"]
-  n35["registry: HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6"]
-  n36["registry: HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6"]
-  n37["registry: HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6"]
-  n38["registry: HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\Cu"]
-  n39["registry: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Curre"]
+  n29["registry: HKEY_CURRENT_USER\Software\10~0d6481ad63a77c2b255d40864\(kl)"]
+  n30["registry: HKEY_CURRENT_USER\Software\Cl~iCache\6\52C64B7E\LanguageList"]
+  n31["registry: HKEY_CURRENT_USER\Software\Cl~oot%\system32\dhcpqec.dll,-100"]
+  n32["registry: HKEY_CURRENT_USER\Software\Cl~oot%\system32\dhcpqec.dll,-101"]
+  n33["registry: HKEY_CURRENT_USER\Software\Cl~oot%\system32\dhcpqec.dll,-103"]
+  n34["registry: HKEY_CURRENT_USER\Software\Cl~oot%\system32\dhcpqec.dll,-102"]
+  n35["registry: HKEY_CURRENT_USER\Software\Cl~Root%\system32\napipsec.dll,-1"]
+  n36["registry: HKEY_CURRENT_USER\Software\Cl~Root%\system32\napipsec.dll,-2"]
+  n37["registry: HKEY_CURRENT_USER\Software\Cl~Root%\system32\napipsec.dll,-4"]
+  n38["registry: HKEY_LOCAL_MACHINE\SOFTWARE\W~tings\DisableImprovedZoneCheck"]
+  n39["registry: HKEY_LOCAL_MACHINE\SOFTWARE\P~et Settings\Security_HKLM_only"]
   n40["registry: DisableUserModeCallbackFilter"]
   n41["registry: HKEY_CURRENT_USER\Control Panel\Mouse\SwapMouseButtons"]
-  n42["registry: HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Nls\CustomLo"]
-  n43["registry: HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Nls\Extended"]
-  n44["registry: HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Nls\Sorting\"]
-  n45["registry: HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Nls\Locale\0"]
-  n46["registry: HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Nls\Language"]
-  n47["registry: HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Lsa\AccessPr"]
-  n48["registry: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVers"]
-  n49["registry: HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\.NETFramew"]
-  n50["registry: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion"]
-  n51["registry: HKEY_LOCAL_MACHINE\system\CurrentControlSet\control\NetworkP"]
+  n42["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~Control\Nls\CustomLocale\en-US"]
+  n43["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~ntrol\Nls\ExtendedLocale\en-US"]
+  n44["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~ing\Versions\00060101.00060101"]
+  n45["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~01\Control\Nls\Locale\00000409"]
+  n46["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~\Control\Nls\Language Groups\1"]
+  n47["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~AccessProviders\MartaExtension"]
+  n48["registry: HKEY_LOCAL_MACHINE\SOFTWARE\M~RE_Initialize\DisableMetaFiles"]
+  n49["registry: HKEY_LOCAL_MACHINE\SOFTWARE\W~soft\.NETFramework\InstallRoot"]
+  n50["registry: HKEY_LOCAL_MACHINE\Software\M~dows\CurrentVersion\SideBySide"]
+  n51["registry: HKEY_LOCAL_MACHINE\system\Cur~ontrol\NetworkProvider\HwOrder"]
   n52["registry: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\OLEAUT"]
-  n53["registry: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion"]
-  n54["registry: HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Curre"]
+  n53["registry: HKEY_LOCAL_MACHINE\Software\M~rrentVersion\Internet Settings"]
+  n54["registry: HKEY_LOCAL_MACHINE\Software\P~rrentVersion\Internet Settings"]
   n55["registry: HKEY_CURRENT_USER\Control Panel\Mouse"]
   n56["registry: HKEY_CURRENT_USER\Software\AutoIt v3\AutoIt"]
-  n57["registry: HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Nls\Cust"]
+  n57["registry: HKEY_LOCAL_MACHINE\System\Cur~olSet\Control\Nls\CustomLocale"]
   n0 -->|"created"| n1
   n0 -->|"created"| n2
   n0 -->|"created"| n3
@@ -205,60 +216,43 @@ flowchart LR
   n0 -->|"read"| n57
 ```
 
-## IOCs
+## IOCs (defanged)
 - **dropped_files**: C:\Users\comp\service\svchost.exe
-- **registry**: HKEY_CURRENT_USER\Environment\SEE_MASK_NOZONECHECKS, HKEY_CURRENT_USER\Software\10e93180d6481ad63a77c2b255d40864, HKEY_CURRENT_USER\Software\10e93180d6481ad63a77c2b255d40864\[kl], HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-100, HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-101, HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-102, HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-103, HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\napipsec.dll,-1, HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\napipsec.dll,-2, HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\napipsec.dll,-4, HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\LanguageList, HKEY_CURRENT_USER\di
+- **registry**: HKEY&#95;CURRENT&#95;USER\Environment\SEE&#95;MASK&#95;NOZONECHECKS, HKEY&#95;CURRENT&#95;USER\Software\10e93180d6481ad63a77c2b255d40864, HKEY&#95;CURRENT&#95;USER\Software\10e93180d6481ad63a77c2b255d40864\[kl], HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-100, HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-101, HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-102, HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-103, HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\napipsec.dll,-1, HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\napipsec.dll,-2, HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\napipsec.dll,-4, HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\LanguageList, HKEY&#95;CURRENT&#95;USER\di
 
 ## YARA
 ```yara
 import "pe"
 
-rule SPECIMEN_e706854024ae
+rule SPECIMEN_2434c0af980a
 {
     meta:
         author = "SPECIMEN (auto)"
-        sample_sha256 = "e706854024aef57f26d2e9bf55f0fe68faef5c47fd23ef095087607b43fda736"
+        sample_sha256 = "2434c0af980a3a712b4ead907d2bdcd79682c37ce7c6c6a973f87c50d0698391"
         confidence = "auto-generated; review before deploy"
     condition:
         uint16(0) == 0x5A4D and (
         pe.imphash() == "afcdf79be1557326c854b6e20cb900a7"
         or (
-            pe.imports("comctl32.dll", "ImageList_BeginDrag") +
-            pe.imports("comctl32.dll", "ImageList_Destroy") +
-            pe.imports("comctl32.dll", "ImageList_DragEnter") +
-            pe.imports("comctl32.dll", "ImageList_DragLeave") +
-            pe.imports("comctl32.dll", "ImageList_EndDrag") +
-            pe.imports("comctl32.dll", "ImageList_Remove") +
-            pe.imports("comctl32.dll", "ImageList_ReplaceIcon") +
-            pe.imports("comctl32.dll", "ImageList_SetDragCursorImage")
+            pe.imports("wsock32.dll", "inet_ntoa") +
+            pe.imports("mpr.dll", "WNetAddConnection2W") +
+            pe.imports("mpr.dll", "WNetCancelConnection2W") +
+            pe.imports("wsock32.dll", "htons") +
+            pe.imports("wsock32.dll", "ioctlsocket") +
+            pe.imports("wsock32.dll", "ntohs") +
+            pe.imports("wsock32.dll", "recvfrom") +
+            pe.imports("wsock32.dll", "setsockopt")
         ) >= 6
         )
 }
 
 ```
 
-## Sigma
+## Sigma 1 - file_event
 ```yaml
-title: SPECIMEN auto - process_creation pattern
+title: 'SPECIMEN auto - file_event pattern'
 status: experimental
-description: Auto-synthesized from one sandbox run of e706854024aef57f; generalisation rung 4; zero hits on the negative corpus at synthesis time. Review before deploy.
-author: SPECIMEN
-logsource:
-    product: windows
-    category: process_creation
-detection:
-    selection:
-        Image: 'C:\Windows\Microsoft.NET\Framework\*\*.exe'
-    condition: selection
-level: medium
-
-```
-
-## Sigma
-```yaml
-title: SPECIMEN auto - file_event pattern
-status: experimental
-description: Auto-synthesized from one sandbox run of e706854024aef57f; generalisation rung 3; zero hits on the negative corpus at synthesis time. Review before deploy.
+description: Auto-synthesized from one sandbox run of 2434c0af980a3a71; generalisation rung 2; zero hits on the negative corpus at synthesis time. Review before deploy.
 author: SPECIMEN
 tags:
     - attack.t1547.001
@@ -267,17 +261,17 @@ logsource:
     category: file_event
 detection:
     selection:
-        TargetFilename: 'C:\Users\*\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\*\*.url'
+        TargetFilename: 'C:\\Users\\*\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\*\\Host Process for Windows Services.url'
     condition: selection
 level: medium
 
 ```
 
-## Sigma
+## Sigma 2 - file_event
 ```yaml
-title: SPECIMEN auto - file_event pattern
+title: 'SPECIMEN auto - file_event pattern'
 status: experimental
-description: Auto-synthesized from one sandbox run of e706854024aef57f; generalisation rung 2; zero hits on the negative corpus at synthesis time. Review before deploy.
+description: Auto-synthesized from one sandbox run of 2434c0af980a3a71; generalisation rung 2; zero hits on the negative corpus at synthesis time. Review before deploy.
 author: SPECIMEN
 tags:
     - attack.t1105
@@ -286,17 +280,51 @@ logsource:
     category: file_event
 detection:
     selection:
-        TargetFilename: 'C:\Users\*\*\svchost.exe'
+        TargetFilename: 'C:\\Users\\*\\*\\Host Process for Windows Services.vbs'
     condition: selection
 level: medium
 
 ```
 
-## Sigma
+## Sigma 3 - file_event
 ```yaml
-title: SPECIMEN auto - file_event pattern
+title: 'SPECIMEN auto - file_event pattern'
 status: experimental
-description: Auto-synthesized from one sandbox run of e706854024aef57f; generalisation rung 2; zero hits on the negative corpus at synthesis time. Review before deploy.
+description: Auto-synthesized from one sandbox run of 2434c0af980a3a71; generalisation rung 2; zero hits on the negative corpus at synthesis time. Review before deploy.
+author: SPECIMEN
+logsource:
+    product: windows
+    category: file_event
+detection:
+    selection:
+        TargetFilename: '\\Device\\*\\Communication'
+    condition: selection
+level: medium
+
+```
+
+## Sigma 4 - registry_set
+```yaml
+title: 'SPECIMEN auto - registry_set pattern'
+status: experimental
+description: Auto-synthesized from one sandbox run of 2434c0af980a3a71; generalisation rung 2; zero hits on the negative corpus at synthesis time. Review before deploy.
+author: SPECIMEN
+logsource:
+    product: windows
+    category: registry_set
+detection:
+    selection:
+        TargetObject: 'HKEY_CURRENT_USER\\Software\\Classes\\Local Settings\\MuiCache\\*\\*\\@%SystemRoot%\\system*\\*'
+    condition: selection
+level: medium
+
+```
+
+## Sigma 5 - file_event
+```yaml
+title: 'SPECIMEN auto - file_event pattern'
+status: experimental
+description: Auto-synthesized from one sandbox run of 2434c0af980a3a71; generalisation rung 1; zero hits on the negative corpus at synthesis time. Review before deploy.
 author: SPECIMEN
 tags:
     - attack.t1105
@@ -305,102 +333,34 @@ logsource:
     category: file_event
 detection:
     selection:
-        TargetFilename: 'C:\Users\*\*\Host Process for Windows Services.vbs'
+        TargetFilename: 'C:\\Users\\*\\service\\*.exe'
     condition: selection
 level: medium
 
 ```
 
-## Sigma
+## Sigma 6 - registry_set
 ```yaml
-title: SPECIMEN auto - file_event pattern
+title: 'SPECIMEN auto - registry_set pattern'
 status: experimental
-description: Auto-synthesized from one sandbox run of e706854024aef57f; generalisation rung 2; zero hits on the negative corpus at synthesis time. Review before deploy.
-author: SPECIMEN
-logsource:
-    product: windows
-    category: file_event
-detection:
-    selection:
-        TargetFilename: '\Device\*\Communication'
-    condition: selection
-level: medium
-
-```
-
-## Sigma
-```yaml
-title: SPECIMEN auto - registry_set pattern
-status: experimental
-description: Auto-synthesized from one sandbox run of e706854024aef57f; generalisation rung 2; zero hits on the negative corpus at synthesis time. Review before deploy.
+description: Auto-synthesized from one sandbox run of 2434c0af980a3a71; generalisation rung 1; zero hits on the negative corpus at synthesis time. Review before deploy.
 author: SPECIMEN
 logsource:
     product: windows
     category: registry_set
 detection:
     selection:
-        TargetObject: 'HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\*\*\*'
+        TargetObject: 'HKEY_CURRENT_USER\\Environment\\*'
     condition: selection
 level: medium
 
 ```
 
-## Sigma
+## Sigma 7 - process_creation
 ```yaml
-title: SPECIMEN auto - registry_set pattern
+title: 'SPECIMEN auto - process_creation pattern'
 status: experimental
-description: Auto-synthesized from one sandbox run of e706854024aef57f; generalisation rung 2; zero hits on the negative corpus at synthesis time. Review before deploy.
-author: SPECIMEN
-logsource:
-    product: windows
-    category: registry_set
-detection:
-    selection:
-        TargetObject: 'HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\*\*\@%SystemRoot%\system*\*'
-    condition: selection
-level: medium
-
-```
-
-## Sigma
-```yaml
-title: SPECIMEN auto - registry_set pattern
-status: experimental
-description: Auto-synthesized from one sandbox run of e706854024aef57f; generalisation rung 1; zero hits on the negative corpus at synthesis time. Review before deploy.
-author: SPECIMEN
-logsource:
-    product: windows
-    category: registry_set
-detection:
-    selection:
-        TargetObject: 'HKEY_CURRENT_USER\*'
-    condition: selection
-level: medium
-
-```
-
-## Sigma
-```yaml
-title: SPECIMEN auto - registry_set pattern
-status: experimental
-description: Auto-synthesized from one sandbox run of e706854024aef57f; generalisation rung 1; zero hits on the negative corpus at synthesis time. Review before deploy.
-author: SPECIMEN
-logsource:
-    product: windows
-    category: registry_set
-detection:
-    selection:
-        TargetObject: 'HKEY_CURRENT_USER\Environment\*'
-    condition: selection
-level: medium
-
-```
-
-## Sigma
-```yaml
-title: SPECIMEN auto - process_creation pattern
-status: experimental
-description: Auto-synthesized from one sandbox run of e706854024aef57f; generalisation rung 0; zero hits on the negative corpus at synthesis time. Review before deploy.
+description: Auto-synthesized from one sandbox run of 2434c0af980a3a71; generalisation rung 0; zero hits on the negative corpus at synthesis time. Review before deploy.
 author: SPECIMEN
 logsource:
     product: windows
@@ -408,24 +368,63 @@ logsource:
 detection:
     selection:
         Image: 'netsh'
-        CommandLine: '*firewall add allowedprogram "C:\Windows\Microsoft.NET\Framework\v*.*.*\RegAsm.exe" "RegAsm.exe" ENABLE*'
+        CommandLine: '*firewall add allowedprogram "C:\\Windows\\Microsoft.NET\\Framework\\v*.*.*\\RegAsm.exe" "RegAsm.exe" ENABLE*'
     condition: selection
 level: medium
 
 ```
 
-Specificity: YARA FP []; dropped Sigma ['rejected_nonspecific:0']
+## Sigma 8 - registry_set
+```yaml
+title: 'SPECIMEN auto - registry_set pattern'
+status: experimental
+description: Auto-synthesized from one sandbox run of 2434c0af980a3a71; generalisation rung 0; zero hits on the negative corpus at synthesis time. Review before deploy.
+author: SPECIMEN
+logsource:
+    product: windows
+    category: registry_set
+detection:
+    selection:
+        TargetObject: 'HKEY_CURRENT_USER\\Software\\10e93180d6481ad63a77c2b255d40864'
+    condition: selection
+level: medium
+
+```
+
+## Sigma 9 - registry_set
+```yaml
+title: 'SPECIMEN auto - registry_set pattern'
+status: experimental
+description: Auto-synthesized from one sandbox run of 2434c0af980a3a71; generalisation rung 0; zero hits on the negative corpus at synthesis time. Review before deploy.
+author: SPECIMEN
+logsource:
+    product: windows
+    category: registry_set
+detection:
+    selection:
+        TargetObject: 'HKEY_CURRENT_USER\\Software\\10e93180d6481ad63a77c2b255d40864\\[kl]'
+    condition: selection
+level: medium
+
+```
+
+Specificity: 3 Sigma candidate(s) dropped because no generalisation rung was specific enough.
 
 ## Evidence manifest
 ```json
 {
-  "sample_sha256": "e706854024aef57f26d2e9bf55f0fe68faef5c47fd23ef095087607b43fda736",
-  "trace_sha256": "e706854024aef57f26d2e9bf55f0fe68faef5c47fd23ef095087607b43fda736",
+  "sample_sha256": null,
+  "trace_sha256": "2434c0af980a3a712b4ead907d2bdcd79682c37ce7c6c6a973f87c50d0698391",
   "trace_run_id": "avast_njrat_1",
   "python": "3.14.3",
   "specimen_version": "1.0.0",
   "execution": "report-only (sandbox report replay; no sample bytes handled)",
-  "report_content_sha256": "6dd904bcfbc1f75808116795690988c363018bf75598eedc7aa10f838e9fb2a2",
-  "report_sha256": "e706854024aef57f26d2e9bf55f0fe68faef5c47fd23ef095087607b43fda736"
+  "report_content_sha256": "e0adff1d683c7bb5b85c1f4d41c45d2faf8b7a936112e48c6bce733ada7e95f8",
+  "report_sha256": "2434c0af980a3a712b4ead907d2bdcd79682c37ce7c6c6a973f87c50d0698391",
+  "sample_sha256_note": "not present in the (reduced) report; rule names use the report hash",
+  "negative_corpus": {
+    "packaged": true,
+    "excluded_family": "njRAT"
+  }
 }
 ```

@@ -107,10 +107,10 @@ def render_markdown(rep: dict[str, Any]) -> str:
     if rep["behavior"]:
         b = rep["behavior"]
         L += ["", "## Behavior", f"P(malicious)={b['probability']} label={b['label']} scorer={b.get('scorer', '')}"
-              + (f" | family match **{md_text(b['family'])}** ({_fam_score(b)})" if b["family"] else "")]
+              + (f" | family match **{md_text(b['family'])}** ({_fam_score(b)})" if b["family"] else ""), ""]
         L += [f"- {md_text(c['feature'])} = {c['value']}, impact {c['impact']:+.2f}" for c in b["contributions"][:6]]
         if b.get("family_evidence"):
-            L += ["", "### Family evidence", f"Top tokens supporting **{md_text(b['family'])}** ({md_text(b.get('family_model', ''))}):"]
+            L += ["", "### Family evidence", f"Top tokens supporting **{md_text(b['family'])}** ({md_text(b.get('family_model', ''))}):", ""]
             L += [f"- {md_text(_tok(c))}" for c in b["family_evidence"]]
     if rep["timeline"]:
         L += ["", "## Timeline", "| t | event | ATT&CK | anomaly |", "|---|---|---|---|"]
