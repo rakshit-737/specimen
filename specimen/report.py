@@ -30,6 +30,10 @@ def fuse(static: StaticVerdict, behavior: BehaviorScore | None) -> tuple[str, st
 def build_report(sample: Sample, static: StaticVerdict, trace: Trace | None,
                  graph: ProvenanceGraph | None, timeline: list[TimelineEntry],
                  behavior: BehaviorScore | None, det: Detections) -> dict[str, Any]:
+    """Assemble the JSON report: fused verdict, static reasons, timeline, graph, IOCs, rules.
+
+    :returns: a JSON-serialisable dict; the manifest is added by the pipeline.
+    """
     label, conf, final = fuse(static, behavior)
     iocs = dict(static.iocs)
     if trace:

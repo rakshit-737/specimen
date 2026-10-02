@@ -117,6 +117,13 @@ def _json_records(text: str) -> list[tuple[int, dict[str, str]]]:
 
 
 def sysmon_to_trace(text: str | bytes, run_id: str = "sysmon", sample_sha256: str = "") -> Trace:
+    """Convert a Sysmon export (``wevtutil /f:xml`` XML or JSON lines) into a :class:`Trace`.
+
+    :param text: export contents; DTDs are refused and size is capped.
+    :param run_id: run identifier stored in the trace.
+    :param sample_sha256: SHA-256 of the sample the run belongs to, if known.
+    :raises ValueError: on oversized or malformed input.
+    """
     if isinstance(text, bytes):
         if len(text) > MAX_BYTES:
             raise ValueError("Sysmon export too large")

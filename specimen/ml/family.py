@@ -31,6 +31,11 @@ def hash_tokens(docs: Sequence[Sequence[str]]) -> sparse.csr_matrix:
 
 
 class FamilyModel:
+    """Multinomial LR over 2^18 hashed behaviour tokens with per-token evidence.
+
+    Weights are stored as ``.npz`` numeric arrays (never pickled); ``meta`` holds the
+    class list, feature mode and the open-set ``abstain_below`` threshold.
+    """
     def __init__(self, coef: np.ndarray, intercept: np.ndarray, classes: list[str],
                  meta: dict[str, Any] | None = None) -> None:
         self.coef = coef

@@ -28,6 +28,11 @@ MODEL_FILE = "api_behaviour.json"
 
 
 def ngrams(apis: Sequence[str]) -> list[str]:
+    """Lower-case API unigrams plus adjacent bigrams (``a>b``), the model's token set.
+
+    :param apis: API call names in call order.
+    :returns: unigram tokens followed by bigram tokens.
+    """
     a = [x.lower() for x in apis]
     return a + [f"{x}>{y}" for x, y in zip(a, a[1:])]
 
@@ -46,6 +51,11 @@ def api_sequence(trace: Trace) -> list[str]:
 
 
 class ApiBehaviourModel:
+    """TF-IDF + logistic-regression API n-gram scorer evaluated in pure Python.
+
+    Exported from scikit-learn by ``benchmarks/bench_malbehavd.py``; stored as JSON
+    (``specimen/data/api_behaviour.json``) so the core stays stdlib-only.
+    """
     def __init__(self, idf: dict[str, float], weight: dict[str, float], intercept: float,
                  meta: dict[str, Any] | None = None) -> None:
         self.idf, self.weight, self.intercept, self.meta = idf, weight, intercept, meta or {}

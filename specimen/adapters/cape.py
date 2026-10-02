@@ -234,8 +234,6 @@ def _from_network(report: dict[str, Any], sample_image: str, start: float) -> li
 
 
 def cape_to_trace(report: dict[str, Any], run_id: str | None = None, raw: bytes | None = None) -> Trace:
-    if not isinstance(report, dict) or not isinstance(report.get("behavior", {}), dict):
-        raise CapeFormatError("not a CAPE/Cuckoo report object")
     """Convert a CAPE/Cuckoo report (full call log or reduced summary) into a :class:`Trace`.
 
     :param report: parsed JSON report; unknown shapes are ignored, not raised on.
@@ -243,6 +241,8 @@ def cape_to_trace(report: dict[str, Any], run_id: str | None = None, raw: bytes 
     :param raw: original bytes, hashed into ``Trace.source_sha256``.
     :raises CapeFormatError: if the object is not a report or has no behaviour.
     """
+    if not isinstance(report, dict) or not isinstance(report.get("behavior", {}), dict):
+        raise CapeFormatError("not a CAPE/Cuckoo report object")
     target = _dict(_dict(report.get("target")).get("file"))
     sha = _s(target.get("sha256"))
     sample_image = _s(target.get("name")) or "sample.exe"

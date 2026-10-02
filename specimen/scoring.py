@@ -17,6 +17,11 @@ FEATURES = [
 
 
 def featurize(trace: Trace) -> list[float]:
+    """MVP behaviour features: nine log-scaled ATT&CK-derived counts of a trace.
+
+    :param trace: validated trace.
+    :returns: feature vector in the order of ``FEATURES``.
+    """
     c: Counter[str] = Counter()
     susp = 0
     for ev in trace.events:
@@ -104,6 +109,12 @@ def event_anomaly(event_type: str, technique: str | None) -> float:
 
 
 def score(trace: Trace, family_threshold: float = 0.5) -> BehaviorScore:
+    """Score a trace with the MVP synthetic-trained scorer and the Jaccard family matcher.
+
+    :param trace: validated trace.
+    :param family_threshold: minimum Jaccard similarity for a family match.
+    :returns: probability, label, per-feature contributions and family match.
+    """
     model, protos, _ = trained()
     x = featurize(trace)
     p = model.predict(x)
