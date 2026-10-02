@@ -44,8 +44,10 @@ Memory: a slim loader keeps only events/static/family/split per report
 from __future__ import annotations
 
 import argparse
+import csv
 import gzip
 import hashlib
+import io
 import json
 import random
 import time
@@ -199,6 +201,7 @@ def main() -> int:
                 for t in s:
                     if t.startswith("imp:"):
                         prev[t] += 1 / len(neg_static)
+            # NB: excludes the true family (oracle); the product excludes its *predicted* family
             packaged = negative_blob(fam)
             refs = rng.sample(pool, min(a.refs, len(pool)))
             for ri, ref in enumerate(refs):
@@ -313,9 +316,11 @@ def main() -> int:
                                        "cross_family_fpr_mean", "fpr_95ci", "rules_per_run"]),
     })
     cols = ["seed", "family", "ref", "variant", "rules", "recall", "fpr", "fp", "neg", "novel_recall"]
-    lines = [",".join(cols)] + [",".join(f"{u[c]:.6g}" if isinstance(u[c], float) else str(u[c]) for c in cols)
-                                for u in units]
-    (FIGURES.parents[1] / "results" / "rules_avast_units.csv").write_text("\n".join(lines) + "\n")
+    buf = io.StringIO()
+    w = csv.writer(buf, lineterminator="\n")  # quotes variant names that contain commas
+    w.writerow(cols)
+    w.writerows([f"{u[c]:.6g}" if isinstance(u[c], float) else str(u[c]) for c in cols] for u in units)
+    (FIGURES.parents[1] / "results" / "rules_avast_units.csv").write_text(buf.getvalue())
     print(f"done in {time.time() - t0:.0f}s")
     return 0
 
