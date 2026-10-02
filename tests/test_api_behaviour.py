@@ -53,7 +53,7 @@ def test_roundtrip_and_short_traces(tmp_path):
     m.save(tmp_path)
     m2 = ApiBehaviourModel.load(tmp_path)
     assert m2.proba(["a", "b"]) == pytest.approx(m.proba(["a", "b"]), abs=1e-4)
-    assert m2.score(api_sequence_to_trace(["a", "b"] * 3, "r")) is None  # too few calls
+    assert m2.score(api_sequence_to_trace(["a", "b", "a"][: MIN_CALLS - 1], "r")) is None  # too few calls
     s = m2.score(api_sequence_to_trace(["a", "b"] * MIN_CALLS, "r"))
     assert s is not None and s.scorer.startswith("api-ngram-lr") and s.contributions
 
