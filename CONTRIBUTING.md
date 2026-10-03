@@ -41,15 +41,24 @@ python -m pytest -q -m realdata
   `test:`, `docs:`, `data:`, `perf:`, `refactor:`, `ci:`, `build:`.
 - Add or adjust tests for every behaviour change. CI must stay green without
   the datasets.
-- If you change a benchmark, re-run it, commit the updated `results/*.json`
-  and figures, and update the README tables. Report numbers honestly,
-  including regressions.
+- If you change a benchmark, re-run it through the `bench` workflow
+  (`gh workflow run bench -f suite=<suite>`), commit the updated
+  `results/*.json` and figures from its artefact, and run
+  `python scripts/render_results.py` to regenerate every table in the README
+  and docs (CI fails if they drift). Do not edit generated blocks by hand.
+  Report numbers honestly, including regressions.
+- If a bench run retrains a model, update the SHA-256s in
+  `scripts/model_assets.json`; the docs and release workflows refuse models
+  that do not match.
 - Document design decisions that others would otherwise have to rediscover
   as an ADR in `docs/adr/`.
 
 ## Adding a sandbox adapter
 
 Adapters live in `specimen/adapters/` and return a `specimen.models.Trace`.
-They must treat their input as hostile: coerce types, truncate strings, cap
-list sizes, and ignore unknown shapes rather than raising. Add a small real
-(or clearly synthetic) fixture under `tests/fixtures/`.
+They must treat their input as hostile: coerce types (`specimen.coerce`),
+truncate strings, cap list sizes, and ignore unknown shapes rather than
+raising; malformed input as a whole (invalid JSON or XML, non-finite
+numbers, nesting too deep to parse) must surface as one `ValueError`, never
+as another exception type. Add a small real (or clearly synthetic) fixture
+under `tests/fixtures/`.
