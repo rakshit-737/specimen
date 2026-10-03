@@ -117,3 +117,11 @@ def test_large_sample_hashes_whole_file(tmp_path):
     s, data = load_sample(p)
     assert s.sha256 == hashlib.sha256(p.read_bytes()).hexdigest()
     assert s.size == MAX_BYTES + 21 and s.analysed_bytes == MAX_BYTES and len(data) == MAX_BYTES
+
+
+@pytest.mark.parametrize("workers", ["0", "-1", "two"])
+def test_batch_rejects_bad_worker_count_before_touching_the_ledger(tmp_path, workers, capsys):
+    with pytest.raises(SystemExit) as e:
+        main(["batch", str(FX / "cape"), "--out", str(tmp_path / "b"), "--workers", workers])
+    assert e.value.code == 2 and "--workers" in capsys.readouterr().err
+    assert not (tmp_path / "b" / "jobs.jsonl").exists()

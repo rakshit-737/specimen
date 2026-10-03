@@ -9,6 +9,7 @@ import math
 import re
 from pathlib import Path
 
+from .coerce import finite_float
 from .models import Contribution, Sample, StaticVerdict
 
 MAX_BYTES = 50 * 1024 * 1024
@@ -124,10 +125,8 @@ def triage_pe_metadata(pe: dict, sha256: str = "") -> StaticVerdict:
             break
     ents = []
     for s in pe.get("sections") or []:
-        try:
-            ents.append(float(s.get("entropy", 0)))
-        except (TypeError, ValueError, AttributeError):
-            pass
+        if isinstance(s, dict):  # NaN, Infinity and non-numbers count as 0
+            ents.append(finite_float(s.get("entropy", 0), 0.0, 0.0, 8.0))
     ent = max(ents, default=0.0)
     if ent > 7.2:
         reasons.append(Contribution("high_section_entropy", round(ent - 7.2, 3), 2.0))

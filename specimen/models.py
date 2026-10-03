@@ -1,6 +1,7 @@
 """Typed data models shared across pipeline stages."""
 from __future__ import annotations
 
+import math
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
@@ -61,8 +62,8 @@ class Event:
     def __post_init__(self) -> None:
         if self.type not in EVENT_TYPES:
             raise ValueError(f"unknown event type: {self.type!r}")
-        if self.ts < 0:
-            raise ValueError("negative timestamp")
+        if not math.isfinite(self.ts) or self.ts < 0:
+            raise ValueError(f"timestamp must be finite and >= 0, got {self.ts!r}")
 
 
 @dataclass

@@ -26,7 +26,7 @@ def _job(path: str, out: str) -> dict[str, Any]:
     rep = run_report(path)
     stem = Path(path).stem
     o = Path(out)
-    (o / f"{stem}.json").write_text(json.dumps(rep, indent=2, default=str))
+    (o / f"{stem}.json").write_text(json.dumps(rep, indent=2, default=str, allow_nan=False))
     (o / f"{stem}.md").write_text(render_markdown(rep), encoding="utf-8")
     b = rep.get("behavior") or {}
     return {"verdict": rep["verdict"]["label"], "confidence": rep["verdict"]["confidence"],
@@ -36,6 +36,7 @@ def _job(path: str, out: str) -> dict[str, Any]:
 
 
 def ledger_state(ledger: Path) -> dict[str, dict[str, Any]]:
+    """Latest ledger record per job id (a torn final line after a crash is ignored)."""
     state: dict[str, dict[str, Any]] = {}
     if ledger.exists():
         for line in ledger.read_text(encoding="utf-8").splitlines():
@@ -48,6 +49,19 @@ def ledger_state(ledger: Path) -> dict[str, dict[str, Any]]:
 
 
 def run_batch(inputs: Iterable[Path], out: Path, workers: int = 2) -> list[dict[str, Any]]:
+    """Run ``specimen report`` on every input in a process pool, recording each job in ``out/jobs.jsonl``.
+
+    Jobs already ``done`` in the ledger are skipped, so an interrupted batch resumes;
+    a failing report is recorded as ``failed`` without stopping the batch.
+
+    :param inputs: CAPE/Cuckoo JSON reports.
+    :param out: output directory for reports and the ledger.
+    :param workers: worker processes (>= 1; checked before the ledger is touched).
+    :returns: one ledger record per job run in this call.
+    :raises ValueError: if ``workers`` < 1.
+    """
+    if workers < 1:
+        raise ValueError(f"workers must be >= 1, got {workers}")
     out.mkdir(parents=True, exist_ok=True)
     ledger = out / "jobs.jsonl"
     state = ledger_state(ledger)

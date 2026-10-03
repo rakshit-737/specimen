@@ -17,12 +17,24 @@ from .static_triage import load_sample, triage
 def _emit(rep: dict, out: Path | None, stem: str) -> None:
     if out:
         out.mkdir(parents=True, exist_ok=True)
-        (out / f"{stem}.json").write_text(json.dumps(rep, indent=2, default=str))
+        # allow_nan=False: a report is always strict JSON (no NaN/Infinity tokens)
+        (out / f"{stem}.json").write_text(json.dumps(rep, indent=2, default=str, allow_nan=False))
         (out / f"{stem}.md").write_text(render_markdown(rep), encoding="utf-8")
 
 
-RELEASE_HINT = ("gh release download v1.0.0 -R rakshit-737/specimen -p 'family_*' -p 'static_*' -D models "
-                "(then set SPECIMEN_MODELS=models or run from that directory)")
+RELEASE_HINT = ("gh release download -R rakshit-737/specimen -p 'family_*' -p 'static_*' -D models "
+                "(latest release; then set SPECIMEN_MODELS=models or run from that directory). "
+                "From a clone, python scripts/fetch_models.py also checks the pinned SHA-256s")
+
+
+def _positive_int(v: str) -> int:
+    try:
+        n = int(v)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"expected a positive integer, got {v!r}") from None
+    if n < 1:
+        raise argparse.ArgumentTypeError(f"must be >= 1, got {n}")
+    return n
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -47,7 +59,7 @@ def _parser() -> argparse.ArgumentParser:
     b = sub.add_parser("batch", help="queue a directory of CAPE reports (resumable job ledger)", formatter_class=fmt)
     b.add_argument("directory", type=Path, help="directory containing *.json CAPE/Cuckoo reports")
     b.add_argument("--out", type=Path, default=Path("out/batch"), help="output directory (reports + jobs.jsonl ledger)")
-    b.add_argument("--workers", type=int, default=2, help="worker processes")
+    b.add_argument("--workers", type=_positive_int, default=2, help="worker processes (>= 1)")
     e = sub.add_parser("triage-ember", help="static gate (trained LightGBM + TreeSHAP) on EMBER raw-feature JSON lines",
                        formatter_class=fmt)
     e.add_argument("features", type=Path, help="JSON-lines file of EMBER raw features")
@@ -62,6 +74,11 @@ def _need_file(ap: argparse.ArgumentParser, path: str | Path | None, what: str) 
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Entry point of the ``specimen`` command; returns the process exit code.
+
+    Missing inputs exit 2 (argparse); malformed or mismatched inputs print one
+    ``specimen: error: ...`` line and return 1.
+    """
     ap = _parser()
     args = ap.parse_args(argv)
     for attr, what in (("sample", "sample"), ("report", "report"), ("trace", "trace"), ("features", "features file")):
@@ -70,6 +87,9 @@ def main(argv: list[str] | None = None) -> int:
         return _dispatch(ap, args)
     except (ValueError, OSError) as e:
         print(f"specimen: error: {e}", file=sys.stderr)
+        return 1
+    except (OverflowError, RecursionError, SyntaxError) as e:  # SyntaxError covers xml.etree ParseError
+        print(f"specimen: error: malformed input ({type(e).__name__}: {e})", file=sys.stderr)
         return 1
 
 

@@ -16,6 +16,7 @@ from collections.abc import Iterable
 from functools import lru_cache
 from typing import Any
 
+from .coerce import finite_float, safe_int
 from .models import Trace
 from .provenance import map_technique
 
@@ -100,10 +101,7 @@ def behavior_tokens(trace: Trace) -> list[str]:
 
 
 def _hexint(v: Any) -> int:
-    try:
-        return int(str(v), 16) if isinstance(v, str) and v.startswith("0x") else int(v)
-    except (TypeError, ValueError):
-        return 0
+    return safe_int(v, 0)
 
 
 def static_tokens(pe: dict[str, Any]) -> list[str]:
@@ -126,13 +124,10 @@ def static_tokens(pe: dict[str, Any]) -> list[str]:
             continue
         name = str(s.get("name", "")).strip("\x00").lower() or "<empty>"
         out.add(f"sec:{name}")
-        try:
-            ent = float(s.get("entropy", 0))
-        except (TypeError, ValueError):
-            ent = 0.0
+        ent = finite_float(s.get("entropy", 0), 0.0, 0.0, 8.0)  # NaN/inf/garbage -> 0
         out.add(f"sec_ent:{name}:{int(ent)}")
     out.add(f"osversion:{pe.get('osversion')}")
-    out.add(f"ndll:{min(int(pe.get('imported_dll_count') or 0), 20)}")
+    out.add(f"ndll:{min(max(safe_int(pe.get('imported_dll_count'), 0), 0), 20)}")
     ts = str(pe.get("timestamp") or "")[:4]
     if ts:
         out.add(f"pe_year:{ts}")

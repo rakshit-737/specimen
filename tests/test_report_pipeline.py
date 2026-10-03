@@ -69,7 +69,7 @@ def test_batch_queue_is_resumable(tmp_path):
     bad.mkdir()
     (bad / "broken.json").write_text("{not json")
     res = run_batch(bad.glob("*.json"), out, workers=1)
-    assert res[0]["status"] == "failed" and "JSONDecodeError" in res[0]["error"]
+    assert res[0]["status"] == "failed" and "invalid JSON" in res[0]["error"]
     assert len(ledger_state(out / "jobs.jsonl")) == 5
 
 

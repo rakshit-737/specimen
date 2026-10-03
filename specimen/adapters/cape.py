@@ -14,12 +14,13 @@ list sizes are capped and unknown shapes are ignored rather than raised on.
 """
 from __future__ import annotations
 
-import json
+import math
 import ntpath
 import re
 from pathlib import Path
 from typing import Any
 
+from ..coerce import loads, safe_int
 from ..hashing import read_capped, sha256_bytes
 from ..models import Event, Trace
 
@@ -82,10 +83,11 @@ def _dict(v: Any) -> dict[str, Any]:
 
 
 def _int(v: Any, default: int) -> int:
-    try:
-        return int(v)
-    except (TypeError, ValueError):
-        return default
+    return safe_int(v, default)
+
+
+def _ts_ok(ts: Any) -> bool:
+    return isinstance(ts, (int, float)) and not isinstance(ts, bool) and math.isfinite(ts)
 
 
 def _first(d: dict[str, str], *keys: str) -> str:
@@ -105,12 +107,12 @@ def _from_calls(report: dict[str, Any], sample_image: str) -> list[Event]:
     for p in procs:
         for c in _list(p.get("calls"), 1)[:1]:
             ts = c.get("timestamp") if isinstance(c, dict) else None
-            if isinstance(ts, (int, float)):
+            if _ts_ok(ts):
                 t0 = ts if t0 is None else min(t0, ts)
     known = {_int(p.get("process_id"), -1) for p in procs}
 
     def rel(ts: Any, fallback: float) -> float:
-        if isinstance(ts, (int, float)) and t0 is not None:
+        if _ts_ok(ts) and t0 is not None:
             return max(0.0, float(ts) - t0)
         return fallback
 
@@ -269,9 +271,9 @@ def cape_to_trace(report: dict[str, Any], run_id: str | None = None, raw: bytes 
 def load_cape(path: str | Path) -> Trace:
     raw = read_capped(path)
     try:
-        doc = json.loads(raw)
-    except json.JSONDecodeError as e:
-        raise CapeFormatError(f"invalid JSON: {e}") from e
+        doc = loads(raw, str(path))
+    except ValueError as e:
+        raise CapeFormatError(str(e)) from e
     return cape_to_trace(doc, run_id=Path(path).stem, raw=raw)
 
 
