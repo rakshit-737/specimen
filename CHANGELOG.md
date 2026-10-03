@@ -9,6 +9,7 @@ uses [Semantic Versioning](https://semver.org/).
 ## [1.1.1] - 2026-10-03
 
 ### Fixed
+- **Release:** `scripts/fetch_models.py` downloads each bench artefact into its own directory, so fetching the full model set (two artefacts from one run that share `results/*.json`) no longer aborts with "file exists"; this unblocks the release workflow.
 - **Security:** sandbox-controlled strings can no longer form Markdown links or images in reports: every Markdown-structural character is entity-encoded, and protocol-relative and numeric-IPv4 URLs are defanged. A rendering test with the docs-site Markdown extensions guards it.
 - **Evidence binding:** a Sysmon export whose event 1 `Hashes` do not include the sample's SHA-256 is refused; traces that record no sample hash are replayed as `unbound` with low confidence (`manifest.trace_binding`). The lab fixture now carries the dummy sample's hash.
 - **`analyze` uses the v2 rule synthesizer** with the packaged negative corpus (minus the predicted family), like `report`; it used to emit MVP rules checked only against synthetic negatives.
