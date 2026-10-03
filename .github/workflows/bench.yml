@@ -1,16 +1,17 @@
 name: bench
-# Full-data benchmarks run here, never on a laptop (shared-machine rule).
-# Results, figures and model files are uploaded as artefacts; only the small
-# result files are committed afterwards.
+# Every published benchmark number is produced here (shared-machine rule: full-data
+# runs never run on a laptop), so each result file records this run's id and commit.
+# Results, figures and model files are uploaded as artefacts; only the small result
+# files are committed afterwards.
 on:
   workflow_dispatch:
     inputs:
       suite:
-        description: "rules | family | static-temporal | avast (rules+family) | all"
+        description: "rules | family | avast (rules+family) | static-temporal | static | malbehavd | api-cross | maldetconv | light (static, malbehavd, api-cross, maldetconv) | all"
         default: all
         type: string
       seeds:
-        description: "seeds for the rule benchmark / temporal EMBER"
+        description: "seeds for the rule benchmark / temporal EMBER (positive integer)"
         default: "5"
         type: string
 permissions:
@@ -18,11 +19,24 @@ permissions:
 env:
   SPECIMEN_DATA: ${{ github.workspace }}/../specimen-data
   PYTHONUNBUFFERED: "1"
+  SUITE: ${{ inputs.suite }}
+  SEEDS: ${{ inputs.seeds }}
 jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Validate the dispatch inputs (passed via env, never interpolated into scripts)
+        run: |
+          [[ "$SEEDS" =~ ^[1-9][0-9]?$ ]] || { echo "seeds must be an integer 1-99, got '$SEEDS'"; exit 1; }
+          case "$SUITE" in rules|family|avast|static-temporal|static|malbehavd|api-cross|maldetconv|light|all) ;;
+            *) echo "unknown suite '$SUITE'"; exit 1;; esac
   avast:
+    needs: validate
     if: contains(fromJSON('["rules","family","avast","all"]'), inputs.suite)
     runs-on: ubuntu-24.04
     timeout-minutes: 340
+    env:
+      BENIGN_DIR: ${{ github.workspace }}/../speakeasy-data
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -30,7 +44,7 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
-      - run: pip install -e ".[ml]"
+      - run: pip install -e ".[ml]" huggingface_hub
       - name: Restore Avast-CTU data + token cache
         id: cache
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -45,20 +59,27 @@ jobs:
           python scripts/download_data.py --dest "$SPECIMEN_DATA" --verify
           python -c "from specimen.ml.avast import build_cache; build_cache(workers=4)"
           rm -f "$SPECIMEN_DATA/avast_cape/"*.zip
-      - name: Rule benchmark
+      - name: Restore the benign Speakeasy cache
         if: contains(fromJSON('["rules","avast","all"]'), inputs.suite)
-        run: python benchmarks/bench_rules.py --seeds "${{ inputs.seeds }}"
+        id: benign
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ env.BENIGN_DIR }}/cache
+          # keyed on the pinned Hugging Face revision and the adapter version
+          key: speakeasy-fc2e98fa-adapter-v1
+      - name: Download the benign Quo Vadis Speakeasy reports (pinned revision) and build the cache
+        if: contains(fromJSON('["rules","avast","all"]'), inputs.suite) && steps.benign.outputs.cache-hit != 'true'
+        run: python scripts/build_speakeasy_cache.py --dest "$BENIGN_DIR"
+      - name: Rule benchmark (cross-family and benign FPR)
+        if: contains(fromJSON('["rules","avast","all"]'), inputs.suite)
+        run: python benchmarks/bench_rules.py --seeds "$SEEDS" --benign "$BENIGN_DIR/cache/speakeasy_benign.jsonl.gz"
       - name: Family benchmark
         if: contains(fromJSON('["family","avast","all"]'), inputs.suite)
         run: python benchmarks/bench_family.py
-      - name: Sanity-check result ranges
-        run: |
-          python - <<'PY'
-          import json, pathlib
-          for f in pathlib.Path("results").glob("*_avast.json"):
-              d = json.loads(f.read_text())
-              print(f.name, d.get("generated"))
-          PY
+      - name: Check result ranges and provenance
+        run: python scripts/check_results.py results/rules_avast.json results/family_avast.json --run-id "$GITHUB_RUN_ID" --any
+      - name: Hash the model files
+        run: sha256sum models/* 2>/dev/null | tee models.sha256 || true
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: bench-avast
@@ -66,7 +87,9 @@ jobs:
             results/
             docs/figures/
             models/family_*
+            models.sha256
   static-temporal:
+    needs: validate
     if: contains(fromJSON('["static-temporal","all"]'), inputs.suite)
     runs-on: ubuntu-24.04
     timeout-minutes: 340
@@ -79,16 +102,18 @@ jobs:
           python-version: "3.12"
       - run: sudo apt-get update && sudo apt-get install -y lbzip2
       - run: pip install -e ".[ml]"
-      - name: Download the official EMBER-2018 archive and check its pinned prefix
+      - name: Download the official EMBER-2018 archive and check its pinned SHA-256
         run: |
           mkdir -p "$SPECIMEN_DATA/ember"
           f="$SPECIMEN_DATA/ember/ember_dataset_2018_2.tar.bz2"
           curl -fL --retry 5 --retry-delay 30 -o "$f" https://ember.elastic.co/ember_dataset_2018_2.tar.bz2
           ls -l "$f"
-          # first 120 MiB must match the prefix hash pinned in scripts/download_data.py
-          test "$(head -c 125829120 "$f" | sha256sum | cut -d' ' -f1)" = c1637eaa021ee7d4a534e22c3208907ba0c40e2f3baa59b413fadfbd3d34bf65
+          # the whole archive must match (pinned in scripts/download_data.py as well)
+          echo "b6052eb8d350a49a8d5a5396fbe7d16cf42848b86ff969b77464434cf2997812  $f" | sha256sum -c -
           sha256sum "$f" | tee ember_full.sha256
-      - run: python benchmarks/bench_static_temporal.py --seeds "${{ inputs.seeds }}"
+      - run: python benchmarks/bench_static_temporal.py --seeds "$SEEDS"
+      - run: python scripts/check_results.py results/static_ember_temporal.json --run-id "$GITHUB_RUN_ID"
+      - run: sha256sum models/static_* | tee models.sha256
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: bench-static-temporal
@@ -96,3 +121,68 @@ jobs:
             results/static_ember_temporal.json
             docs/figures/static_temporal.png
             ember_full.sha256
+            models/static_*
+            models.sha256
+  light:
+    # MalbehavD, Mal-API-2019 / Oliveira, the MalDetConv reproduction and the one-month EMBER split:
+    # small pinned downloads, CPU only, one job per suite so they run in parallel
+    needs: validate
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [static, malbehavd, api-cross, maldetconv]
+    if: contains(fromJSON('["light","static","malbehavd","api-cross","maldetconv","all"]'), inputs.suite)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 340
+    steps:
+      - name: Skip suites that were not requested
+        id: want
+        env:
+          ME: ${{ matrix.suite }}
+        run: |
+          if [[ "$SUITE" == all || "$SUITE" == light || "$SUITE" == "$ME" ]]; then echo "run=true" >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: steps.want.outputs.run == 'true'
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        if: steps.want.outputs.run == 'true'
+        with:
+          python-version: "3.12"
+      - name: Install
+        if: steps.want.outputs.run == 'true'
+        env:
+          ME: ${{ matrix.suite }}
+        run: |
+          pip install -e ".[ml]"
+          if [[ "$ME" == api-cross ]]; then pip install xgboost; fi
+          if [[ "$ME" == maldetconv ]]; then pip install torch --index-url https://download.pytorch.org/whl/cpu; fi
+      - name: Download the pinned data
+        if: steps.want.outputs.run == 'true'
+        env:
+          ME: ${{ matrix.suite }}
+        run: |
+          case "$ME" in
+            static) only=ember;; malbehavd|maldetconv) only=malbehavd;; api-cross) only=malapi,oliveira;;
+          esac
+          for i in 1 2 3; do python scripts/download_data.py --only "$only" --dest "$SPECIMEN_DATA" && break; sleep 60; done
+          python scripts/download_data.py --dest "$SPECIMEN_DATA" --verify
+      - name: Run
+        if: steps.want.outputs.run == 'true'
+        env:
+          ME: ${{ matrix.suite }}
+        run: |
+          case "$ME" in
+            static) python benchmarks/bench_static.py; out=static_ember;;
+            malbehavd) python benchmarks/bench_malbehavd.py; out=behaviour_malbehavd;;
+            api-cross) python benchmarks/bench_api_cross.py; out=api_cross;;
+            maldetconv) python benchmarks/repro_maldetconv.py; out=repro_maldetconv;;
+          esac
+          python scripts/check_results.py "results/$out.json" --run-id "$GITHUB_RUN_ID"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: steps.want.outputs.run == 'true'
+        with:
+          name: bench-${{ matrix.suite }}
+          path: |
+            results/
+            docs/figures/
