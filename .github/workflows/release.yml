@@ -92,9 +92,9 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/rakshit-737/specimen:${{ github.ref_name }}
-            ghcr.io/rakshit-737/specimen:${{ steps.ver.outputs.v }}
-            ghcr.io/rakshit-737/specimen:latest
+            ghcr.io/rakshit-737/specimen-malware-analysis:${{ github.ref_name }}
+            ghcr.io/rakshit-737/specimen-malware-analysis:${{ steps.ver.outputs.v }}
+            ghcr.io/rakshit-737/specimen-malware-analysis:latest
           labels: |
             org.opencontainers.image.version=${{ steps.ver.outputs.v }}
             org.opencontainers.image.revision=${{ github.sha }}

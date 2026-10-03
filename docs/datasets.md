@@ -46,4 +46,4 @@ Li Z., Zhu H., Liu H., Song J., Cheng Q. Comprehensive evaluation of Mal-API-201
 Raff E. et al. Automatic Yara Rule Generation Using Biclustering. AISec 2020, doi:10.1145/3411508.3421372.
 ```
 
-Machine-readable versions of all of these are in [`CITATION.cff`](https://github.com/rakshit-737/specimen/blob/main/CITATION.cff).
+Machine-readable versions of all of these are in [`CITATION.cff`](https://github.com/rakshit-737/specimen-malware-analysis/blob/main/CITATION.cff).

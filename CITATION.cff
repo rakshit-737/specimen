@@ -4,8 +4,8 @@ title: "SPECIMEN: sample-to-story malware analysis with specificity-checked rule
 type: software
 authors:
   - name: Rakshit
-repository-code: "https://github.com/rakshit-737/specimen"
-url: "https://rakshit-737.github.io/specimen/"
+repository-code: "https://github.com/rakshit-737/specimen-malware-analysis"
+url: "https://rakshit-737.github.io/specimen-malware-analysis/"
 license: MIT
 version: 1.1.3
 date-released: 2026-10-03

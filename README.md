@@ -1,16 +1,16 @@
 # SPECIMEN
 
-[![ci](https://github.com/rakshit-737/specimen/actions/workflows/ci.yml/badge.svg)](https://github.com/rakshit-737/specimen/actions/workflows/ci.yml)
-[![docs](https://github.com/rakshit-737/specimen/actions/workflows/docs.yml/badge.svg)](https://rakshit-737.github.io/specimen/)
+[![ci](https://github.com/rakshit-737/specimen-malware-analysis/actions/workflows/ci.yml/badge.svg)](https://github.com/rakshit-737/specimen-malware-analysis/actions/workflows/ci.yml)
+[![docs](https://github.com/rakshit-737/specimen-malware-analysis/actions/workflows/docs.yml/badge.svg)](https://rakshit-737.github.io/specimen-malware-analysis/)
 ![python](https://img.shields.io/badge/python-3.10%20%E2%80%93%203.14-blue)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 ![core deps](https://img.shields.io/badge/core-stdlib%20only-lightgrey)
 
-**Docs:** <https://rakshit-737.github.io/specimen/> (architecture, evaluation with confidence intervals, API reference, [demo reports](https://rakshit-737.github.io/specimen/demo/)) · **Image:** `ghcr.io/rakshit-737/specimen`
+**Docs:** <https://rakshit-737.github.io/specimen-malware-analysis/> (architecture, evaluation with confidence intervals, API reference, [demo reports](https://rakshit-737.github.io/specimen-malware-analysis/demo/)) · **Image:** `ghcr.io/rakshit-737/specimen-malware-analysis`
 
 **Contribution, in one sentence:** SPECIMEN measures, on a temporal split of 48,976 CAPEv2 reports and on 32,673 benign emulation reports, how often Sigma rules synthesised from *one* sandbox run and checked against a real negative corpus catch later siblings without firing on other families or on benign software, inside one explainable sample-to-report pipeline; the ablation separates what candidate generation, the generalisation ladder and the negative corpus each contribute.
 
-[![njRAT demo report: verdict, provenance graph and a synthesised Sigma rule](docs/figures/demo.png)](https://rakshit-737.github.io/specimen/demo/avast_njrat_1/)
+[![njRAT demo report: verdict, provenance graph and a synthesised Sigma rule](docs/figures/demo.png)](https://rakshit-737.github.io/specimen-malware-analysis/demo/avast_njrat_1/)
 
 **One sample (or one sandbox report) in, one defensible story out:** what the sample is, what it did on the host, how to detect it next time, and the evidence behind each conclusion.
 
@@ -36,7 +36,7 @@ SPECIMEN replays sandbox behaviour (CAPEv2/Cuckoo reports, Sysmon exports or its
 [^rules]: Shipped configuration: packaged negative corpus minus the family the trained model predicts. Mean over 450 runs with a two-level bootstrap CI; the median family is much lower (see Evaluation). Benign FPR is on emulator (Speakeasy) reports, a lower bound.
 [^beh]: Shipped API n-gram LR; Nadeau-Bengio corrected 95 % intervals. 42 % of random-split test rows have an exact duplicate in train, which inflates the paper-protocol number.
 
-All cells come from `results/*.json`, produced by the `bench` workflow; each table on the [Evaluation](https://rakshit-737.github.io/specimen/benchmarks/) page names its run id.
+All cells come from `results/*.json`, produced by the `bench` workflow; each table on the [Evaluation](https://rakshit-737.github.io/specimen-malware-analysis/benchmarks/) page names its run id.
 <!-- /gen:headline -->
 
 ## Architecture
@@ -85,7 +85,7 @@ Core install is stdlib-only, so this needs nothing but Python 3.10+:
 
 <!-- quickstart:start -->
 ```bash
-git clone https://github.com/rakshit-737/specimen && cd specimen
+git clone https://github.com/rakshit-737/specimen-malware-analysis && cd specimen
 pip install -e .
 python -m specimen demo --out out
 python -m specimen report tests/fixtures/cape/avast_njrat_1.json --out out/reports
@@ -106,14 +106,14 @@ python -m pytest -q
 
 # trained family model and EMBER gate (too large for git): release assets, SHA-256 pinned in scripts/model_assets.json
 python scripts/fetch_models.py --dest models            # verifies every hash; or, without a clone:
-gh release download -R rakshit-737/specimen -p 'family_*' -p 'static_*' -D models   # latest release
+gh release download -R rakshit-737/specimen-malware-analysis -p 'family_*' -p 'static_*' -D models   # latest release
 
 python -m specimen analyze <your-sample> --trace <recorded-run.json|sysmon.xml> --out out/
 python -m specimen batch <your-report-dir> --out out/batch --workers 4
 python -m specimen triage-ember <ember-raw-features.jsonl>
 ```
 
-In Docker: `docker run --rm --network none -v "$PWD/tests/fixtures:/fx:ro" ghcr.io/rakshit-737/specimen:latest report /fx/cape/avast_njrat_1.json` (pin a release with `:v1.1.0`; releases after 1.1.0 are also tagged with the plain version, e.g. `:1.2.0`. The image has no family or EMBER model: mount them with `-v ./models:/opt/specimen/models:ro`).
+In Docker: `docker run --rm --network none -v "$PWD/tests/fixtures:/fx:ro" ghcr.io/rakshit-737/specimen-malware-analysis:latest report /fx/cape/avast_njrat_1.json` (pin a release with `:v1.1.0`; releases after 1.1.0 are also tagged with the plain version, e.g. `:1.2.0`. The image has no family or EMBER model: mount them with `-v ./models:/opt/specimen/models:ro`).
 
 Example: `specimen report` on the bundled njRAT report with the pinned family model in `models/` (actual output):
 
@@ -157,7 +157,7 @@ The test fixtures in `tests/fixtures/cape/` are four real Avast-CTU reduced repo
 
 ## Evaluation
 
-Every number below is generated by `scripts/render_results.py` from `results/*.json`, and every result file comes from the GitHub Actions `bench` workflow (its run id and commit are in the file and under each table). Exact commands, runtimes and expected values are on the [Reproduce](https://rakshit-737.github.io/specimen/reproduce/) page; protocols and caveats are on the [Evaluation](https://rakshit-737.github.io/specimen/benchmarks/) page.
+Every number below is generated by `scripts/render_results.py` from `results/*.json`, and every result file comes from the GitHub Actions `bench` workflow (its run id and commit are in the file and under each table). Exact commands, runtimes and expected values are on the [Reproduce](https://rakshit-737.github.io/specimen-malware-analysis/reproduce/) page; protocols and caveats are on the [Evaluation](https://rakshit-737.github.io/specimen-malware-analysis/benchmarks/) page.
 
 ### 1. Static gate on EMBER (standalone `triage-ember`; `analyze` does not call it)
 
@@ -173,7 +173,7 @@ Train Jan-Sep 2018, calibrate the 99 %-recall threshold on October, test Nov-Dec
 | random split, same months and volume | 0.9965 [0.9964, 0.9966] | 0.852 [0.843, 0.862] | 0.949 [0.947, 0.951] |  |  |  |
 | *upstream EMBER-2018 LightGBM (600k Jan-Oct rows, EMBER features)* | *0.99643* | *0.868* | *0.965* |  |  |  |
 
-Intervals for the 5 seeds are 95 % t-intervals over seeds (seed variance only: the test rows are fixed); the seed-0 row bootstraps the test rows. Source: `results/static_ember_temporal.json` (bench run [37091150763](https://github.com/rakshit-737/specimen/actions/runs/37091150763), commit `68dfb7c`).
+Intervals for the 5 seeds are 95 % t-intervals over seeds (seed variance only: the test rows are fixed); the seed-0 row bootstraps the test rows. Source: `results/static_ember_temporal.json` (bench run [37091150763](https://github.com/rakshit-737/specimen-malware-analysis/actions/runs/37091150763), commit `68dfb7c`).
 <!-- /gen:static-temporal -->
 
 On the same Nov-Dec months the upstream model (all 600k labelled Jan-Oct rows, EMBER's own features) reaches a far higher TPR at 0.1 % FPR; SPECIMEN's gate uses a fifth of the rows, its own featuriser and no October training data, so the gap mixes volume and features with drift. "Detonations saved" depends on the malware share of the submissions (benign share x benign skipped + malware share x malware missed).
@@ -187,7 +187,7 @@ On the same Nov-Dec months the upstream model (all 600k labelled Jan-Oct rows, E
 | logistic regression | 0.967 [0.964, 0.971] | 0.006 [0.000, 0.098] | 0.577 | 0.925 | 0.929 |
 | LightGBM (SPECIMEN) | 0.994 [0.993, 0.995] | 0.846 [0.812, 0.877] | 0.928 | 0.964 | 0.966 |
 
-Source: `results/static_ember.json` (bench run [37093305708](https://github.com/rakshit-737/specimen/actions/runs/37093305708), commit `a575df4`).
+Source: `results/static_ember.json` (bench run [37093305708](https://github.com/rakshit-737/specimen-malware-analysis/actions/runs/37093305708), commit `a575df4`).
 <!-- /gen:static-random -->
 
 </details>
@@ -206,7 +206,7 @@ Authors' temporal split: 37,512 training reports before 2019-08-01, 11,464 later
 | *published HMIL behaviour+static (Bosansky 2022)* | *0.945* |  |  |
 | *published HMIL static-only (Bosansky 2022)* | *~0.63* |  |  |
 
-McNemar, behaviour-only vs behaviour+static on test: 159 vs 56 discordant reports, p = 1.3e-12. Source: `results/family_avast.json` (bench run [37091150763](https://github.com/rakshit-737/specimen/actions/runs/37091150763), commit `68dfb7c`).
+McNemar, behaviour-only vs behaviour+static on test: 159 vs 56 discordant reports, p = 1.3e-12. Source: `results/family_avast.json` (bench run [37091150763](https://github.com/rakshit-737/specimen-malware-analysis/actions/runs/37091150763), commit `68dfb7c`).
 <!-- /gen:family -->
 
 **Open set.** The abstain threshold is chosen on the validation slice and applied unchanged to test:
@@ -217,7 +217,7 @@ McNemar, behaviour-only vs behaviour+static on test: 159 vs 56 discordant report
 | validation (2019-06..07; chosen here) | 0.85 | 95.4 % | 99.8 % | 26.8 % |
 | test (applied unchanged) | 0.85 | 92.4 % [91.9, 92.9] | 99.9 % [99.8, 99.9] | 13.3 % [12.7, 13.9] |
 
-Leave-one-family-out on test: the median top probability of a held-out family's reports is 0.45-0.79. Below the threshold reports say `unknown (closest: X)`. Source: `results/family_avast.json` (bench run [37091150763](https://github.com/rakshit-737/specimen/actions/runs/37091150763), commit `68dfb7c`).
+Leave-one-family-out on test: the median top probability of a held-out family's reports is 0.45-0.79. Below the threshold reports say `unknown (closest: X)`. Source: `results/family_avast.json` (bench run [37091150763](https://github.com/rakshit-737/specimen-malware-analysis/actions/runs/37091150763), commit `68dfb7c`).
 <!-- /gen:family-openset -->
 
 ### 3. Do auto-rules from ONE run generalise? `results/rules_avast.json`
@@ -245,7 +245,7 @@ For each family and seed (5 seeds), 10 reference runs are drawn from the trainin
 
 Benign FPR: share of the 32,671 benign Quo Vadis Speakeasy reports on which any rule of a run fires (mean over runs); the interval is Wilson on the reports hit by *any* run of the row, an upper bound for a single run (all runs share the same benign reports, so their counts cannot be pooled). Only 5,376 of these reports contain an event a Sigma rule here can match (5,651 file writes, 55 process creations, 0 registry value writes in total): the emulator records far fewer host actions than a sandbox, so this is a weak lower bound, not a benign-FPR estimate for sandbox traces. Predicted family: 5-fold cross-fitted FamilyModel (behaviour+static) on train; it matches the true family for 98.4 % of the reference runs.
 
-Source: `results/rules_avast.json` (bench run [37109545948](https://github.com/rakshit-737/specimen/actions/runs/37109545948), commit `be11eac`).
+Source: `results/rules_avast.json` (bench run [37109545948](https://github.com/rakshit-737/specimen-malware-analysis/actions/runs/37109545948), commit `be11eac`).
 <!-- /gen:rules -->
 
 <img src="docs/figures/rule_generalisation.png" width="640" alt="Sibling recall against cross-family FPR (log scale) per synthesizer, with 95 % CIs">
@@ -260,7 +260,7 @@ What the ablation shows:
 - **Against the MVP**, the shipped synthesizer changes recall by +0.127 [-0.065, 0.378] (not significant at family level, p = 0.57) and FPR by -1.74 pp (p = 0.0078).
 - **The mean hides the spread** (shipped, per family): Swisyn 0.998, Qakbot 0.937, Lokibot 0.417, njRAT 0.141, Zeus 0.090, Ursnif 0.029, Adload 0.020, Trickbot 0.005, Emotet 0.001. Emotet, Trickbot and Ursnif randomise every artefact that reduced reports record.
 
-Source: `results/rules_avast.json` (bench run [37109545948](https://github.com/rakshit-737/specimen/actions/runs/37109545948), commit `be11eac`).
+Source: `results/rules_avast.json` (bench run [37109545948](https://github.com/rakshit-737/specimen-malware-analysis/actions/runs/37109545948), commit `be11eac`).
 <!-- /gen:rules-findings -->
 
 <details><summary>Family-clustered paired tests</summary>
@@ -284,7 +284,7 @@ Source: `results/rules_avast.json` (bench run [37109545948](https://github.com/r
 | packaged corpus, predicted family excluded (shipped) | packaged corpus, no exclusion (default install, no family model) | FPR | -0.005 pp [-0.010, -0.002] | 0.016 | 0.016 |
 | ladder + 1,500 other-family negatives (true family excluded, oracle) | packaged corpus, predicted family excluded (shipped) | recall | -0.003 [-0.010, +0.001] | 0.56 | 0.38 |
 
-Tests are on the family-mean differences (the 450 units are clustered within 9 families; with 9 families the smallest attainable two-sided p is 0.0039). Source: `results/rules_avast.json` (bench run [37109545948](https://github.com/rakshit-737/specimen/actions/runs/37109545948), commit `be11eac`).
+Tests are on the family-mean differences (the 450 units are clustered within 9 families; with 9 families the smallest attainable two-sided p is 0.0039). Source: `results/rules_avast.json` (bench run [37109545948](https://github.com/rakshit-737/specimen-malware-analysis/actions/runs/37109545948), commit `be11eac`).
 <!-- /gen:rules-tests -->
 
 </details>
@@ -305,7 +305,7 @@ Every sample goes through `api_sequence_to_trace`. 70/30 splits as in the datase
 
 - Duplicates: 1,601 distinct sequences in 2,570 rows; 42.4 [38.4, 46.4] % of test rows have an exact copy in train. The LR is 99.5 [96.2, 100.0] % accurate on those and 93.9 [91.5, 96.3] % on unseen rows.
 - Simulated shipped routing (per-split LR for traces with at least 5 calls, MVP scorer otherwise; p >= 0.5 counts as not benign): accuracy 0.960 [0.947, 0.972]; at the report's 'malicious' cut-off (p >= 0.8) 88.9 [85.6, 92.3] % of malicious traces are labelled malicious. 24.3 % of traces have fewer than 20 calls.
-- Intervals: Nadeau-Bengio corrected t over repeated splits/folds (logit scale near 0/1). Source: `results/behaviour_malbehavd.json` (bench run [37093305708](https://github.com/rakshit-737/specimen/actions/runs/37093305708), commit `a575df4`).
+- Intervals: Nadeau-Bengio corrected t over repeated splits/folds (logit scale near 0/1). Source: `results/behaviour_malbehavd.json` (bench run [37093305708](https://github.com/rakshit-737/specimen-malware-analysis/actions/runs/37093305708), commit `a575df4`).
 <!-- /gen:behaviour -->
 
 The MVP's synthetic-trained scorer does not transfer: API-only traces trigger almost no ATT&CK-mapped features.
@@ -323,7 +323,7 @@ The MVP's synthetic-trained scorer does not transfer: API-only traces trigger al
 | 80 | 0.955 | 0.943 [0.933, 0.953] | 0.921 [0.904, 0.938] | 0.959 [0.948, 0.970] | +0.016, p = 0.012 | 0.923 [0.904, 0.942] | 0.940 [0.923, 0.957] |
 | 100 | 0.961 | 0.950 [0.934, 0.966] | 0.923 [0.908, 0.938] | 0.957 [0.949, 0.966] | +0.008, p = 0.15 | 0.912 [0.882, 0.943] | 0.939 [0.924, 0.953] |
 
-10 seeds x random 70/30; 20 epochs (not stated in the paper). Source: `results/repro_maldetconv.json` (bench run [37093305708](https://github.com/rakshit-737/specimen/actions/runs/37093305708), commit `a575df4`).
+10 seeds x random 70/30; 20 epochs (not stated in the paper). Source: `results/repro_maldetconv.json` (bench run [37093305708](https://github.com/rakshit-737/specimen-malware-analysis/actions/runs/37093305708), commit `a575df4`).
 <!-- /gen:maldetconv -->
 
 Both are re-implementations rather than exact reproductions: the paper's training schedule and preprocessing details are not fully specified.
@@ -355,7 +355,7 @@ Feature-matched comparisons on identical folds (all rows; Nadeau-Bengio correcte
 | random-forest / uni+bigram | specimen-lr / uni+bigram | +0.005 [-0.008, +0.018] | 0.43 |
 | specimen-lr / tfidf | specimen-lr / uni+bigram | +0.102 [+0.090, +0.113] | 2.2e-15 |
 
-No grid search was run: the paper grid-searches (section 5.1, p. 6) but does not give the ranges, so defaults are used; part of any gap to the paper may come from that. Source: `results/api_cross.json` (bench run [37109548412](https://github.com/rakshit-737/specimen/actions/runs/37109548412), commit `be11eac`).
+No grid search was run: the paper grid-searches (section 5.1, p. 6) but does not give the ranges, so defaults are used; part of any gap to the paper may come from that. Source: `results/api_cross.json` (bench run [37109548412](https://github.com/rakshit-737/specimen-malware-analysis/actions/runs/37109548412), commit `be11eac`).
 <!-- /gen:li2024 -->
 
 **Cross-dataset.** The shipped MalbehavD-trained scorer applied unchanged to Mal-API-2019 (all malware):
@@ -370,7 +370,7 @@ No grid search was run: the paper grid-searches (section 5.1, p. 6) but does not
 | whole sequence | 0.5 | 71.6 % [70.5, 72.6] |
 | whole sequence | 0.8 | 40.1 % [38.9, 41.2] |
 
-Within Oliveira (integer-coded calls, duplicate-free, 5-fold x seeds, class-balanced LR): balanced accuracy 0.916 [0.896, 0.937], ROC AUC 0.982 [0.977, 0.987]. Source: `results/api_cross.json` (bench run [37109548412](https://github.com/rakshit-737/specimen/actions/runs/37109548412), commit `be11eac`).
+Within Oliveira (integer-coded calls, duplicate-free, 5-fold x seeds, class-balanced LR): balanced accuracy 0.916 [0.896, 0.937], ROC AUC 0.982 [0.977, 0.987]. Source: `results/api_cross.json` (bench run [37109548412](https://github.com/rakshit-737/specimen-malware-analysis/actions/runs/37109548412), commit `be11eac`).
 <!-- /gen:cross -->
 
 Cross-dataset transfer to Oliveira is not possible because the re-host has no API-name table.
@@ -430,7 +430,7 @@ Cross-dataset transfer to Oliveira is not possible because the re-host has no AP
 
 ## Project docs
 
-[Docs site](https://rakshit-737.github.io/specimen/) · [CHANGELOG](CHANGELOG.md) · [CONTRIBUTING](CONTRIBUTING.md) · [ADRs](docs/adr/) · [Threat model](THREAT_MODEL.md) · [Security policy](SECURITY.md) · [Citation](CITATION.cff)
+[Docs site](https://rakshit-737.github.io/specimen-malware-analysis/) · [CHANGELOG](CHANGELOG.md) · [CONTRIBUTING](CONTRIBUTING.md) · [ADRs](docs/adr/) · [Threat model](THREAT_MODEL.md) · [Security policy](SECURITY.md) · [Citation](CITATION.cff)
 
 ## Citation of the data and papers
 

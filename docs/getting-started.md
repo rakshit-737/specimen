@@ -5,7 +5,7 @@
 The core is stdlib-only, so nothing but Python 3.10+ is needed:
 
 ```bash
-git clone https://github.com/rakshit-737/specimen && cd specimen
+git clone https://github.com/rakshit-737/specimen-malware-analysis && cd specimen
 pip install -e .
 python -m specimen demo --out out
 python -m specimen report tests/fixtures/cape/avast_njrat_1.json --out out/reports
@@ -23,7 +23,7 @@ Without the trained models, the report's `family` is `null`, nothing is left out
 pip install -e ".[dev,ml]"                # [ml] adds numpy / scikit-learn / LightGBM
 python -m pytest -q                       # no datasets needed
 python scripts/fetch_models.py --dest models   # SHA-256 pinned in scripts/model_assets.json
-# without a clone: gh release download -R rakshit-737/specimen -p 'family_*' -p 'static_*' -D models
+# without a clone: gh release download -R rakshit-737/specimen-malware-analysis -p 'family_*' -p 'static_*' -D models
 ```
 
 The family model (`family_model.npz`, about 5.7 MB) and the EMBER gate (`static_lgbm.txt`, about 4.4 MB) exceed the 1 MB repository limit and are release assets; put them in `models/` or point `SPECIMEN_MODELS` at them. `triage-ember` names any missing file. No model is ever unpickled.
@@ -40,10 +40,10 @@ python -m specimen triage-ember <ember-raw-features.jsonl>
 
 ```bash
 docker run --rm --network none --read-only -v "$PWD/tests/fixtures:/fx:ro" \
-  ghcr.io/rakshit-737/specimen:latest report /fx/cape/avast_njrat_1.json
+  ghcr.io/rakshit-737/specimen-malware-analysis:latest report /fx/cape/avast_njrat_1.json
 # write reports to the host: run as your own uid
 docker run --rm --network none --user "$(id -u):$(id -g)" -v "$PWD/tests/fixtures:/fx:ro" -v "$PWD/out:/out" \
-  ghcr.io/rakshit-737/specimen:latest report /fx/cape/avast_njrat_1.json --out /out
+  ghcr.io/rakshit-737/specimen-malware-analysis:latest report /fx/cape/avast_njrat_1.json --out /out
 ```
 
 The image contains no family or EMBER model; mount them with `-v "$PWD/models:/opt/specimen/models:ro"`. Pin a release with `:v1.1.0`; releases after 1.1.0 are also tagged with the plain version (for example `:1.2.0`) and carry `org.opencontainers.image.version` and `revision` labels.

@@ -3,7 +3,7 @@
 Every published number comes from a script in `benchmarks/` and a JSON file in `results/`. All of them run in the manual **`bench`** GitHub Actions workflow, so each result file records the run id, job, commit, command and runtime that produced it (`provenance`):
 
 ```bash
-gh workflow run bench -R rakshit-737/specimen -f suite=all -f seeds=5
+gh workflow run bench -R rakshit-737/specimen-malware-analysis -f suite=all -f seeds=5
 # suites: rules | family | avast (rules+family) | static-temporal | static | malbehavd | api-cross | maldetconv | light | all
 ```
 
@@ -14,13 +14,13 @@ The workflow downloads pinned data (SHA-256 checked; the whole 1.7 GB EMBER arch
 <!-- gen:reproduce -->
 | result file | bench suite | script | wall clock (Actions) | source run | commit | expected headline value |
 |---|---|---|---|---|---|---|
-| `static_ember_temporal.json` | `suite=static-temporal` | `python benchmarks/bench_static_temporal.py --seeds 5` | 31 min | [37091150763](https://github.com/rakshit-737/specimen/actions/runs/37091150763) | `68dfb7c` | AUC 0.9892, TPR@0.1% 0.488 |
-| `static_ember.json` | `suite=static` | `python benchmarks/bench_static.py` | 6 min | [37093305708](https://github.com/rakshit-737/specimen/actions/runs/37093305708) | `a575df4` | LightGBM AUC 0.9941 |
-| `rules_avast.json` | `suite=rules` | `python benchmarks/bench_rules.py --seeds 5 --benign <speakeasy cache>` | 10 min | [37109545948](https://github.com/rakshit-737/specimen/actions/runs/37109545948) | `be11eac` | shipped recall 0.293, FPR 0.0058 % |
-| `family_avast.json` | `suite=family` | `python benchmarks/bench_family.py` | 14 min | [37091150763](https://github.com/rakshit-737/specimen/actions/runs/37091150763) | `68dfb7c` | shipped behaviour+static accuracy 0.9497, tau 0.85 |
-| `behaviour_malbehavd.json` | `suite=malbehavd` | `python benchmarks/bench_malbehavd.py` | 1 min | [37093305708](https://github.com/rakshit-737/specimen/actions/runs/37093305708) | `a575df4` | LR 70/30 0.9627, duplicate-free 0.9343 |
-| `api_cross.json` | `suite=api-cross` | `python benchmarks/bench_api_cross.py --seeds 5` | 61 min | [37109548412](https://github.com/rakshit-737/specimen/actions/runs/37109548412) | `be11eac` | Li et al. RF (TF-IDF) 0.6578 |
-| `repro_maldetconv.json` | `suite=maldetconv` | `python benchmarks/repro_maldetconv.py --seeds 10 --epochs 20` | 32 min | [37093305708](https://github.com/rakshit-737/specimen/actions/runs/37093305708) | `a575df4` | n=100 reproduction 0.9498 |
+| `static_ember_temporal.json` | `suite=static-temporal` | `python benchmarks/bench_static_temporal.py --seeds 5` | 31 min | [37091150763](https://github.com/rakshit-737/specimen-malware-analysis/actions/runs/37091150763) | `68dfb7c` | AUC 0.9892, TPR@0.1% 0.488 |
+| `static_ember.json` | `suite=static` | `python benchmarks/bench_static.py` | 6 min | [37093305708](https://github.com/rakshit-737/specimen-malware-analysis/actions/runs/37093305708) | `a575df4` | LightGBM AUC 0.9941 |
+| `rules_avast.json` | `suite=rules` | `python benchmarks/bench_rules.py --seeds 5 --benign <speakeasy cache>` | 10 min | [37109545948](https://github.com/rakshit-737/specimen-malware-analysis/actions/runs/37109545948) | `be11eac` | shipped recall 0.293, FPR 0.0058 % |
+| `family_avast.json` | `suite=family` | `python benchmarks/bench_family.py` | 14 min | [37091150763](https://github.com/rakshit-737/specimen-malware-analysis/actions/runs/37091150763) | `68dfb7c` | shipped behaviour+static accuracy 0.9497, tau 0.85 |
+| `behaviour_malbehavd.json` | `suite=malbehavd` | `python benchmarks/bench_malbehavd.py` | 1 min | [37093305708](https://github.com/rakshit-737/specimen-malware-analysis/actions/runs/37093305708) | `a575df4` | LR 70/30 0.9627, duplicate-free 0.9343 |
+| `api_cross.json` | `suite=api-cross` | `python benchmarks/bench_api_cross.py --seeds 5` | 61 min | [37109548412](https://github.com/rakshit-737/specimen-malware-analysis/actions/runs/37109548412) | `be11eac` | Li et al. RF (TF-IDF) 0.6578 |
+| `repro_maldetconv.json` | `suite=maldetconv` | `python benchmarks/repro_maldetconv.py --seeds 10 --epochs 20` | 32 min | [37093305708](https://github.com/rakshit-737/specimen-malware-analysis/actions/runs/37093305708) | `a575df4` | n=100 reproduction 0.9498 |
 
 Wall clock is the script's own runtime on a GitHub-hosted ubuntu-24.04 runner (4 vCPU), excluding downloads. Re-runs on other hardware should agree within the published intervals.
 <!-- /gen:reproduce -->

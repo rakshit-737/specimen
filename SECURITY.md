@@ -7,7 +7,7 @@ SPECIMEN is a defensive analysis tool for lab use only. It never executes, loads
 Security fixes go into the latest release on the `main` branch.
 
 ## Reporting a vulnerability
-Use GitHub's private vulnerability reporting: <https://github.com/rakshit-737/specimen/security/advisories/new>. Do not open a public issue for a vulnerability, and do not attach live malware: send a hash and a description instead.
+Use GitHub's private vulnerability reporting: <https://github.com/rakshit-737/specimen-malware-analysis/security/advisories/new>. Do not open a public issue for a vulnerability, and do not attach live malware: send a hash and a description instead.
 
 Relevant classes of issues include parser crashes or resource exhaustion on hostile reports, rule or Markdown injection through report strings, evidence-binding bypasses (a trace accepted for the wrong sample), and anything that would make SPECIMEN execute or fetch sample content.
 

@@ -1,8 +1,8 @@
 site_name: SPECIMEN
 site_description: Sample-to-story malware analysis pipeline (lab-only, never executes samples)
-site_url: https://rakshit-737.github.io/specimen/
-repo_url: https://github.com/rakshit-737/specimen
-repo_name: rakshit-737/specimen
+site_url: https://rakshit-737.github.io/specimen-malware-analysis/
+repo_url: https://github.com/rakshit-737/specimen-malware-analysis
+repo_name: rakshit-737/specimen-malware-analysis
 edit_uri: edit/main/docs/
 theme:
   name: material

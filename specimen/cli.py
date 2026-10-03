@@ -22,7 +22,7 @@ def _emit(rep: dict, out: Path | None, stem: str) -> None:
         (out / f"{stem}.md").write_text(render_markdown(rep), encoding="utf-8")
 
 
-RELEASE_HINT = ("gh release download -R rakshit-737/specimen -p 'family_*' -p 'static_*' -D models "
+RELEASE_HINT = ("gh release download -R rakshit-737/specimen-malware-analysis -p 'family_*' -p 'static_*' -D models "
                 "(latest release; then set SPECIMEN_MODELS=models or run from that directory). "
                 "From a clone, python scripts/fetch_models.py also checks the pinned SHA-256s")
 

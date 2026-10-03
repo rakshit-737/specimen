@@ -8,7 +8,7 @@ COPY specimen ./specimen
 RUN pip wheel --no-cache-dir --no-deps -w /wheels .
 
 FROM python:3.12-slim@sha256:dddfd7e07f9d15aeeca61529320492139d21cac7f0070c00609243e51e4e0016
-LABEL org.opencontainers.image.source="https://github.com/rakshit-737/specimen" \
+LABEL org.opencontainers.image.source="https://github.com/rakshit-737/specimen-malware-analysis" \
       org.opencontainers.image.description="Sample-to-story malware analysis pipeline (lab-only, never executes samples)" \
       org.opencontainers.image.licenses="MIT"
 # The API behaviour model and the negative corpus ship inside the wheel.

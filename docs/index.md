@@ -45,7 +45,7 @@
 [^rules]: Shipped configuration: packaged negative corpus minus the family the trained model predicts. Mean over 450 runs with a two-level bootstrap CI; the median family is much lower (see Evaluation). Benign FPR is on emulator (Speakeasy) reports, a lower bound.
 [^beh]: Shipped API n-gram LR; Nadeau-Bengio corrected 95 % intervals. 42 % of random-split test rows have an exact duplicate in train, which inflates the paper-protocol number.
 
-All cells come from `results/*.json`, produced by the `bench` workflow; each table on the [Evaluation](https://rakshit-737.github.io/specimen/benchmarks/) page names its run id.
+All cells come from `results/*.json`, produced by the `bench` workflow; each table on the [Evaluation](https://rakshit-737.github.io/specimen-malware-analysis/benchmarks/) page names its run id.
 <!-- /gen:headline -->
 
 Details, intervals and caveats: [Evaluation](benchmarks.md).

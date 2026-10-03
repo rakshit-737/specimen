@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 RES = ROOT / "results"
 TARGETS = [ROOT / "README.md", ROOT / "docs" / "benchmarks.md", ROOT / "docs" / "index.md",
            ROOT / "docs" / "how-it-works.md", ROOT / "docs" / "reproduce.md", ROOT / "THREAT_MODEL.md"]
-RUN_URL = "https://github.com/rakshit-737/specimen/actions/runs/"
+RUN_URL = "https://github.com/rakshit-737/specimen-malware-analysis/actions/runs/"
 
 
 def load(name: str) -> dict[str, Any]:
@@ -419,7 +419,7 @@ def block_headline() -> str:
     ]
     return (table(["Question", "Data", "SPECIMEN [95 % CI]", "Baseline", "Published"], rows) + "\n\n"
             + "\n".join(notes) + "\n\nAll cells come from `results/*.json`, produced by the `bench` workflow; each "
-              "table on the [Evaluation](https://rakshit-737.github.io/specimen/benchmarks/) page names its run id.")
+              "table on the [Evaluation](https://rakshit-737.github.io/specimen-malware-analysis/benchmarks/) page names its run id.")
 
 
 def demo(name: str = "avast_njrat_1") -> dict:

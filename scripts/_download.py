@@ -15,7 +15,7 @@ import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-UA = {"User-Agent": "specimen-dataset-fetcher/0.2 (+https://github.com/rakshit-737/specimen)"}
+UA = {"User-Agent": "specimen-dataset-fetcher/0.2 (+https://github.com/rakshit-737/specimen-malware-analysis)"}
 CHUNK = 4 * 1024 * 1024
 
 

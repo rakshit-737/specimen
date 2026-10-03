@@ -29,7 +29,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 LOCK = ROOT / "scripts" / "model_assets.json"
-REPO = "rakshit-737/specimen"
+REPO = "rakshit-737/specimen-malware-analysis"
 
 
 def sha256(p: Path) -> str:
