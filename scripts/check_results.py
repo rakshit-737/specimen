@@ -54,8 +54,10 @@ def check(doc: dict) -> list[str]:
             lo, hi = v
             if lo > hi + 1e-12:
                 errs.append(f"{path}: reversed interval {v}")
-            if "diff" not in path.lower() and "pct" not in path.lower() and (lo < -1e-9 or hi > 1 + 1e-9) \
-                    and not path.lower().startswith(("lightgbm_5_seeds_mean_95ci",)):
+            low = path.lower()
+            is_difference = any(k in low for k in ("diff", "minus", "paired", "_vs_"))
+            if not is_difference and "pct" not in low and (lo < -1e-9 or hi > 1 + 1e-9) \
+                    and not low.startswith(("lightgbm_5_seeds_mean_95ci",)):
                 errs.append(f"{path}: interval {v} leaves [0, 1]")
     return errs
 
