@@ -1,7 +1,16 @@
 {
   "benchmark": "behaviour_malbehavd",
-  "generated": "2026-10-02",
-  "python": "3.14.3",
+  "generated": "2026-10-03",
+  "python": "3.12.14",
+  "provenance": {
+    "source": "github-actions",
+    "github_run_id": 37093305708,
+    "github_run_attempt": 1,
+    "job": "light",
+    "commit": "a575df40d1d67144bb3554293dc3a221e4fae407",
+    "command": "bench_malbehavd.py",
+    "runtime_s": 46.8
+  },
   "dataset": {
     "name": "MalbehavD-V1",
     "samples": 2570,
@@ -18,8 +27,14 @@
       "precision": 1.0,
       "recall": 0.0052,
       "f1": 0.0103,
-      "accuracy_95ci": "[0.4682, 0.537]",
-      "roc_auc_95ci": "[0.1948, 0.2594]"
+      "accuracy_95ci": [
+        0.4682,
+        0.537
+      ],
+      "roc_auc_95ci": [
+        0.1948,
+        0.2594
+      ]
     },
     {
       "model": "attack-features",
@@ -30,8 +45,14 @@
       "precision": 0.7252,
       "recall": 0.8156,
       "f1": 0.7677,
-      "accuracy_95ci": "[0.7224, 0.786]",
-      "roc_auc_95ci": "[0.7485, 0.8112]"
+      "accuracy_95ci": [
+        0.7224,
+        0.786
+      ],
+      "roc_auc_95ci": [
+        0.7485,
+        0.8112
+      ]
     },
     {
       "model": "api-ngram-lr",
@@ -42,8 +63,14 @@
       "precision": 0.9712,
       "recall": 0.9636,
       "f1": 0.9674,
-      "accuracy_95ci": "[0.9546, 0.9792]",
-      "roc_auc_95ci": "[0.9839, 0.9962]"
+      "accuracy_95ci": [
+        0.9546,
+        0.9792
+      ],
+      "roc_auc_95ci": [
+        0.9839,
+        0.9962
+      ]
     },
     {
       "model": "api-ngram-lgbm",
@@ -54,89 +81,354 @@
       "precision": 0.9687,
       "recall": 0.9636,
       "f1": 0.9661,
-      "accuracy_95ci": "[0.952, 0.978]",
-      "roc_auc_95ci": "[0.9827, 0.9955]"
+      "accuracy_95ci": [
+        0.952,
+        0.978
+      ],
+      "roc_auc_95ci": [
+        0.9827,
+        0.9955
+      ]
     }
   ],
   "seeds_70_30": [
     {
       "model": "mvp-synthetic",
-      "accuracy": "0.5016 +/- 0.0024",
-      "roc_auc": "0.2386 +/- 0.0475",
-      "f1": "0.0052 +/- 0.0080",
-      "accuracy_sd": 0.0011
+      "accuracy": {
+        "mean": 0.50164,
+        "ci95": [
+          0.49924580906711047,
+          0.5040341909328895
+        ],
+        "n_runs": 5,
+        "method": "Nadeau-Bengio corrected t"
+      },
+      "roc_auc": {
+        "mean": 0.238624,
+        "ci95": [
+          0.19113336471240344,
+          0.28611463528759656
+        ],
+        "n_runs": 5,
+        "method": "Nadeau-Bengio corrected t"
+      },
+      "f1": {
+        "mean": 0.00518,
+        "ci95": [
+          0.0003889920944738039,
+          0.0385949207747461
+        ],
+        "n_runs": 5,
+        "method": "Nadeau-Bengio corrected t on the logit scale"
+      },
+      "accuracy_sd": 0.0010876580344942714,
+      "runs": [
+        0.5032,
+        0.5006,
+        0.5019,
+        0.5019,
+        0.5006
+      ]
     },
     {
       "model": "attack-features",
-      "accuracy": "0.7235 +/- 0.0501",
-      "roc_auc": "0.7654 +/- 0.0450",
-      "f1": "0.7301 +/- 0.0546",
-      "accuracy_sd": 0.0228
+      "accuracy": {
+        "mean": 0.72348,
+        "ci95": [
+          0.6733920112783113,
+          0.7735679887216887
+        ],
+        "n_runs": 5,
+        "method": "Nadeau-Bengio corrected t"
+      },
+      "roc_auc": {
+        "mean": 0.7654280000000001,
+        "ci95": [
+          0.7204558062692897,
+          0.8104001937307105
+        ],
+        "n_runs": 5,
+        "method": "Nadeau-Bengio corrected t"
+      },
+      "f1": {
+        "mean": 0.7301200000000001,
+        "ci95": [
+          0.6755357186867362,
+          0.784704281313264
+        ],
+        "n_runs": 5,
+        "method": "Nadeau-Bengio corrected t"
+      },
+      "accuracy_sd": 0.022754494061613423,
+      "runs": [
+        0.7536,
+        0.7056,
+        0.7289,
+        0.6965,
+        0.7328
+      ]
     },
     {
       "model": "api-ngram-lr",
-      "accuracy": "0.9627 +/- 0.0113",
-      "roc_auc": "0.9889 +/- 0.0085",
-      "f1": "0.9623 +/- 0.0119",
-      "accuracy_sd": 0.0052
+      "accuracy": {
+        "mean": 0.96266,
+        "ci95": [
+          0.9513213959977963,
+          0.9739986040022036
+        ],
+        "n_runs": 5,
+        "method": "Nadeau-Bengio corrected t"
+      },
+      "roc_auc": {
+        "mean": 0.988876,
+        "ci95": [
+          0.9803977211503505,
+          0.9973542788496494
+        ],
+        "n_runs": 5,
+        "method": "Nadeau-Bengio corrected t"
+      },
+      "f1": {
+        "mean": 0.96234,
+        "ci95": [
+          0.9504782228691195,
+          0.9742017771308804
+        ],
+        "n_runs": 5,
+        "method": "Nadeau-Bengio corrected t"
+      },
+      "accuracy_sd": 0.00515101931660134,
+      "runs": [
+        0.9676,
+        0.9663,
+        0.9611,
+        0.9546,
+        0.9637
+      ]
     },
     {
       "model": "api-ngram-lgbm",
-      "accuracy": "0.9614 +/- 0.0162",
-      "roc_auc": "0.9887 +/- 0.0068",
-      "f1": "0.9609 +/- 0.0173",
-      "accuracy_sd": 0.0074
+      "accuracy": {
+        "mean": 0.96136,
+        "ci95": [
+          0.9451218070505364,
+          0.9775981929494636
+        ],
+        "n_runs": 5,
+        "method": "Nadeau-Bengio corrected t"
+      },
+      "roc_auc": {
+        "mean": 0.988726,
+        "ci95": [
+          0.981933368989922,
+          0.995518631010078
+        ],
+        "n_runs": 5,
+        "method": "Nadeau-Bengio corrected t"
+      },
+      "f1": {
+        "mean": 0.9609400000000001,
+        "ci95": [
+          0.943660235151956,
+          0.9782197648480443
+        ],
+        "n_runs": 5,
+        "method": "Nadeau-Bengio corrected t"
+      },
+      "accuracy_sd": 0.007376855698737777,
+      "runs": [
+        0.9663,
+        0.9572,
+        0.9637,
+        0.9507,
+        0.9689
+      ]
     }
   ],
   "cv": [
     {
       "model": "mvp-synthetic",
-      "cv_accuracy": "0.5012 +/- 0.0018",
-      "cv_roc_auc": "0.2417 +/- 0.0213"
+      "cv_accuracy": {
+        "mean": 0.50116,
+        "ci95": [
+          0.49939593006689803,
+          0.502924069933102
+        ],
+        "n_runs": 25,
+        "method": "Nadeau-Bengio corrected t"
+      },
+      "cv_roc_auc": {
+        "mean": 0.24167000000000002,
+        "ci95": [
+          0.2204147270963553,
+          0.26292527290364476
+        ],
+        "n_runs": 25,
+        "method": "Nadeau-Bengio corrected t"
+      }
     },
     {
       "model": "attack-features",
-      "cv_accuracy": "0.7152 +/- 0.0201",
-      "cv_roc_auc": "0.7628 +/- 0.0219"
+      "cv_accuracy": {
+        "mean": 0.715248,
+        "ci95": [
+          0.6951352727949666,
+          0.7353607272050334
+        ],
+        "n_runs": 25,
+        "method": "Nadeau-Bengio corrected t"
+      },
+      "cv_roc_auc": {
+        "mean": 0.7628083999999999,
+        "ci95": [
+          0.740957534446681,
+          0.7846592655533189
+        ],
+        "n_runs": 25,
+        "method": "Nadeau-Bengio corrected t"
+      }
     },
     {
       "model": "api-ngram-lr",
-      "cv_accuracy": "0.9622 +/- 0.0099",
-      "cv_roc_auc": "0.9892 +/- 0.0052"
+      "cv_accuracy": {
+        "mean": 0.962188,
+        "ci95": [
+          0.9523050389601604,
+          0.9720709610398397
+        ],
+        "n_runs": 25,
+        "method": "Nadeau-Bengio corrected t"
+      },
+      "cv_roc_auc": {
+        "mean": 0.9891559999999999,
+        "ci95": [
+          0.9839979256590867,
+          0.9943140743409131
+        ],
+        "n_runs": 25,
+        "method": "Nadeau-Bengio corrected t"
+      }
     },
     {
       "model": "api-ngram-lgbm",
-      "cv_accuracy": "0.9628 +/- 0.0080",
-      "cv_roc_auc": "0.9899 +/- 0.0042"
+      "cv_accuracy": {
+        "mean": 0.962808,
+        "ci95": [
+          0.9547594357964664,
+          0.9708565642035336
+        ],
+        "n_runs": 25,
+        "method": "Nadeau-Bengio corrected t"
+      },
+      "cv_roc_auc": {
+        "mean": 0.989882,
+        "ci95": [
+          0.9856419867094872,
+          0.9941220132905129
+        ],
+        "n_runs": 25,
+        "method": "Nadeau-Bengio corrected t"
+      }
     }
   ],
   "published": [
     {
       "model": "MalDetConv CNN-BiGRU (Maniriho et al. 2022)",
       "accuracy": 0.961,
-      "f1": 0.9602
+      "f1": 0.9602,
+      "source": "arXiv:2209.03547v1, Table 3 (p. 19) and Table 5 (p. 19)"
     },
     {
       "model": "MalDy TF-IDF + XGBoost (as reported there)",
       "accuracy": 0.9559,
-      "f1": "-"
+      "f1": "-",
+      "source": "arXiv:2209.03547v1, Table 7 (p. 21)"
     }
   ],
   "dedup_70_30": [
     {
       "model": "api-ngram-lr",
-      "accuracy": "0.9343 +/- 0.0260",
-      "roc_auc": "0.9713 +/- 0.0151"
+      "accuracy": {
+        "mean": 0.9343,
+        "ci95": [
+          0.9082704635698274,
+          0.9603295364301726
+        ],
+        "n_runs": 5,
+        "method": "Nadeau-Bengio corrected t"
+      },
+      "roc_auc": {
+        "mean": 0.9712580000000001,
+        "ci95": [
+          0.9561319381391017,
+          0.9863840618608984
+        ],
+        "n_runs": 5,
+        "method": "Nadeau-Bengio corrected t"
+      },
+      "runs": [
+        0.9439,
+        0.9459,
+        0.9168,
+        0.9293,
+        0.9356
+      ]
     },
     {
       "model": "api-ngram-lgbm",
-      "accuracy": "0.9389 +/- 0.0115",
-      "roc_auc": "0.9704 +/- 0.0132"
+      "accuracy": {
+        "mean": 0.9389,
+        "ci95": [
+          0.9274148189191197,
+          0.9503851810808802
+        ],
+        "n_runs": 5,
+        "method": "Nadeau-Bengio corrected t"
+      },
+      "roc_auc": {
+        "mean": 0.9704239999999998,
+        "ci95": [
+          0.9572489000507446,
+          0.9835990999492551
+        ],
+        "n_runs": 5,
+        "method": "Nadeau-Bengio corrected t"
+      },
+      "runs": [
+        0.9418,
+        0.9439,
+        0.9356,
+        0.9418,
+        0.9314
+      ]
     },
     {
       "model": "attack-features",
-      "accuracy": "0.7231 +/- 0.0182",
-      "roc_auc": "0.6816 +/- 0.0754"
+      "accuracy": {
+        "mean": 0.7230800000000001,
+        "ci95": [
+          0.7049220676066323,
+          0.7412379323933678
+        ],
+        "n_runs": 5,
+        "method": "Nadeau-Bengio corrected t"
+      },
+      "roc_auc": {
+        "mean": 0.6815640000000001,
+        "ci95": [
+          0.6061534487751048,
+          0.7569745512248953
+        ],
+        "n_runs": 5,
+        "method": "Nadeau-Bengio corrected t"
+      },
+      "runs": [
+        0.711,
+        0.7339,
+        0.7235,
+        0.7256,
+        0.7214
+      ]
     }
   ],
   "duplicate_leakage": {
@@ -144,20 +436,95 @@
     "distinct_sequences": 1601,
     "rows_in_duplicate_groups": 1157,
     "distinct_malicious": 478,
-    "test_rows_with_exact_duplicate_in_train": "0.4236 +/- 0.0401",
-    "lr_accuracy_on_seen_rows": "0.9950 +/- 0.0109",
-    "lr_accuracy_on_unseen_rows": "0.9387 +/- 0.0238"
+    "test_rows_with_exact_duplicate_in_train": {
+      "mean": 0.42360570687418936,
+      "ci95": [
+        0.3835028258328931,
+        0.46370858791548564
+      ],
+      "n_runs": 5,
+      "method": "Nadeau-Bengio corrected t"
+    },
+    "lr_accuracy_on_seen_rows": {
+      "mean": 0.9949635570650545,
+      "ci95": [
+        0.9617650448239802,
+        0.9996992368514219
+      ],
+      "n_runs": 5,
+      "method": "Nadeau-Bengio corrected t on the logit scale"
+    },
+    "lr_accuracy_on_unseen_rows": {
+      "mean": 0.9386968478885791,
+      "ci95": [
+        0.9148728721059869,
+        0.9625208236711713
+      ],
+      "n_runs": 5,
+      "method": "Nadeau-Bengio corrected t"
+    }
   },
   "pipeline_path": {
+    "what": "simulated shipped routing: per-split LR for traces with >= MIN_CALLS calls, MVP scorer otherwise; p >= 0.5 counts as not benign",
     "min_calls": 5,
-    "short_trace_share": 0.0043,
-    "accuracy": "0.9595 +/- 0.0127",
-    "recall_at_0.5": "0.9496 +/- 0.0269",
-    "roc_auc": "0.9881 +/- 0.0087",
-    "traces_under_20_calls_lr_accuracy": "0.9644 +/- 0.0175",
-    "traces_under_20_calls_mvp_accuracy": "0.5556 +/- 0.0879"
+    "short_trace_share": 0.004280155642023347,
+    "share_under_20_calls": 0.24319066147859922,
+    "accuracy": {
+      "mean": 0.95954,
+      "ci95": [
+        0.9468388549787445,
+        0.9722411450212554
+      ],
+      "n_runs": 5,
+      "method": "Nadeau-Bengio corrected t"
+    },
+    "recall_at_0.5": {
+      "mean": 0.9496399999999999,
+      "ci95": [
+        0.9226990957237231,
+        0.9765809042762768
+      ],
+      "n_runs": 5,
+      "method": "Nadeau-Bengio corrected t"
+    },
+    "malicious_recall_at_0.8": {
+      "mean": 0.8894125563555615,
+      "ci95": [
+        0.8560250134368504,
+        0.9228000992742725
+      ],
+      "n_runs": 5,
+      "method": "Nadeau-Bengio corrected t"
+    },
+    "roc_auc": {
+      "mean": 0.9881059999999999,
+      "ci95": [
+        0.9794081185605393,
+        0.9968038814394605
+      ],
+      "n_runs": 5,
+      "method": "Nadeau-Bengio corrected t"
+    },
+    "traces_under_20_calls_lr_accuracy": {
+      "mean": 0.9644440590563317,
+      "ci95": [
+        0.9469554707939466,
+        0.9819326473187168
+      ],
+      "n_runs": 5,
+      "method": "Nadeau-Bengio corrected t"
+    },
+    "traces_under_20_calls_mvp_accuracy": {
+      "mean": 0.555637060116777,
+      "ci95": [
+        0.467773871465975,
+        0.6435002487675792
+      ],
+      "n_runs": 5,
+      "method": "Nadeau-Bengio corrected t"
+    }
   },
-  "shipped_model_max_abs_diff_vs_sklearn": 1.32e-06,
+  "shipped_model_max_abs_diff_vs_sklearn": 1.315401298107588e-06,
   "ci_method": "Nadeau-Bengio corrected resampled t (repeated splits/folds); percentile bootstrap (seed-0 holdout)",
-  "markdown": "| model | roc_auc | roc_auc_95ci | accuracy | accuracy_95ci | f1 |\n|---|---|---|---|---|---|\n| mvp-synthetic | 0.22831 | [0.1948, 0.2594] | 0.5032 | [0.4682, 0.537] | 0.0103 |\n| attack-features | 0.77918 | [0.7485, 0.8112] | 0.7536 | [0.7224, 0.786] | 0.7677 |\n| api-ngram-lr | 0.99099 | [0.9839, 0.9962] | 0.9676 | [0.9546, 0.9792] | 0.9674 |\n| api-ngram-lgbm | 0.98985 | [0.9827, 0.9955] | 0.9663 | [0.952, 0.978] | 0.9661 |\n| MalDetConv CNN-BiGRU (Maniriho et al. 2022) |  |  | 0.961 |  | 0.9602 |\n| MalDy TF-IDF + XGBoost (as reported there) |  |  | 0.9559 |  | - |\n\n| model | accuracy | roc_auc | f1 |\n|---|---|---|---|\n| mvp-synthetic | 0.5016 +/- 0.0024 | 0.2386 +/- 0.0475 | 0.0052 +/- 0.0080 |\n| attack-features | 0.7235 +/- 0.0501 | 0.7654 +/- 0.0450 | 0.7301 +/- 0.0546 |\n| api-ngram-lr | 0.9627 +/- 0.0113 | 0.9889 +/- 0.0085 | 0.9623 +/- 0.0119 |\n| api-ngram-lgbm | 0.9614 +/- 0.0162 | 0.9887 +/- 0.0068 | 0.9609 +/- 0.0173 |\n\n| model | cv_accuracy | cv_roc_auc |\n|---|---|---|\n| mvp-synthetic | 0.5012 +/- 0.0018 | 0.2417 +/- 0.0213 |\n| attack-features | 0.7152 +/- 0.0201 | 0.7628 +/- 0.0219 |\n| api-ngram-lr | 0.9622 +/- 0.0099 | 0.9892 +/- 0.0052 |\n| api-ngram-lgbm | 0.9628 +/- 0.0080 | 0.9899 +/- 0.0042 |\n\n| model | accuracy | roc_auc |\n|---|---|---|\n| api-ngram-lr | 0.9343 +/- 0.0260 | 0.9713 +/- 0.0151 |\n| api-ngram-lgbm | 0.9389 +/- 0.0115 | 0.9704 +/- 0.0132 |\n| attack-features | 0.7231 +/- 0.0182 | 0.6816 +/- 0.0754 |"
+  "markdown": "| model | roc_auc | roc_auc_95ci | accuracy | accuracy_95ci | f1 |\n|---|---|---|---|---|---|\n| mvp-synthetic | 0.22831 | [0.1948, 0.2594] | 0.5032 | [0.4682, 0.537] | 0.0103 |\n| attack-features | 0.77918 | [0.7485, 0.8112] | 0.7536 | [0.7224, 0.786] | 0.7677 |\n| api-ngram-lr | 0.99099 | [0.9839, 0.9962] | 0.9676 | [0.9546, 0.9792] | 0.9674 |\n| api-ngram-lgbm | 0.98985 | [0.9827, 0.9955] | 0.9663 | [0.952, 0.978] | 0.9661 |\n| MalDetConv CNN-BiGRU (Maniriho et al. 2022) |  |  | 0.961 |  | 0.9602 |\n| MalDy TF-IDF + XGBoost (as reported there) |  |  | 0.9559 |  | - |"
 }

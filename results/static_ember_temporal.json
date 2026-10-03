@@ -1,7 +1,16 @@
 {
   "benchmark": "static_ember_temporal",
-  "generated": "2026-10-02",
+  "generated": "2026-10-03",
   "python": "3.12.14",
+  "provenance": {
+    "source": "github-actions",
+    "github_run_id": 37091150763,
+    "github_run_attempt": 1,
+    "job": "static-temporal",
+    "commit": "68dfb7cfa1de1fdeea9b18b698d95c26915f30a2",
+    "command": "bench_static_temporal.py --seeds 5",
+    "runtime_s": 1832.0
+  },
   "dataset": "EMBER 2018 v2 official archive (ember.elastic.co), labelled rows only",
   "featuriser": "specimen.ml.ember.vectorize (the shipped gate's 2,440-dim CRC32 feature space)",
   "months_collected": {
@@ -60,81 +69,202 @@
   "summary": [
     {
       "protocol": "temporal (train Jan-Sep, calibrate Oct, test Nov-Dec)",
-      "roc_auc": "0.9892 (min 0.9889, max 0.9894)",
-      "tpr@0.1%fpr": "0.4884 (min 0.4660, max 0.5379)",
-      "tpr@1%fpr": "0.8732 (min 0.8686, max 0.8787)",
-      "detonations_saved": "0.3639 (min 0.3542, max 0.3739)",
-      "malware_missed": "0.0063 (min 0.0055, max 0.0077)",
-      "benign_skipped": "0.7224 (min 0.7032, max 0.7410)"
+      "roc_auc": {
+        "mean": 0.9891910027196358,
+        "ci95": [
+          0.9889228263080893,
+          0.9894591791311823
+        ],
+        "n_runs": 5,
+        "min": 0.988910602794473,
+        "max": 0.9894202264035515
+      },
+      "tpr@0.1%fpr": {
+        "mean": 0.488344685696023,
+        "ci95": [
+          0.45239372699847774,
+          0.5242956443935683
+        ],
+        "n_runs": 5,
+        "min": 0.465952899346823,
+        "max": 0.5378822683418892
+      },
+      "tpr@1%fpr": {
+        "mean": 0.8731558236621858,
+        "ci95": [
+          0.867603342205035,
+          0.8787083051193366
+        ],
+        "n_runs": 5,
+        "min": 0.8685656073347582,
+        "max": 0.878732796676188
+      },
+      "detonations_saved": {
+        "mean": 0.363908,
+        "ci95": [
+          0.3545497019208343,
+          0.3732662980791657
+        ],
+        "n_runs": 5,
+        "min": 0.35416000000000003,
+        "max": 0.37388999999999994
+      },
+      "malware_missed": {
+        "mean": 0.006272097157581448,
+        "ci95": [
+          0.005227757943063882,
+          0.007316436372099014
+        ],
+        "n_runs": 5,
+        "min": 0.005493078720811777,
+        "max": 0.007710285040848531
+      },
+      "benign_skipped": {
+        "mean": 0.7224462823157178,
+        "ci95": [
+          0.7043820417873548,
+          0.7405105228440809
+        ],
+        "n_runs": 5,
+        "min": 0.7032260648417006,
+        "max": 0.7409936520015219
+      },
+      "seed0_test_row_bootstrap_95ci": {
+        "roc_auc": [
+          0.9888470998091898,
+          0.9898116565230379
+        ],
+        "tpr@0.1%fpr": [
+          0.4253347499706566,
+          0.5608831306920815
+        ],
+        "tpr@1%fpr": [
+          0.8696950595135837,
+          0.8820433482320743
+        ]
+      }
     },
     {
       "protocol": "random split, same months and volume",
-      "roc_auc": "0.9965 (min 0.9965, max 0.9966)",
-      "tpr@0.1%fpr": "0.8523 (min 0.8446, max 0.8621)",
-      "tpr@1%fpr": "0.9491 (min 0.9477, max 0.9513)"
+      "roc_auc": {
+        "mean": 0.9965075777427478,
+        "ci95": [
+          0.9964114265336639,
+          0.9966037289518317
+        ],
+        "n_runs": 5,
+        "min": 0.996457624893403,
+        "max": 0.9966430409853384
+      },
+      "tpr@0.1%fpr": {
+        "mean": 0.8523592667333251,
+        "ci95": [
+          0.8427788094488428,
+          0.8619397240178074
+        ],
+        "n_runs": 5,
+        "min": 0.8446452890924848,
+        "max": 0.8621154750414532
+      },
+      "tpr@1%fpr": {
+        "mean": 0.9490934906864907,
+        "ci95": [
+          0.9474395741551892,
+          0.9507474072177923
+        ],
+        "n_runs": 5,
+        "min": 0.9477442027371495,
+        "max": 0.9512539476128553
+      }
     },
     {
-      "protocol": "upstream EMBER-2018 LightGBM (all 600k train rows, Nov-Dec test)",
+      "protocol": "upstream EMBER-2018 LightGBM (all 600k Jan-Oct rows, EMBER features, Nov-Dec test)",
       "roc_auc": 0.99643,
       "tpr@0.1%fpr": 0.8681,
       "tpr@1%fpr": 0.965
     }
   ],
+  "baselines_same_test_rows": [
+    {
+      "protocol": "MVP heuristic gate (no training), same test rows",
+      "roc_auc": 0.5102750587126832,
+      "tpr@0.1%fpr": 0.0006391946147853704,
+      "tpr@1%fpr": 0.005173481413419092,
+      "threshold": 0.23147521650098238,
+      "detonations_saved": 0.0,
+      "malware_missed": 0.0,
+      "benign_skipped": 0.0,
+      "malware_share": 0.50063,
+      "roc_auc_95ci": [
+        0.5071499128686864,
+        0.513888018558662
+      ]
+    },
+    {
+      "protocol": "detonate every PE (what analyze does)",
+      "roc_auc": null,
+      "tpr@0.1%fpr": null,
+      "tpr@1%fpr": null,
+      "detonations_saved": 0.0,
+      "malware_missed": 0.0,
+      "benign_skipped": 0.0
+    }
+  ],
   "per_seed": [
     {
       "seed": 0,
-      "threshold": 0.064,
-      "roc_auc": 0.98933,
-      "tpr@0.1%fpr": 0.4883,
-      "tpr@1%fpr": 0.8767,
-      "detonations_saved": 0.3594,
-      "malware_missed": 0.0061,
-      "benign_skipped": 0.7136,
-      "malware_share": 0.5006
+      "threshold": 0.06399978161573383,
+      "roc_auc": 0.9893293510592778,
+      "tpr@0.1%fpr": 0.48832471086431095,
+      "tpr@1%fpr": 0.8766953638415597,
+      "detonations_saved": 0.35940000000000005,
+      "malware_missed": 0.006092323672173062,
+      "benign_skipped": 0.7135991349099866,
+      "malware_share": 0.50063
     },
     {
       "seed": 1,
-      "threshold": 0.07888,
-      "roc_auc": 0.98902,
-      "tpr@0.1%fpr": 0.4787,
-      "tpr@1%fpr": 0.8693,
-      "detonations_saved": 0.3739,
-      "malware_missed": 0.0077,
-      "benign_skipped": 0.741,
-      "malware_share": 0.5006
+      "threshold": 0.07887767743861454,
+      "roc_auc": 0.9890199713681065,
+      "tpr@0.1%fpr": 0.47865689231568226,
+      "tpr@1%fpr": 0.8693046761081038,
+      "detonations_saved": 0.37388999999999994,
+      "malware_missed": 0.007710285040848531,
+      "benign_skipped": 0.7409936520015219,
+      "malware_share": 0.50063
     },
     {
       "seed": 2,
-      "threshold": 0.07356,
-      "roc_auc": 0.98942,
-      "tpr@0.1%fpr": 0.5379,
-      "tpr@1%fpr": 0.8686,
-      "detonations_saved": 0.3673,
-      "malware_missed": 0.0061,
-      "benign_skipped": 0.7294,
-      "malware_share": 0.5006
+      "threshold": 0.07356323116445072,
+      "roc_auc": 0.9894202264035515,
+      "tpr@0.1%fpr": 0.5378822683418892,
+      "tpr@1%fpr": 0.8685656073347582,
+      "detonations_saved": 0.36729,
+      "malware_missed": 0.006092323672173062,
+      "benign_skipped": 0.7293990427939203,
+      "malware_share": 0.50063
     },
     {
       "seed": 3,
-      "threshold": 0.05816,
-      "roc_auc": 0.98891,
-      "tpr@0.1%fpr": 0.466,
-      "tpr@1%fpr": 0.8787,
-      "detonations_saved": 0.3542,
-      "malware_missed": 0.006,
-      "benign_skipped": 0.7032,
-      "malware_share": 0.5006
+      "threshold": 0.05815677899334652,
+      "roc_auc": 0.988910602794473,
+      "tpr@0.1%fpr": 0.465952899346823,
+      "tpr@1%fpr": 0.878732796676188,
+      "detonations_saved": 0.35416000000000003,
+      "malware_missed": 0.005972474681900805,
+      "benign_skipped": 0.7032260648417006,
+      "malware_share": 0.50063
     },
     {
       "seed": 4,
-      "threshold": 0.07155,
-      "roc_auc": 0.98927,
-      "tpr@0.1%fpr": 0.4709,
-      "tpr@1%fpr": 0.8725,
+      "threshold": 0.07154562080653734,
+      "roc_auc": 0.9892748619727708,
+      "tpr@0.1%fpr": 0.47090665761140965,
+      "tpr@1%fpr": 0.8724806743503186,
       "detonations_saved": 0.3648,
-      "malware_missed": 0.0055,
-      "benign_skipped": 0.725,
-      "malware_share": 0.5006
+      "malware_missed": 0.005493078720811777,
+      "benign_skipped": 0.7250135170314597,
+      "malware_share": 0.50063
     }
   ],
   "per_month": [
@@ -145,10 +275,10 @@
       "roc_auc": 0.99063,
       "tpr@0.1%fpr": 0.4075,
       "tpr@1%fpr": 0.8798,
-      "detonations_saved": 0.3679,
-      "malware_missed": 0.0054,
-      "benign_skipped": 0.7321,
-      "malware_share": 0.5012
+      "detonations_saved": 0.36785999999999996,
+      "malware_missed": 0.005386641129997606,
+      "benign_skipped": 0.732135696527388,
+      "malware_share": 0.50124
     },
     {
       "seed": 0,
@@ -157,10 +287,10 @@
       "roc_auc": 0.98796,
       "tpr@0.1%fpr": 0.5415,
       "tpr@1%fpr": 0.8736,
-      "detonations_saved": 0.3509,
-      "malware_missed": 0.0068,
-      "benign_skipped": 0.6951,
-      "malware_share": 0.5
+      "detonations_saved": 0.35094000000000003,
+      "malware_missed": 0.006799728010879565,
+      "benign_skipped": 0.6951078043121725,
+      "malware_share": 0.50002
     },
     {
       "seed": 1,
@@ -170,9 +300,9 @@
       "tpr@0.1%fpr": 0.4753,
       "tpr@1%fpr": 0.8831,
       "detonations_saved": 0.3809,
-      "malware_missed": 0.0065,
-      "benign_skipped": 0.7572,
-      "malware_share": 0.5012
+      "malware_missed": 0.006463969355997127,
+      "benign_skipped": 0.7571978506696607,
+      "malware_share": 0.50124
     },
     {
       "seed": 1,
@@ -181,10 +311,10 @@
       "roc_auc": 0.9873,
       "tpr@0.1%fpr": 0.5415,
       "tpr@1%fpr": 0.855,
-      "detonations_saved": 0.3669,
-      "malware_missed": 0.009,
-      "benign_skipped": 0.7248,
-      "malware_share": 0.5
+      "detonations_saved": 0.36688,
+      "malware_missed": 0.008959641614335427,
+      "benign_skipped": 0.7248289931597264,
+      "malware_share": 0.50002
     },
     {
       "seed": 2,
@@ -193,10 +323,10 @@
       "roc_auc": 0.99077,
       "tpr@0.1%fpr": 0.424,
       "tpr@1%fpr": 0.8791,
-      "detonations_saved": 0.3757,
-      "malware_missed": 0.0052,
-      "benign_skipped": 0.748,
-      "malware_share": 0.5012
+      "detonations_saved": 0.37568,
+      "malware_missed": 0.0051871359029606575,
+      "benign_skipped": 0.748015077391932,
+      "malware_share": 0.50124
     },
     {
       "seed": 2,
@@ -206,9 +336,9 @@
       "tpr@0.1%fpr": 0.5865,
       "tpr@1%fpr": 0.8577,
       "detonations_saved": 0.3589,
-      "malware_missed": 0.007,
-      "benign_skipped": 0.7108,
-      "malware_share": 0.5
+      "malware_missed": 0.006999720011199552,
+      "benign_skipped": 0.7108284331373255,
+      "malware_share": 0.50002
     },
     {
       "seed": 3,
@@ -217,10 +347,10 @@
       "roc_auc": 0.99012,
       "tpr@0.1%fpr": 0.4319,
       "tpr@1%fpr": 0.8887,
-      "detonations_saved": 0.3632,
-      "malware_missed": 0.0055,
-      "benign_skipped": 0.7227,
-      "malware_share": 0.5012
+      "detonations_saved": 0.36322,
+      "malware_missed": 0.005546245311627165,
+      "benign_skipped": 0.7226722271232657,
+      "malware_share": 0.50124
     },
     {
       "seed": 3,
@@ -229,10 +359,10 @@
       "roc_auc": 0.98762,
       "tpr@0.1%fpr": 0.5203,
       "tpr@1%fpr": 0.8685,
-      "detonations_saved": 0.3451,
-      "malware_missed": 0.0064,
-      "benign_skipped": 0.6838,
-      "malware_share": 0.5
+      "detonations_saved": 0.34509999999999996,
+      "malware_missed": 0.00639974401023959,
+      "benign_skipped": 0.6838273530941238,
+      "malware_share": 0.50002
     },
     {
       "seed": 4,
@@ -241,10 +371,10 @@
       "roc_auc": 0.9905,
       "tpr@0.1%fpr": 0.4123,
       "tpr@1%fpr": 0.8801,
-      "detonations_saved": 0.3727,
-      "malware_missed": 0.0047,
-      "benign_skipped": 0.7426,
-      "malware_share": 0.5012
+      "detonations_saved": 0.37273999999999996,
+      "malware_missed": 0.0046684223126645915,
+      "benign_skipped": 0.7426417515438287,
+      "malware_share": 0.50124
     },
     {
       "seed": 4,
@@ -253,44 +383,44 @@
       "roc_auc": 0.98795,
       "tpr@0.1%fpr": 0.5443,
       "tpr@1%fpr": 0.8642,
-      "detonations_saved": 0.3569,
-      "malware_missed": 0.0063,
-      "benign_skipped": 0.7074,
-      "malware_share": 0.5
+      "detonations_saved": 0.35685999999999996,
+      "malware_missed": 0.006319747210111595,
+      "benign_skipped": 0.7074282971318853,
+      "malware_share": 0.50002
     }
   ],
   "random_split": [
     {
       "seed": 0,
-      "roc_auc": 0.9965,
-      "tpr@0.1%fpr": 0.8526,
-      "tpr@1%fpr": 0.9513
+      "roc_auc": 0.9965005284183038,
+      "tpr@0.1%fpr": 0.85264722273825,
+      "tpr@1%fpr": 0.9512539476128553
     },
     {
       "seed": 1,
-      "roc_auc": 0.99647,
-      "tpr@0.1%fpr": 0.8446,
-      "tpr@1%fpr": 0.9492
+      "roc_auc": 0.9964658122025025,
+      "tpr@0.1%fpr": 0.8446452890924848,
+      "tpr@1%fpr": 0.949238578680203
     },
     {
       "seed": 2,
-      "roc_auc": 0.99664,
-      "tpr@0.1%fpr": 0.8575,
-      "tpr@1%fpr": 0.9489
+      "roc_auc": 0.9966430409853384,
+      "tpr@0.1%fpr": 0.8575443200950778,
+      "tpr@1%fpr": 0.9488709517678519
     },
     {
       "seed": 3,
-      "roc_auc": 0.99646,
-      "tpr@0.1%fpr": 0.8621,
-      "tpr@1%fpr": 0.9477
+      "roc_auc": 0.996457624893403,
+      "tpr@0.1%fpr": 0.8621154750414532,
+      "tpr@1%fpr": 0.9477442027371495
     },
     {
       "seed": 4,
-      "roc_auc": 0.99647,
-      "tpr@0.1%fpr": 0.8448,
-      "tpr@1%fpr": 0.9484
+      "roc_auc": 0.9964708822141908,
+      "tpr@0.1%fpr": 0.8448440266993598,
+      "tpr@1%fpr": 0.9483597726343946
     }
   ],
-  "markdown": "| protocol | roc_auc | tpr@0.1%fpr | tpr@1%fpr | detonations_saved | malware_missed | benign_skipped |\n|---|---|---|---|---|---|---|\n| temporal (train Jan-Sep, calibrate Oct, test Nov-Dec) | 0.9892 (min 0.9889, max 0.9894) | 0.4884 (min 0.4660, max 0.5379) | 0.8732 (min 0.8686, max 0.8787) | 0.3639 (min 0.3542, max 0.3739) | 0.0063 (min 0.0055, max 0.0077) | 0.7224 (min 0.7032, max 0.7410) |\n| random split, same months and volume | 0.9965 (min 0.9965, max 0.9966) | 0.8523 (min 0.8446, max 0.8621) | 0.9491 (min 0.9477, max 0.9513) |  |  |  |\n| upstream EMBER-2018 LightGBM (all 600k train rows, Nov-Dec test) | 0.99643 | 0.8681 | 0.965 |  |  |  |",
-  "runtime_s": 1745.3
+  "ci_method": "95 % t-interval over seeds (seed variance only; test rows fixed); seed-0 percentile bootstrap over test rows",
+  "released_model": "seed 0 -> models/static_lgbm.txt + static_meta.json (bench artefact, release asset)"
 }

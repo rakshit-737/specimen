@@ -1,16 +1,38 @@
 {
-  "comment": "Pinned SHA-256 of the trained model files (too large for git). scripts/fetch_models.py downloads them from the release named here, else the latest release, else the bench run artefacts, and verifies every hash. Update after a bench run that retrains a model, and set 'release' once a release carries the files.",
-  "release": "v1.1.0",
+  "comment": "Pinned SHA-256 of the trained model files (too large for git). scripts/fetch_models.py downloads them from the release named in 'release' (if set), else the latest release, else the bench run artefacts below, and verifies every hash. Update after a bench run that retrains a model; once a release carries these files, set 'release' to its tag.",
+  "release": null,
   "files": {
-    "family_model.npz": {"sha256": "3faaee72288696b2e38b75f8765402a8563673d358f4003486f3dbfc62d0e0ef",
-                         "what": "Avast-CTU family model (behaviour+static hashed LR)",
-                         "bench_run": {"run_id": 37004185054, "artifact": "bench-avast"}},
-    "family_meta.json": {"sha256": "13cf781e581ea4531dc3d7f7a2ba2ae95d06662e1919d1af0eb36f61a5f07d56",
-                         "what": "family model metadata (classes, abstain threshold)",
-                         "bench_run": {"run_id": 37004185054, "artifact": "bench-avast"}},
-    "static_lgbm.txt": {"sha256": "841ab136d3b452b98b5d283935d8c030df9fa4d54f2eb5f17a159bcaaa98ae18",
-                        "what": "EMBER LightGBM gate (triage-ember)"},
-    "static_meta.json": {"sha256": "57edf5226de910501d5c3e12f62433283c48adc84d6a71fed76eef27b5653bee",
-                         "what": "EMBER gate metadata and threshold"}
+    "family_model.npz": {
+      "sha256": "3faaee72288696b2e38b75f8765402a8563673d358f4003486f3dbfc62d0e0ef",
+      "what": "Avast-CTU family model (behaviour+static hashed LR; weights identical to the v1.1.0 asset)",
+      "bench_run": {
+        "run_id": 37091150763,
+        "artifact": "bench-avast"
+      }
+    },
+    "family_meta.json": {
+      "sha256": "c10b2f7c494a3b4acf259744e46572efeda7093e1d642174ba5626e8040bcbb2",
+      "what": "family model metadata: classes, variant and abstain threshold, both selected on the temporal validation slice",
+      "bench_run": {
+        "run_id": 37091150763,
+        "artifact": "bench-avast"
+      }
+    },
+    "static_lgbm.txt": {
+      "sha256": "6058468429390278be96602739426bd54290316ffe0ddba19007c5f1c397dc14",
+      "what": "EMBER LightGBM gate (triage-ember): temporal model, train 2018-01..09, threshold for 99 % recall on 2018-10 (seed 0 of results/static_ember_temporal.json)",
+      "bench_run": {
+        "run_id": 37091150763,
+        "artifact": "bench-static-temporal"
+      }
+    },
+    "static_meta.json": {
+      "sha256": "9080537516161ae3909292b20c366feffe2144789b76b71eee5eedf4ad0a0de8",
+      "what": "EMBER gate metadata and threshold",
+      "bench_run": {
+        "run_id": 37091150763,
+        "artifact": "bench-static-temporal"
+      }
+    }
   }
 }

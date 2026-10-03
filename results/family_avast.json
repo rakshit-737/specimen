@@ -1,7 +1,16 @@
 {
   "benchmark": "family_avast",
-  "generated": "2026-10-02",
+  "generated": "2026-10-03",
   "python": "3.12.14",
+  "provenance": {
+    "source": "github-actions",
+    "github_run_id": 37091150763,
+    "github_run_attempt": 1,
+    "job": "avast",
+    "commit": "68dfb7cfa1de1fdeea9b18b698d95c26915f30a2",
+    "command": "bench_family.py",
+    "runtime_s": 867.0
+  },
   "dataset": {
     "name": "Avast-CTU Public CAPEv2 (reduced reports)",
     "reports": 48976,
@@ -24,110 +33,110 @@
   "metrics": [
     {
       "model": "mvp-jaccard",
-      "accuracy": 0.8783,
-      "macro_f1": 0.7125,
-      "fit+predict_s": 2.5,
+      "accuracy": 0.8783147243545011,
+      "macro_f1": 0.7125452181161493,
+      "fit+predict_s": 2.7,
       "per_family_recall": {
         "Adload": 0.6,
-        "Emotet": 0.8458,
-        "HarHar": 0.8696,
-        "Lokibot": 0.8672,
-        "Qakbot": 0.9924,
-        "Swisyn": 0.9934,
-        "Trickbot": 0.9528,
-        "Ursnif": 0.0677,
-        "Zeus": 0.6458,
-        "njRAT": 0.7495
+        "Emotet": 0.8458486823462738,
+        "HarHar": 0.8695652173913043,
+        "Lokibot": 0.8671532846715329,
+        "Qakbot": 0.9923664122137404,
+        "Swisyn": 0.9934241427900423,
+        "Trickbot": 0.9528443113772455,
+        "Ursnif": 0.06772908366533864,
+        "Zeus": 0.6458333333333334,
+        "njRAT": 0.7495395948434622
       },
       "accuracy_95ci": [
-        0.872203,
-        0.884173
+        0.8722031,
+        0.88417289
       ],
-      "novel_behaviour_accuracy": 0.8126,
+      "novel_behaviour_accuracy": 0.8126293995859213,
       "novel_95ci": [
-        0.803152,
-        0.821752
+        0.80315214,
+        0.82175164
       ]
     },
     {
       "model": "static-only",
-      "accuracy": 0.7004,
-      "macro_f1": 0.7442,
-      "fit+predict_s": 38.1,
+      "accuracy": 0.7003663642707606,
+      "macro_f1": 0.7441774683987793,
+      "fit+predict_s": 40.9,
       "per_family_recall": {
         "Adload": 1.0,
-        "Emotet": 0.1658,
-        "HarHar": 0.9855,
-        "Lokibot": 0.8015,
-        "Qakbot": 0.7354,
-        "Swisyn": 0.9981,
-        "Trickbot": 0.9693,
-        "Ursnif": 0.7649,
-        "Zeus": 0.8819,
-        "njRAT": 0.8785
+        "Emotet": 0.1657693397563049,
+        "HarHar": 0.9855072463768116,
+        "Lokibot": 0.8014598540145985,
+        "Qakbot": 0.7353689567430025,
+        "Swisyn": 0.9981211836542978,
+        "Trickbot": 0.969311377245509,
+        "Ursnif": 0.7649402390438247,
+        "Zeus": 0.8819444444444444,
+        "njRAT": 0.8784530386740331
       },
       "accuracy_95ci": [
-        0.691915,
-        0.708684
+        0.69191455,
+        0.70868393
       ],
-      "novel_behaviour_accuracy": 0.5035,
+      "novel_behaviour_accuracy": 0.5035492457852706,
       "novel_95ci": [
-        0.491633,
-        0.515461
+        0.49163332,
+        0.51546114
       ]
     },
     {
       "model": "behaviour-only",
-      "accuracy": 0.9587,
-      "macro_f1": 0.9262,
-      "fit+predict_s": 34.3,
+      "accuracy": 0.9586531751570132,
+      "macro_f1": 0.9261859080734185,
+      "fit+predict_s": 36.9,
       "per_family_recall": {
         "Adload": 1.0,
-        "Emotet": 0.9051,
-        "HarHar": 0.9855,
-        "Lokibot": 0.946,
-        "Qakbot": 0.9949,
-        "Swisyn": 0.9991,
-        "Trickbot": 0.9648,
-        "Ursnif": 0.9721,
+        "Emotet": 0.9050722584301502,
+        "HarHar": 0.9855072463768116,
+        "Lokibot": 0.945985401459854,
+        "Qakbot": 0.9949109414758269,
+        "Swisyn": 0.9990605918271489,
+        "Trickbot": 0.9648203592814372,
+        "Ursnif": 0.9721115537848606,
         "Zeus": 0.8125,
-        "njRAT": 0.9871
+        "njRAT": 0.9871086556169429
       },
       "accuracy_95ci": [
-        0.954852,
-        0.962147
+        0.95485239,
+        0.96214667
       ],
-      "novel_behaviour_accuracy": 0.9343,
+      "novel_behaviour_accuracy": 0.9343389529724934,
       "novel_95ci": [
-        0.928185,
-        0.94
+        0.92818516,
+        0.93999952
       ]
     },
     {
       "model": "behaviour+static",
-      "accuracy": 0.9497,
-      "macro_f1": 0.923,
-      "fit+predict_s": 31.1,
+      "accuracy": 0.9496685275645499,
+      "macro_f1": 0.9229606419224213,
+      "fit+predict_s": 33.3,
       "per_family_recall": {
         "Adload": 1.0,
-        "Emotet": 0.8657,
-        "HarHar": 0.9855,
-        "Lokibot": 0.9679,
-        "Qakbot": 0.9949,
-        "Swisyn": 0.9993,
-        "Trickbot": 0.9641,
-        "Ursnif": 0.9721,
-        "Zeus": 0.9653,
-        "njRAT": 0.9853
+        "Emotet": 0.8656843298384812,
+        "HarHar": 0.9855072463768116,
+        "Lokibot": 0.9678832116788321,
+        "Qakbot": 0.9949109414758269,
+        "Swisyn": 0.9992954438703616,
+        "Trickbot": 0.9640718562874252,
+        "Ursnif": 0.9721115537848606,
+        "Zeus": 0.9652777777777778,
+        "njRAT": 0.9852670349907919
       },
       "accuracy_95ci": [
-        0.945514,
-        0.953522
+        0.94551358,
+        0.95352221
       ],
-      "novel_behaviour_accuracy": 0.9246,
+      "novel_behaviour_accuracy": 0.9245785270629991,
       "novel_95ci": [
-        0.91804,
-        0.930634
+        0.91804046,
+        0.93063445
       ]
     },
     {
@@ -143,9 +152,9 @@
   ],
   "selection": {
     "validation_accuracy": {
-      "static-only": 0.9292,
-      "behaviour-only": 0.9863,
-      "behaviour+static": 0.9869
+      "static-only": 0.9292307692307692,
+      "behaviour-only": 0.9862937062937063,
+      "behaviour+static": 0.9868531468531468
     },
     "shipped": "behaviour+static",
     "validation_slice": "train runs dated >= 2019-06-01"
@@ -157,90 +166,289 @@
     "a_wrong_b_right": 56,
     "p_value": 1.2853356553962155e-12
   },
-  "novel_test_share": 0.5898,
+  "novel_test_share": 0.5898464759246337,
   "open_set": {
-    "protocol": "leave-one-family-out (train 9 families, score held-out family test reports)",
-    "per_family": {
-      "Adload": {
-        "n": 5,
-        "median_max_p": 0.6331
+    "protocol": "tau = largest grid value with >= 95 % known-family coverage on the temporal validation slice (models fitted on train runs before 2019-06-01; leave-one-family-out for unseen families); applied unchanged to test",
+    "abstain_below": 0.85,
+    "selected_on": "validation 2019-06-01..2019-07-31",
+    "validation_curve": [
+      {
+        "tau": 0.3,
+        "known_coverage": 0.9983216783216783,
+        "known_accuracy_covered": 0.9882319977584758,
+        "unseen_family_accepted": 0.9893706293706294
       },
-      "Emotet": {
-        "n": 3529,
-        "median_max_p": 0.4678
+      {
+        "tau": 0.35,
+        "known_coverage": 0.9972027972027973,
+        "known_accuracy_covered": 0.9893408134642356,
+        "unseen_family_accepted": 0.9779020979020979
       },
-      "HarHar": {
-        "n": 69,
-        "median_max_p": 0.5561
+      {
+        "tau": 0.4,
+        "known_coverage": 0.9952447552447552,
+        "known_accuracy_covered": 0.9904440697020798,
+        "unseen_family_accepted": 0.9451748251748252
       },
-      "Lokibot": {
-        "n": 685,
-        "median_max_p": 0.6815
+      {
+        "tau": 0.45,
+        "known_coverage": 0.9932867132867133,
+        "known_accuracy_covered": 0.9923965080259082,
+        "unseen_family_accepted": 0.9026573426573427
       },
-      "Qakbot": {
-        "n": 393,
-        "median_max_p": 0.5368
-      },
-      "Swisyn": {
-        "n": 4258,
-        "median_max_p": 0.4512
-      },
-      "Trickbot": {
-        "n": 1336,
-        "median_max_p": 0.6421
-      },
-      "Ursnif": {
-        "n": 502,
-        "median_max_p": 0.6697
-      },
-      "Zeus": {
-        "n": 144,
-        "median_max_p": 0.517
-      },
-      "njRAT": {
-        "n": 543,
-        "median_max_p": 0.7876
-      }
-    },
-    "risk_coverage": [
       {
         "tau": 0.5,
-        "known_coverage": 0.9737,
-        "known_accuracy_covered": 0.9712,
-        "unseen_family_accepted": 0.4482
+        "known_coverage": 0.9910489510489511,
+        "known_accuracy_covered": 0.9940728196443692,
+        "unseen_family_accepted": 0.6744055944055944
+      },
+      {
+        "tau": 0.55,
+        "known_coverage": 0.9874125874125874,
+        "known_accuracy_covered": 0.9951841359773371,
+        "unseen_family_accepted": 0.39944055944055945
       },
       {
         "tau": 0.6,
-        "known_coverage": 0.9592,
-        "known_accuracy_covered": 0.982,
-        "unseen_family_accepted": 0.3014
+        "known_coverage": 0.9762237762237762,
+        "known_accuracy_covered": 0.995702005730659,
+        "unseen_family_accepted": 0.3683916083916084
+      },
+      {
+        "tau": 0.65,
+        "known_coverage": 0.9731468531468531,
+        "known_accuracy_covered": 0.9959758551307847,
+        "unseen_family_accepted": 0.33622377622377625
       },
       {
         "tau": 0.7,
-        "known_coverage": 0.9482,
-        "known_accuracy_covered": 0.99,
-        "unseen_family_accepted": 0.2065
+        "known_coverage": 0.9661538461538461,
+        "known_accuracy_covered": 0.9959467284308049,
+        "unseen_family_accepted": 0.30937062937062937
+      },
+      {
+        "tau": 0.75,
+        "known_coverage": 0.9633566433566434,
+        "known_accuracy_covered": 0.9968060394889663,
+        "unseen_family_accepted": 0.29202797202797204
       },
       {
         "tau": 0.8,
-        "known_coverage": 0.9309,
-        "known_accuracy_covered": 0.9977,
-        "unseen_family_accepted": 0.1563
+        "known_coverage": 0.9591608391608392,
+        "known_accuracy_covered": 0.9970836978710994,
+        "unseen_family_accepted": 0.2786013986013986
+      },
+      {
+        "tau": 0.85,
+        "known_coverage": 0.9544055944055944,
+        "known_accuracy_covered": 0.9976553341148886,
+        "unseen_family_accepted": 0.26825174825174825
       },
       {
         "tau": 0.9,
-        "known_coverage": 0.9115,
-        "known_accuracy_covered": 0.9991,
-        "unseen_family_accepted": 0.0988
+        "known_coverage": 0.9490909090909091,
+        "known_accuracy_covered": 0.9979369289714117,
+        "unseen_family_accepted": 0.23608391608391607
       },
       {
         "tau": 0.95,
-        "known_coverage": 0.8904,
-        "known_accuracy_covered": 0.9994,
-        "unseen_family_accepted": 0.0188
+        "known_coverage": 0.9292307692307692,
+        "known_accuracy_covered": 0.9984948826008428,
+        "unseen_family_accepted": 0.05314685314685315
       }
     ],
-    "abstain_below": 0.6
+    "validation_lofo": {
+      "Adload": {
+        "n": 41,
+        "median_max_p": 0.4951530378810098
+      },
+      "Emotet": {
+        "n": 45,
+        "median_max_p": 0.35169905706901905
+      },
+      "HarHar": {
+        "n": 27,
+        "median_max_p": 0.2931057395394245
+      },
+      "Lokibot": {
+        "n": 286,
+        "median_max_p": 0.5503365689121936
+      },
+      "Qakbot": {
+        "n": 205,
+        "median_max_p": 0.49117193097491263
+      },
+      "Swisyn": {
+        "n": 1921,
+        "median_max_p": 0.5013088216008754
+      },
+      "Trickbot": {
+        "n": 694,
+        "median_max_p": 0.9153269009162976
+      },
+      "Ursnif": {
+        "n": 11,
+        "median_max_p": 0.5555474379782267
+      },
+      "Zeus": {
+        "n": 35,
+        "median_max_p": 0.5069672751817039
+      },
+      "njRAT": {
+        "n": 310,
+        "median_max_p": 0.8262895949684255
+      }
+    },
+    "n_validation": 3575,
+    "n_validation_unseen": 3575,
+    "test_at_tau": {
+      "tau": 0.85,
+      "known_coverage": 0.9238485694347522,
+      "known_coverage_95ci": [
+        0.9188499,
+        0.92856327
+      ],
+      "known_accuracy_covered": 0.998678122934567,
+      "known_accuracy_covered_95ci": [
+        0.99778221,
+        0.9992124
+      ],
+      "unseen_family_accepted": 0.1328506629448709,
+      "unseen_family_accepted_95ci": [
+        0.12676026,
+        0.13918705
+      ],
+      "n_known_test": 11464,
+      "n_unseen_test": 11464
+    },
+    "test_curve_for_reference": [
+      {
+        "tau": 0.3,
+        "known_coverage": 0.9961618981158409,
+        "known_accuracy_covered": 0.9531523642732049,
+        "unseen_family_accepted": 0.9883984647592463
+      },
+      {
+        "tau": 0.35,
+        "known_coverage": 0.9927599441730635,
+        "known_accuracy_covered": 0.9561549951673842,
+        "unseen_family_accepted": 0.9519364968597348
+      },
+      {
+        "tau": 0.4,
+        "known_coverage": 0.9856943475226797,
+        "known_accuracy_covered": 0.9615929203539823,
+        "unseen_family_accepted": 0.8954989532449407
+      },
+      {
+        "tau": 0.45,
+        "known_coverage": 0.9800244242847174,
+        "known_accuracy_covered": 0.9658210947930574,
+        "unseen_family_accepted": 0.6814375436147941
+      },
+      {
+        "tau": 0.5,
+        "known_coverage": 0.9736566643405443,
+        "known_accuracy_covered": 0.9712417129546677,
+        "unseen_family_accepted": 0.4481856245638521
+      },
+      {
+        "tau": 0.55,
+        "known_coverage": 0.9662421493370551,
+        "known_accuracy_covered": 0.9768890493816015,
+        "unseen_family_accepted": 0.3787508722958828
+      },
+      {
+        "tau": 0.6,
+        "known_coverage": 0.9591765526866713,
+        "known_accuracy_covered": 0.9819934521644235,
+        "unseen_family_accepted": 0.3013782274947662
+      },
+      {
+        "tau": 0.65,
+        "known_coverage": 0.9508025122121424,
+        "known_accuracy_covered": 0.9890825688073395,
+        "unseen_family_accepted": 0.2557571528262387
+      },
+      {
+        "tau": 0.7,
+        "known_coverage": 0.948185624563852,
+        "known_accuracy_covered": 0.9899724011039558,
+        "unseen_family_accepted": 0.20647243545010469
+      },
+      {
+        "tau": 0.75,
+        "known_coverage": 0.942079553384508,
+        "known_accuracy_covered": 0.9917592592592592,
+        "unseen_family_accepted": 0.18222260990928124
+      },
+      {
+        "tau": 0.8,
+        "known_coverage": 0.9309141660851361,
+        "known_accuracy_covered": 0.9976574212893553,
+        "unseen_family_accepted": 0.15631542219120725
+      },
+      {
+        "tau": 0.85,
+        "known_coverage": 0.9238485694347522,
+        "known_accuracy_covered": 0.998678122934567,
+        "unseen_family_accepted": 0.1328506629448709
+      },
+      {
+        "tau": 0.9,
+        "known_coverage": 0.9115491974877878,
+        "known_accuracy_covered": 0.9991387559808612,
+        "unseen_family_accepted": 0.098831123517097
+      },
+      {
+        "tau": 0.95,
+        "known_coverage": 0.8903524075366365,
+        "known_accuracy_covered": 0.9994121681199177,
+        "unseen_family_accepted": 0.01884159106769016
+      }
+    ],
+    "test_lofo": {
+      "Adload": {
+        "n": 5,
+        "median_max_p": 0.6330857591994293
+      },
+      "Emotet": {
+        "n": 3529,
+        "median_max_p": 0.4677964843220329
+      },
+      "HarHar": {
+        "n": 69,
+        "median_max_p": 0.5561079070547087
+      },
+      "Lokibot": {
+        "n": 685,
+        "median_max_p": 0.681497116543972
+      },
+      "Qakbot": {
+        "n": 393,
+        "median_max_p": 0.5368243407655493
+      },
+      "Swisyn": {
+        "n": 4258,
+        "median_max_p": 0.4511638465954933
+      },
+      "Trickbot": {
+        "n": 1336,
+        "median_max_p": 0.6420811060798577
+      },
+      "Ursnif": {
+        "n": 502,
+        "median_max_p": 0.669743896194679
+      },
+      "Zeus": {
+        "n": 144,
+        "median_max_p": 0.5169508465427589
+      },
+      "njRAT": {
+        "n": 543,
+        "median_max_p": 0.7876429767999745
+      }
+    }
   },
   "ci_method": "Wilson 95 % on test accuracy; exact McNemar (binomial)",
   "example": {
@@ -282,5 +490,5 @@
       ]
     ]
   },
-  "markdown": "| model | accuracy | accuracy_95ci | novel_behaviour_accuracy | macro_f1 | fit+predict_s |\n|---|---|---|---|---|---|\n| mvp-jaccard | 0.8783 | [0.872203, 0.884173] | 0.8126 | 0.7125 | 2.5 |\n| static-only | 0.7004 | [0.691915, 0.708684] | 0.5035 | 0.7442 | 38.1 |\n| behaviour-only | 0.9587 | [0.954852, 0.962147] | 0.9343 | 0.9262 | 34.3 |\n| behaviour+static | 0.9497 | [0.945514, 0.953522] | 0.9246 | 0.923 | 31.1 |\n| published HMIL behaviour+static (Bosansky 2022) | 0.945 |  |  | - |  |\n| published HMIL static-only (Bosansky 2022) | ~0.63 |  |  | - |  |"
+  "markdown": "| model | accuracy | accuracy_95ci | novel_behaviour_accuracy | macro_f1 | fit+predict_s |\n|---|---|---|---|---|---|\n| mvp-jaccard | 0.8783147243545011 | [0.8722031, 0.88417289] | 0.8126293995859213 | 0.7125452181161493 | 2.7 |\n| static-only | 0.7003663642707606 | [0.69191455, 0.70868393] | 0.5035492457852706 | 0.7441774683987793 | 40.9 |\n| behaviour-only | 0.9586531751570132 | [0.95485239, 0.96214667] | 0.9343389529724934 | 0.9261859080734185 | 36.9 |\n| behaviour+static | 0.9496685275645499 | [0.94551358, 0.95352221] | 0.9245785270629991 | 0.9229606419224213 | 33.3 |\n| published HMIL behaviour+static (Bosansky 2022) | 0.945 |  |  | - |  |\n| published HMIL static-only (Bosansky 2022) | ~0.63 |  |  | - |  |"
 }
