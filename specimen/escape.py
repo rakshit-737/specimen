@@ -72,29 +72,61 @@ _SAFE_EXT = {"exe", "dll", "sys", "bat", "cmd", "com", "scr", "ps1", "vbs", "js"
              "php", "html", "htm", "asp", "aspx", "jsp", "cgi", "url", "vbe", "wsf", "hta", "mui", "nls", "manifest"}
 
 
+# dotted IPv4 with hex (0x..) or octal (0..) parts, e.g. 0xC0.0xA8.1.1 or 0300.0250.1.1
+_IPV4_ALT = re.compile(r"(?i)(?<![\w.])((?:0x[0-9a-f]{1,8}|0[0-7]{1,11}|\d{1,10})(?:\.(?:0x[0-9a-f]{1,8}|0[0-7]{1,11}|"
+                       r"\d{1,10})){1,3})(?![\w.])")
+# protocol-relative or scheme URL host: //example.com, //3232235777 (integer IPv4), //0xc0a80101
+_HOST_SLASHES = re.compile(r"(?i)(?<![\w/:])(//)(?=(?:[\w-]+\.)+[\w-]+|\d{6,10}\b|0x[0-9a-f]{6,8}\b|\[)")
+_SCHEME = re.compile(r"(?i)\b(https?|ftps?|wss?|file|smb)://")
+
+
 def defang(s: str) -> str:
     """Defang URLs, domains and IPv4 addresses for human-facing text.
 
-    File names such as ``kernel32.dll`` are left alone (common file
-    extensions are not treated as top-level domains)."""
-    s = re.sub(r"(?i)\bhttp(s?)://", r"hxxp\1://", s)
+    Handles ``http(s)``/``ftp``/``ws``/``file``/``smb`` schemes,
+    protocol-relative ``//host`` URLs, dotted IPv4 (also with hex or octal
+    parts) and integer IPv4 hosts after ``//``. File names such as
+    ``kernel32.dll`` are left alone (common file extensions are not treated
+    as top-level domains)."""
+    def scheme(m: re.Match[str]) -> str:
+        sch = m.group(1).lower()
+        if sch.startswith("http"):
+            return "hxxp" + sch[4:] + "://"
+        if sch.startswith("ftp"):
+            return "fxp" + sch[3:] + "://"
+        return sch + "[:]//"
+    s = _SCHEME.sub(scheme, s)
+    s = _HOST_SLASHES.sub("[//]", s)
 
     def dot(m: re.Match[str]) -> str:
         tail = re.match(r"[A-Za-z]+", s[m.end():])
         return "." if tail and tail.group().lower() in _SAFE_EXT else "[.]"
     s = _IPV4.sub(lambda m: "[.]".join(m.groups()), s)
+    s = _IPV4_ALT.sub(lambda m: m.group(1).replace(".", "[.]")
+                      if re.search(r"(?i)0x|(^|\.)0\d", m.group(1)) else m.group(1), s)
     return _TLD_DOT.sub(dot, s)
+
+
+# Markdown structure characters that untrusted text must never contribute:
+# links/images ([ ] ( ) !), escapes (\), emphasis (* _), code (`), tables (|).
+_MD_ENTITIES = {"\\": "&#92;", "[": "&#91;", "]": "&#93;", "(": "&#40;", ")": "&#41;", "!": "&#33;",
+                "|": "&#124;", "`": "&#96;", "*": "&#42;", "_": "&#95;", "#": "&#35;", "~": "&#126;"}
+_MD_SPECIAL = re.compile("[" + re.escape("".join(_MD_ENTITIES)) + "]")
 
 
 def md_text(s: object, defang_iocs: bool = True) -> str:
     """Untrusted text for a Markdown table cell or list item.
 
-    HTML-escaped, single-line, pipes and backticks neutralised, the
-    pymdown snippet marker ``--8<--`` broken, network IOCs defanged."""
+    HTML-escaped, single-line; every Markdown-structural character
+    (``[ ] ( ) ! \\ | ` * _ # ~``) becomes an HTML entity, so report data can
+    never form a link, image, code span, emphasis or table cell; the
+    pymdown snippet marker ``--8<--`` is broken; network IOCs are defanged."""
     t = _CTRL.sub(" ", str(s))
-    t = html.escape(t, quote=False).replace("|", "&#124;").replace("`", "&#96;").replace("*", "&#42;")
-    t = t.replace("_", "&#95;").replace("--8&lt;--", "-&#45;8&lt;--")
-    return defang(t) if defang_iocs else t
+    if defang_iocs:  # defang first: its "[.]" markers are then entity-encoded like everything else
+        t = defang(t)
+    t = html.escape(t, quote=False)
+    t = _MD_SPECIAL.sub(lambda m: _MD_ENTITIES[m.group()], t)
+    return t.replace("--8&lt;--", "-&#45;8&lt;--")
 
 
 def mermaid_label(s: str, n: int = 60) -> str:

@@ -63,6 +63,46 @@ def test_crafted_report_markdown_is_inert(crafted):
     assert "--8<--" not in md.replace("```", "")
 
 
+CANARY = {
+    "behavior": {"summary": {
+        "executed_commands": ["cmd.exe /c echo [audit-canary-cmd](javascript:void(0))",
+                              "cmd.exe /c echo ![audit-canary-px](//3232235777/p.png)",
+                              "cmd.exe /c echo <http://audit-canary.example/x> [r]: http://audit-canary.example/y",
+                              "cmd.exe /c echo `x` \\[esc\\](javascript:alert(1))"],
+        "write_files": ["C:\\Users\\a\\AppData\\Roaming\\[audit-canary-file](https:\\evil).exe"],
+        "mutexes": ["![m](http://audit-canary.example/m.png)"],
+    }},
+}
+
+
+def test_report_data_never_renders_as_link_or_image(tmp_path):
+    """Render the Markdown report with Python-Markdown and the docs-site extensions:
+    no <a>, <img> or autolink may come from sandbox-controlled strings."""
+    markdown = pytest.importorskip("markdown")
+    p = tmp_path / "canary.json"
+    p.write_text(json.dumps(CANARY))
+    rep = run_report(p)
+    md = render_markdown(rep)
+    exts = ["admonition", "tables", "attr_list", "md_in_html"]
+    try:
+        import pymdownx  # noqa: F401
+        exts += ["pymdownx.superfences", "pymdownx.inlinehilite", "pymdownx.details"]
+    except ImportError:
+        pass
+    html_out = markdown.markdown(md, extensions=exts)
+    assert "<a " not in html_out and "<img" not in html_out, html_out
+    assert "href=" not in html_out and "src=" not in html_out
+    assert "audit-canary" in html_out  # the text itself is still shown
+
+
+def test_defang_protocol_relative_and_numeric_hosts():
+    assert defang("//3232235777/p.png") == "[//]3232235777/p.png"
+    assert defang("//evil.example.org/x").startswith("[//]evil")
+    assert "[.]" in defang("0xC0.0xA8.0x01.0x01")
+    assert defang("cscript //nologo a.vbs") == "cscript //nologo a.vbs"
+    assert defang("ftp://x.org") == "fxp://x[.]org"
+
+
 def test_defang():
     assert defang("http://mbfgq.ga/Dboy/five/fre.php") == "hxxp://mbfgq[.]ga/Dboy/five/fre.php"
     assert defang("C:\\x\\kernel32.dll") == "C:\\x\\kernel32.dll"
