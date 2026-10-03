@@ -406,7 +406,7 @@ def block_headline() -> str:
     ]
     notes = [
         "[^gate]: Standalone `triage-ember` model on EMBER raw features; `analyze` has no PE-to-EMBER extractor and "
-        "still detonates every PE. Threshold for 99 % recall calibrated on October; 5 subsample seeds, 95 % "
+        "still replays every PE. Threshold for 99 % recall calibrated on October; 5 subsample seeds, 95 % "
         "t-intervals (seed variance only).",
         "[^ember]: Upstream benchmark trains on all 600k Jan-Oct rows with EMBER's own features; SPECIMEN uses a "
         "132k-row Jan-Sep subsample and holds October out, so the gap is not drift alone.",
@@ -547,7 +547,8 @@ BLOCKS = {"headline": block_headline, "threat-fpr": block_threat_fpr, "demo-exam
           "rules-findings": block_rules_findings, "family": block_family, "family-openset": block_family_openset,
           "static-temporal": block_static_temporal, "static-random": block_static_random,
           "behaviour": block_behaviour, "maldetconv": block_maldetconv, "li2024": block_li2024, "cross": block_cross}
-_BLOCK = re.compile(r"(<!-- gen:([a-z0-9-]+) -->\n)(.*?)(\n<!-- /gen:\2 -->)", re.S)
+# The body is optional so an empty block (markers on adjacent lines) is filled too.
+_BLOCK = re.compile(r"(<!-- gen:([a-z0-9-]+) -->\n)(?:(.*?)\n)?(<!-- /gen:\2 -->)", re.S)
 
 
 def render(text: str) -> str:
@@ -559,7 +560,7 @@ def render(text: str) -> str:
             raise SystemExit(f"unknown generated block {name!r}")
         if name not in cache:
             cache[name] = BLOCKS[name]()
-        return m.group(1) + cache[name] + m.group(4)
+        return m.group(1) + cache[name] + "\n" + m.group(4)
     return _BLOCK.sub(sub, text)
 
 

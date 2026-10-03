@@ -32,6 +32,20 @@
 ## At a glance
 
 <!-- gen:headline -->
+| Question | Data | SPECIMEN [95 % CI] | Baseline | Published |
+|---|---|---|---|---|
+| Can a static gate skip detonations safely? [^gate] | EMBER 2018, temporal (train Jan-Sep, test Nov-Dec) | skips 72 % of benign, misses 0.6 % of malware; AUC 0.989 [0.989, 0.989] | heuristic AUC 0.51; detonate all: 0 % saved | EMBER LightGBM, 600k rows: AUC 0.996 [^ember] |
+| Which family is it? | Avast-CTU CAPEv2, temporal split | 95.0 % [94.6, 95.4] [^fam] | Jaccard: 87.8 % | HMIL: 94.5 % |
+| Do Sigma rules from **one** run catch later siblings? | Avast-CTU, 9 families x 10 runs x 5 seeds | recall 0.293 [0.067, 0.560] at 0.006 % cross-family FPR, 0.000 % benign FPR [^rules] | MVP: 0.166 at 1.74 % | none found |
+| Is the behaviour malicious? | MalbehavD-V1, 2,570 Cuckoo API traces | 93.4 [90.8, 96.0] % duplicate-free; 96.3 [95.1, 97.4] % on the paper's random splits [^beh] | MVP scorer: 50 % | MalDetConv 96.1 % (random split) |
+
+[^gate]: Standalone `triage-ember` model on EMBER raw features; `analyze` has no PE-to-EMBER extractor and still replays every PE. Threshold for 99 % recall calibrated on October; 5 subsample seeds, 95 % t-intervals (seed variance only).
+[^ember]: Upstream benchmark trains on all 600k Jan-Oct rows with EMBER's own features; SPECIMEN uses a 132k-row Jan-Sep subsample and holds October out, so the gap is not drift alone.
+[^fam]: Shipped behaviour+static model, chosen on a temporal validation slice; Wilson 95 % interval.
+[^rules]: Shipped configuration: packaged negative corpus minus the family the trained model predicts. Mean over 450 runs with a two-level bootstrap CI; the median family is much lower (see Evaluation). Benign FPR is on emulator (Speakeasy) reports, a lower bound.
+[^beh]: Shipped API n-gram LR; Nadeau-Bengio corrected 95 % intervals. 42 % of random-split test rows have an exact duplicate in train, which inflates the paper-protocol number.
+
+All cells come from `results/*.json`, produced by the `bench` workflow; each table on the [Evaluation](https://rakshit-737.github.io/specimen/benchmarks/) page names its run id.
 <!-- /gen:headline -->
 
 Details, intervals and caveats: [Evaluation](benchmarks.md).
