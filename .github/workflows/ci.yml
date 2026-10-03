@@ -40,6 +40,8 @@ jobs:
       - run: pip install -e ".[dev,ml]"
       - run: python -m ruff check .
       - run: python -m pytest -q -m "not realdata"
+      - name: Committed result files carry provenance and sane ranges
+        run: python scripts/check_results.py results/*.json
       - name: Benchmark scripts still compile and import (bench-smoke)
         run: |
           python -m py_compile benchmarks/*.py scripts/*.py

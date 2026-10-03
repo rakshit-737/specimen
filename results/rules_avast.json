@@ -1,7 +1,16 @@
 {
   "benchmark": "rules_avast",
-  "generated": "2026-10-02",
+  "generated": "2026-10-03",
   "python": "3.12.14",
+  "provenance": {
+    "source": "github-actions",
+    "github_run_id": 37109545948,
+    "github_run_attempt": 1,
+    "job": "avast",
+    "commit": "be11eac7ab2799f33db42cd04bce02d90870337b",
+    "command": "bench_rules.py --seeds 5 --benign /home/runner/work/specimen/specimen/../speakeasy-data/cache/speakeasy_benign.jsonl.gz",
+    "runtime_s": 617.3
+  },
   "dataset": "Avast-CTU CAPEv2 reduced reports, temporal split (train < 2019-08-01 <= test)",
   "protocol": {
     "refs_per_family": 10,
@@ -18,320 +27,964 @@
       "Zeus",
       "njRAT"
     ],
-    "negatives_for_synthesis": "1500 other-family train runs per (seed, family)",
-    "novel_test_share": 0.5898,
-    "ci": "two-level bootstrap (families, units); Wilson for pooled FPR; paired Wilcoxon"
+    "negatives_for_synthesis": "1500 other-family train runs per (seed, family) for the oracle rows; the packaged corpus (200 train runs per family) for the packaged rows",
+    "reference_runs": "train runs with host actions, excluding the packaged corpus's own runs",
+    "packaged_members_identified": true,
+    "packaged_members": 1800,
+    "predicted_family": "5-fold cross-fitted FamilyModel (behaviour+static) on train",
+    "cross_fitted_family_accuracy_train": 0.9928023032629558,
+    "reference_runs_with_correct_prediction": 0.9844444444444445,
+    "novel_test_share": 0.5898464759246337,
+    "ci": "two-level bootstrap (families, units); Wilson for pooled rates; family-clustered Wilcoxon / sign-flip tests for paired comparisons"
   },
   "summary": [
     {
       "synthesizer": "sigma-mvp",
-      "sibling_recall_mean": 0.174,
+      "negatives": "synthetic benign",
+      "oracle": false,
+      "sibling_recall_mean": 0.16574925490379075,
       "recall_95ci": [
-        0.02689,
-        0.39598
+        0.015022819997546757,
+        0.40083799412561044
       ],
-      "sibling_recall_median_family": 0.0046,
-      "novel_behaviour_recall": 0.1927,
+      "sibling_recall_median_family": 0.005104790419161678,
+      "novel_behaviour_recall": 0.18260281326638442,
       "novel_recall_95ci": [
-        0.02933,
-        0.43176
+        0.017925057308068097,
+        0.43078673955886876
       ],
-      "cross_family_fpr_mean": 0.018492,
+      "cross_family_fpr_mean": 0.017429760233805804,
       "fpr_95ci": [
-        0.00914,
-        0.02887
+        0.008580549639544348,
+        0.027522555998214907
       ],
+      "fpr_pooled": 0.018235364617949248,
       "fpr_pooled_wilson": [
-        0.01958,
-        0.019834
+        0.01811335,
+        0.01835819
       ],
-      "runs_with_any_sibling_hit": 0.422,
-      "rules_per_run": 0.62,
-      "units": 450
-    },
-    {
-      "synthesizer": "sigma-mvp + real neg",
-      "sibling_recall_mean": 0.0,
-      "recall_95ci": [
+      "runs_with_any_sibling_hit": 0.3844444444444444,
+      "rules_per_run": 0.5933333333333334,
+      "units": 450,
+      "benign_fpr_mean": 0.0,
+      "benign_fpr_95ci": [
         0.0,
         0.0
+      ],
+      "benign_reports_hit_by_any_run": 0,
+      "benign_any_run_wilson": [
+        0.0,
+        0.00011757
+      ],
+      "benign_units_with_any_hit": 0.0
+    },
+    {
+      "synthesizer": "sigma-mvp + real neg (oracle)",
+      "negatives": "synthetic + 1,500 other-family runs",
+      "oracle": true,
+      "sibling_recall_mean": 4.092490280335584e-06,
+      "recall_95ci": [
+        0.0,
+        1.636996112134234e-05
       ],
       "sibling_recall_median_family": 0.0,
-      "novel_behaviour_recall": 0.0,
+      "novel_behaviour_recall": 4.544421722335833e-06,
       "novel_recall_95ci": [
         0.0,
-        0.0
+        1.8177686889343333e-05
       ],
-      "cross_family_fpr_mean": 0.0,
+      "cross_family_fpr_mean": 2.1941372652273126e-07,
       "fpr_95ci": [
         0.0,
+        1.0970686326136565e-06
+      ],
+      "fpr_pooled": 2.1791002495069785e-07,
+      "fpr_pooled_wilson": [
+        4e-08,
+        1.23e-06
+      ],
+      "runs_with_any_sibling_hit": 0.0022222222222222222,
+      "rules_per_run": 0.013333333333333334,
+      "units": 450,
+      "benign_fpr_mean": 0.0,
+      "benign_fpr_95ci": [
+        0.0,
         0.0
       ],
-      "fpr_pooled_wilson": [
+      "benign_reports_hit_by_any_run": 0,
+      "benign_any_run_wilson": [
         0.0,
-        1e-06
+        0.00011757
       ],
-      "runs_with_any_sibling_hit": 0.0,
-      "rules_per_run": 0.01,
-      "units": 450
+      "benign_units_with_any_hit": 0.0
     },
     {
-      "synthesizer": "exact + real neg",
-      "sibling_recall_mean": 0.2977,
+      "synthesizer": "exact + synthetic neg",
+      "negatives": "synthetic benign",
+      "oracle": false,
+      "sibling_recall_mean": 0.3134994458125402,
       "recall_95ci": [
-        0.06827,
-        0.56325
+        0.09178258127303472,
+        0.573681184931597
       ],
-      "sibling_recall_median_family": 0.0563,
-      "novel_behaviour_recall": 0.2911,
+      "sibling_recall_median_family": 0.145287616888637,
+      "novel_behaviour_recall": 0.31161964769910583,
       "novel_recall_95ci": [
-        0.05976,
-        0.559
+        0.09193918896402808,
+        0.5684105750403671
       ],
-      "cross_family_fpr_mean": 8.6e-05,
+      "cross_family_fpr_mean": 0.00813180879028458,
       "fpr_95ci": [
-        1e-05,
-        0.00024
+        0.003780299169502312,
+        0.014540217769684121
       ],
+      "fpr_pooled": 0.008455562698161929,
       "fpr_pooled_wilson": [
-        8.6e-05,
-        0.000104
+        0.0083722,
+        0.00853975
       ],
-      "runs_with_any_sibling_hit": 0.698,
-      "rules_per_run": 5.69,
-      "units": 450
+      "runs_with_any_sibling_hit": 0.74,
+      "rules_per_run": 6.035555555555556,
+      "units": 450,
+      "benign_fpr_mean": 0.0,
+      "benign_fpr_95ci": [
+        0.0,
+        0.0
+      ],
+      "benign_reports_hit_by_any_run": 0,
+      "benign_any_run_wilson": [
+        0.0,
+        0.00011757
+      ],
+      "benign_units_with_any_hit": 0.0
+    },
+    {
+      "synthesizer": "exact + real neg (oracle)",
+      "negatives": "synthetic + 1,500 other-family runs",
+      "oracle": true,
+      "sibling_recall_mean": 0.2922956956099589,
+      "recall_95ci": [
+        0.06319729209376215,
+        0.5622374618864544
+      ],
+      "sibling_recall_median_family": 0.0901388888888889,
+      "novel_behaviour_recall": 0.2883933336910864,
+      "novel_recall_95ci": [
+        0.060855179835837596,
+        0.5574572023589253
+      ],
+      "cross_family_fpr_mean": 0.0001248035905210688,
+      "fpr_95ci": [
+        1.4476732589564371e-05,
+        0.0003101448130124568
+      ],
+      "fpr_pooled": 0.00013575794554428476,
+      "fpr_pooled_wilson": [
+        0.00012551,
+        0.00014684
+      ],
+      "runs_with_any_sibling_hit": 0.6933333333333334,
+      "rules_per_run": 5.426666666666667,
+      "units": 450,
+      "benign_fpr_mean": 0.0,
+      "benign_fpr_95ci": [
+        0.0,
+        0.0
+      ],
+      "benign_reports_hit_by_any_run": 0,
+      "benign_any_run_wilson": [
+        0.0,
+        0.00011757
+      ],
+      "benign_units_with_any_hit": 0.0
     },
     {
       "synthesizer": "ladder + synthetic neg",
-      "sibling_recall_mean": 0.3715,
+      "negatives": "synthetic benign",
+      "oracle": false,
+      "sibling_recall_mean": 0.3620556970288081,
       "recall_95ci": [
-        0.15098,
-        0.62019
+        0.13996887658679658,
+        0.6121565666515109
       ],
-      "sibling_recall_median_family": 0.2278,
-      "novel_behaviour_recall": 0.3919,
+      "sibling_recall_median_family": 0.2388888888888889,
+      "novel_behaviour_recall": 0.3835626627847321,
       "novel_recall_95ci": [
-        0.16868,
-        0.63244
+        0.1632205149134553,
+        0.6261351299588384
       ],
-      "cross_family_fpr_mean": 0.086668,
+      "cross_family_fpr_mean": 0.09316644403536992,
       "fpr_95ci": [
-        0.03652,
-        0.14822
+        0.039673117434714314,
+        0.16527490672165032
       ],
+      "fpr_pooled": 0.0973449842560007,
       "fpr_pooled_wilson": [
-        0.089666,
-        0.090189
+        0.09707411,
+        0.09761654
       ],
-      "runs_with_any_sibling_hit": 0.798,
-      "rules_per_run": 6.17,
-      "units": 450
+      "runs_with_any_sibling_hit": 0.7866666666666666,
+      "rules_per_run": 5.9911111111111115,
+      "units": 450,
+      "benign_fpr_mean": 0.0,
+      "benign_fpr_95ci": [
+        0.0,
+        0.0
+      ],
+      "benign_reports_hit_by_any_run": 0,
+      "benign_any_run_wilson": [
+        0.0,
+        0.00011757
+      ],
+      "benign_units_with_any_hit": 0.0
     },
     {
-      "synthesizer": "ladder + real neg (v2)",
-      "sibling_recall_mean": 0.304,
+      "synthesizer": "ladder + real neg (oracle)",
+      "negatives": "synthetic + 1,500 other-family runs",
+      "oracle": true,
+      "sibling_recall_mean": 0.2961250797265241,
       "recall_95ci": [
-        0.07286,
-        0.57758
+        0.06899622811603984,
+        0.5652585889416274
       ],
-      "sibling_recall_median_family": 0.0574,
-      "novel_behaviour_recall": 0.2978,
+      "sibling_recall_median_family": 0.08958333333333332,
+      "novel_behaviour_recall": 0.2924477405925959,
       "novel_recall_95ci": [
-        0.06592,
-        0.56933
+        0.06536461228295098,
+        0.5588948536342369
       ],
-      "cross_family_fpr_mean": 0.000195,
+      "cross_family_fpr_mean": 0.00019326829172022794,
       "fpr_95ci": [
-        2e-05,
-        0.00043
+        4.238780748181405e-05,
+        0.0003918015100587131
       ],
+      "fpr_pooled": 0.00020723243372811366,
       "fpr_pooled_wilson": [
-        0.000197,
-        0.000224
+        0.00019447,
+        0.00022083
       ],
-      "runs_with_any_sibling_hit": 0.731,
-      "rules_per_run": 5.71,
-      "units": 450
+      "runs_with_any_sibling_hit": 0.7222222222222222,
+      "rules_per_run": 5.464444444444444,
+      "units": 450,
+      "benign_fpr_mean": 0.0,
+      "benign_fpr_95ci": [
+        0.0,
+        0.0
+      ],
+      "benign_reports_hit_by_any_run": 0,
+      "benign_any_run_wilson": [
+        0.0,
+        0.00011757
+      ],
+      "benign_units_with_any_hit": 0.0
     },
     {
-      "synthesizer": "ladder + real neg, k=3",
-      "sibling_recall_mean": 0.2266,
+      "synthesizer": "ladder + real neg, k=3 (oracle)",
+      "negatives": "synthetic + 1,500 other-family runs",
+      "oracle": true,
+      "sibling_recall_mean": 0.23686100462252618,
       "recall_95ci": [
-        0.03872,
-        0.45785
+        0.05182842507228121,
+        0.47642653253929157
       ],
-      "sibling_recall_median_family": 0.0447,
-      "novel_behaviour_recall": 0.2148,
+      "sibling_recall_median_family": 0.06902777777777777,
+      "novel_behaviour_recall": 0.22681809712386566,
       "novel_recall_95ci": [
-        0.02831,
-        0.44269
+        0.04264108824133642,
+        0.4599100209414815
       ],
-      "cross_family_fpr_mean": 7e-05,
+      "cross_family_fpr_mean": 8.884879427432888e-05,
       "fpr_95ci": [
-        1e-05,
-        0.00019
+        1.4235872702203316e-05,
+        0.00020910115780092288
       ],
+      "fpr_pooled": 9.23938505790959e-05,
       "fpr_pooled_wilson": [
-        6.6e-05,
-        8.1e-05
+        8.401e-05,
+        0.00010162
       ],
-      "runs_with_any_sibling_hit": 0.591,
-      "rules_per_run": 2.6,
-      "units": 450
+      "runs_with_any_sibling_hit": 0.6222222222222222,
+      "rules_per_run": 2.58,
+      "units": 450,
+      "benign_fpr_mean": 0.0,
+      "benign_fpr_95ci": [
+        0.0,
+        0.0
+      ],
+      "benign_reports_hit_by_any_run": 0,
+      "benign_any_run_wilson": [
+        0.0,
+        0.00011757
+      ],
+      "benign_units_with_any_hit": 0.0
     },
     {
-      "synthesizer": "shipped (packaged corpus)",
-      "sibling_recall_mean": 0.3026,
+      "synthesizer": "packaged, true family excluded (oracle)",
+      "negatives": "packaged corpus minus the true family",
+      "oracle": true,
+      "sibling_recall_mean": 0.29294166390139253,
       "recall_95ci": [
-        0.07549,
-        0.57111
+        0.06695561759457865,
+        0.5599650379616584
       ],
-      "sibling_recall_median_family": 0.0576,
-      "novel_behaviour_recall": 0.2964,
+      "sibling_recall_median_family": 0.08986111111111111,
+      "novel_behaviour_recall": 0.2893039718153727,
       "novel_recall_95ci": [
-        0.06754,
-        0.56639
+        0.0637272727573993,
+        0.5552701641087188
       ],
-      "cross_family_fpr_mean": 3.9e-05,
+      "cross_family_fpr_mean": 4.414524154717569e-05,
       "fpr_95ci": [
-        1e-05,
-        7e-05
+        1.848473566903382e-05,
+        7.432111311556861e-05
       ],
+      "fpr_pooled": 4.358200499013957e-05,
       "fpr_pooled_wilson": [
-        3.2e-05,
-        4.4e-05
+        3.795e-05,
+        5.006e-05
       ],
-      "runs_with_any_sibling_hit": 0.733,
-      "rules_per_run": 5.68,
-      "units": 450
+      "runs_with_any_sibling_hit": 0.7088888888888889,
+      "rules_per_run": 5.453333333333333,
+      "units": 450,
+      "benign_fpr_mean": 0.0,
+      "benign_fpr_95ci": [
+        0.0,
+        0.0
+      ],
+      "benign_reports_hit_by_any_run": 0,
+      "benign_any_run_wilson": [
+        0.0,
+        0.00011757
+      ],
+      "benign_units_with_any_hit": 0.0
     },
     {
-      "synthesizer": "v2, 5 runs pooled",
-      "sibling_recall_mean": 0.3909,
+      "synthesizer": "packaged, predicted family excluded (shipped)",
+      "negatives": "packaged corpus minus the predicted family",
+      "oracle": false,
+      "sibling_recall_mean": 0.29294166390139253,
       "recall_95ci": [
-        0.16036,
-        0.63968
+        0.06695561759457865,
+        0.5599650379616584
       ],
-      "sibling_recall_median_family": 0.2653,
-      "novel_behaviour_recall": 0.35,
+      "sibling_recall_median_family": 0.08986111111111111,
+      "novel_behaviour_recall": 0.2893039718153727,
       "novel_recall_95ci": [
-        0.10374,
-        0.62061
+        0.0637272727573993,
+        0.5552701641087188
       ],
-      "cross_family_fpr_mean": 0.000557,
+      "cross_family_fpr_mean": 5.7757307177795335e-05,
       "fpr_95ci": [
-        6e-05,
-        0.00126
+        2.5848768642914027e-05,
+        0.00010624119230879679
       ],
+      "fpr_pooled": 5.796406663688563e-05,
       "fpr_pooled_wilson": [
-        0.000533,
-        0.000674
+        5.14e-05,
+        6.536e-05
       ],
-      "runs_with_any_sibling_hit": 1.0,
-      "rules_per_run": 5.97,
-      "units": 45
+      "runs_with_any_sibling_hit": 0.7088888888888889,
+      "rules_per_run": 5.457777777777777,
+      "units": 450,
+      "benign_fpr_mean": 0.0,
+      "benign_fpr_95ci": [
+        0.0,
+        0.0
+      ],
+      "benign_reports_hit_by_any_run": 0,
+      "benign_any_run_wilson": [
+        0.0,
+        0.00011757
+      ],
+      "benign_units_with_any_hit": 0.0
+    },
+    {
+      "synthesizer": "packaged, no exclusion (default install)",
+      "negatives": "whole packaged corpus",
+      "oracle": false,
+      "sibling_recall_mean": 0.0001142786532975535,
+      "recall_95ci": [
+        9.227554912725662e-06,
+        0.0003186881072694901
+      ],
+      "sibling_recall_median_family": 2.91970802919708e-05,
+      "novel_behaviour_recall": 0.00025702441559119846,
+      "novel_recall_95ci": [
+        1.8635076315243137e-05,
+        0.0007663517254412654
+      ],
+      "cross_family_fpr_mean": 8.983899733101977e-06,
+      "fpr_95ci": [
+        1.4050723110428649e-06,
+        2.0659328455788758e-05
+      ],
+      "fpr_pooled": 9.370131072880007e-06,
+      "fpr_pooled_wilson": [
+        6.96e-06,
+        1.262e-05
+      ],
+      "runs_with_any_sibling_hit": 0.03111111111111111,
+      "rules_per_run": 2.4355555555555557,
+      "units": 450,
+      "benign_fpr_mean": 0.0,
+      "benign_fpr_95ci": [
+        0.0,
+        0.0
+      ],
+      "benign_reports_hit_by_any_run": 0,
+      "benign_any_run_wilson": [
+        0.0,
+        0.00011757
+      ],
+      "benign_units_with_any_hit": 0.0
+    },
+    {
+      "synthesizer": "v2, 5 runs pooled (oracle)",
+      "negatives": "synthetic + 1,500 other-family runs",
+      "oracle": true,
+      "sibling_recall_mean": 0.38029578515487233,
+      "recall_95ci": [
+        0.1478816288074912,
+        0.6351644681330182
+      ],
+      "sibling_recall_median_family": 0.3416666666666667,
+      "novel_behaviour_recall": 0.36392971882367026,
+      "novel_recall_95ci": [
+        0.12271023318920489,
+        0.6196367197676972
+      ],
+      "cross_family_fpr_mean": 0.0004207797873503083,
+      "fpr_95ci": [
+        5.076124442338995e-05,
+        0.0010234866435157276
+      ],
+      "fpr_pooled": 0.0004488946513984376,
+      "fpr_pooled_wilson": [
+        0.00039165,
+        0.00051451
+      ],
+      "runs_with_any_sibling_hit": 0.9333333333333333,
+      "rules_per_run": 5.626666666666666,
+      "units": 45,
+      "benign_fpr_mean": 0.0,
+      "benign_fpr_95ci": [
+        0.0,
+        0.0
+      ],
+      "benign_reports_hit_by_any_run": 0,
+      "benign_any_run_wilson": [
+        0.0,
+        0.00011757
+      ],
+      "benign_units_with_any_hit": 0.0
     },
     {
       "synthesizer": "yara-imphash",
-      "sibling_recall_mean": 0.0813,
+      "negatives": "none",
+      "oracle": false,
+      "sibling_recall_mean": 0.08040337022974209,
       "recall_95ci": [
-        0.00016,
-        0.22429
+        0.00047942291121320734,
+        0.22764437722232028
       ],
-      "sibling_recall_median_family": 0.0002,
-      "novel_behaviour_recall": 0.0731,
+      "sibling_recall_median_family": 0.0006944444444444445,
+      "novel_behaviour_recall": 0.07077487960365401,
       "novel_recall_95ci": [
-        9e-05,
-        0.19856
+        0.00016841495789377648,
+        0.197509810991213
       ],
-      "cross_family_fpr_mean": 0.00025,
+      "cross_family_fpr_mean": 0.0002250778338103673,
       "fpr_95ci": [
         0.0,
-        0.00073
+        0.0005808385433000742
       ],
+      "fpr_pooled": 0.00023970102744576765,
       "fpr_pooled_wilson": [
-        0.000252,
-        0.000282
+        0.00022595,
+        0.00025429
       ],
-      "runs_with_any_sibling_hit": 0.213,
-      "rules_per_run": 0.98,
+      "runs_with_any_sibling_hit": 0.22,
+      "rules_per_run": 0.9866666666666667,
       "units": 450
     },
     {
-      "synthesizer": "yara-v2",
-      "sibling_recall_mean": 0.1041,
+      "synthesizer": "yara-v2 (oracle)",
+      "negatives": "1,500 other-family runs (imphash + import prevalence)",
+      "oracle": true,
+      "sibling_recall_mean": 0.10544970539135022,
       "recall_95ci": [
-        0.00714,
-        0.28625
+        0.008244453243729723,
+        0.2898564741505812
       ],
-      "sibling_recall_median_family": 0.0179,
-      "novel_behaviour_recall": 0.097,
+      "sibling_recall_median_family": 0.01043824701195219,
+      "novel_behaviour_recall": 0.09714437787009726,
       "novel_recall_95ci": [
-        0.00809,
-        0.26096
+        0.007845174457224057,
+        0.26160471774723765
       ],
-      "cross_family_fpr_mean": 0.000707,
+      "cross_family_fpr_mean": 0.0007879408337787382,
       "fpr_95ci": [
-        4e-05,
-        0.00195
+        6.35211913076306e-05,
+        0.002285777196332963
       ],
+      "fpr_pooled": 0.0007999477015940118,
       "fpr_pooled_wilson": [
-        0.000694,
-        0.000743
+        0.00077449,
+        0.00082624
       ],
-      "runs_with_any_sibling_hit": 0.269,
-      "rules_per_run": 0.94,
+      "runs_with_any_sibling_hit": 0.30666666666666664,
+      "rules_per_run": 0.9644444444444444,
+      "units": 450
+    },
+    {
+      "synthesizer": "yara-v2, packaged, predicted family excluded (shipped)",
+      "negatives": "packaged import prevalence minus the predicted family",
+      "oracle": false,
+      "sibling_recall_mean": 0.13743315327363598,
+      "recall_95ci": [
+        0.024886807941104653,
+        0.30926965978495763
+      ],
+      "sibling_recall_median_family": 0.03326347305389222,
+      "novel_behaviour_recall": 0.12552618915179203,
+      "novel_recall_95ci": [
+        0.023323119453197202,
+        0.2751051115244624
+      ],
+      "cross_family_fpr_mean": 0.0018230229930136287,
+      "fpr_95ci": [
+        0.0002591682258767847,
+        0.004467375928034614
+      ],
+      "fpr_pooled": 0.001857029232629847,
+      "fpr_pooled_wilson": [
+        0.00181805,
+        0.00189684
+      ],
+      "runs_with_any_sibling_hit": 0.4288888888888889,
+      "rules_per_run": 0.9866666666666667,
+      "units": 450
+    },
+    {
+      "synthesizer": "yara-v2, packaged, no exclusion (default install)",
+      "negatives": "whole packaged import prevalence",
+      "oracle": false,
+      "sibling_recall_mean": 0.08390865218060485,
+      "recall_95ci": [
+        0.0038579559950215766,
+        0.23047978258681526
+      ],
+      "sibling_recall_median_family": 0.009693430656934307,
+      "novel_behaviour_recall": 0.07334548860336645,
+      "novel_recall_95ci": [
+        0.0022558615893530417,
+        0.2001554016607069
+      ],
+      "cross_family_fpr_mean": 0.0008160157204603285,
+      "fpr_95ci": [
+        0.0001179820469752743,
+        0.0019850627699254807
+      ],
+      "fpr_pooled": 0.0008361207657358277,
+      "fpr_pooled_wilson": [
+        0.00081009,
+        0.00086299
+      ],
+      "runs_with_any_sibling_hit": 0.2866666666666667,
+      "rules_per_run": 0.9866666666666667,
       "units": 450
     }
   ],
   "paired_tests": [
     {
       "a": "sigma-mvp",
-      "b": "ladder + real neg (v2)",
+      "b": "ladder + real neg (oracle)",
       "metric": "recall",
-      "mean_diff": 0.13003,
-      "n": 450,
-      "wilcoxon_p": 7.364006170223497e-11
-    },
-    {
-      "a": "sigma-mvp + real neg",
-      "b": "ladder + real neg (v2)",
-      "metric": "recall",
-      "mean_diff": 0.30399,
-      "n": 450,
-      "wilcoxon_p": 9.679120634027161e-56
-    },
-    {
-      "a": "exact + real neg",
-      "b": "ladder + real neg (v2)",
-      "metric": "recall",
-      "mean_diff": 0.00632,
-      "n": 450,
-      "wilcoxon_p": 6.977728290310815e-07
-    },
-    {
-      "a": "ladder + synthetic neg",
-      "b": "ladder + real neg (v2)",
-      "metric": "fpr",
-      "mean_diff": -0.08647,
-      "n": 450,
-      "wilcoxon_p": 4.131350359808666e-52
+      "mean_diff": 0.1303758248227333,
+      "diff_95ci": [
+        -0.05997981162322173,
+        0.381993871238096
+      ],
+      "families": 9,
+      "units": 450,
+      "family_mean_diffs": {
+        "Adload": 0.02,
+        "Emotet": 0.0008160952111079625,
+        "Lokibot": 0.40948905109489053,
+        "Qakbot": -0.03038167938931299,
+        "Swisyn": 0.9968952559887271,
+        "Trickbot": -0.00020958083832335332,
+        "Ursnif": 0.027529880478087652,
+        "Zeus": -0.25027777777777777,
+        "njRAT": -0.00047882136279926436
+      },
+      "wilcoxon_family_p": 0.49609375,
+      "sign_flip_family_p": 0.359375,
+      "method": "exact Wilcoxon signed-rank and sign-flip permutation on family-mean differences; two-level bootstrap CI"
     },
     {
       "a": "sigma-mvp",
-      "b": "sigma-mvp + real neg",
-      "metric": "fpr",
-      "mean_diff": -0.01849,
-      "n": 450,
-      "wilcoxon_p": 1.0730411389870185e-33
+      "b": "packaged, predicted family excluded (shipped)",
+      "metric": "recall",
+      "mean_diff": 0.12719240899760173,
+      "diff_95ci": [
+        -0.06534138608137376,
+        0.3783484249309518
+      ],
+      "families": 9,
+      "units": 450,
+      "family_mean_diffs": {
+        "Adload": 0.02,
+        "Emotet": 0.0008500991782374609,
+        "Lokibot": 0.40948905109489053,
+        "Qakbot": -0.05104325699745548,
+        "Swisyn": 0.9969046500704556,
+        "Trickbot": -0.00026946107784431143,
+        "Ursnif": 0.027529880478087652,
+        "Zeus": -0.25,
+        "njRAT": -0.008729281767955795
+      },
+      "wilcoxon_family_p": 0.5703125,
+      "sign_flip_family_p": 0.3984375,
+      "method": "exact Wilcoxon signed-rank and sign-flip permutation on family-mean differences; two-level bootstrap CI"
     },
     {
-      "a": "ladder + real neg (v2)",
-      "b": "shipped (packaged corpus)",
+      "a": "sigma-mvp",
+      "b": "packaged, predicted family excluded (shipped)",
+      "metric": "fpr",
+      "mean_diff": -0.01737200292662801,
+      "diff_95ci": [
+        -0.02746227462172373,
+        -0.00833810373284154
+      ],
+      "families": 9,
+      "units": 450,
+      "family_mean_diffs": {
+        "Adload": 0.0,
+        "Emotet": -0.004511657214870825,
+        "Lokibot": -0.0035921699601076163,
+        "Qakbot": -0.028225092584229065,
+        "Swisyn": -0.007274493477657507,
+        "Trickbot": -0.027300552922590832,
+        "Ursnif": -0.022373654442619958,
+        "Zeus": -0.046035335689045935,
+        "njRAT": -0.017035070048530353
+      },
+      "wilcoxon_family_p": 0.0078125,
+      "sign_flip_family_p": 0.0078125,
+      "method": "exact Wilcoxon signed-rank and sign-flip permutation on family-mean differences; two-level bootstrap CI"
+    },
+    {
+      "a": "sigma-mvp",
+      "b": "exact + synthetic neg",
       "metric": "recall",
-      "mean_diff": -0.00144,
-      "n": 450,
-      "wilcoxon_p": 0.150037143271617
+      "mean_diff": 0.14775019090874944,
+      "diff_95ci": [
+        -0.04616595878025922,
+        0.39809556937620494
+      ],
+      "families": 9,
+      "units": 450,
+      "family_mean_diffs": {
+        "Adload": 0.02,
+        "Emotet": 0.145287616888637,
+        "Lokibot": 0.41089051094890505,
+        "Qakbot": -0.05857506361323153,
+        "Swisyn": 0.9930577736026303,
+        "Trickbot": 0.00017964071856287425,
+        "Ursnif": 0.005936254980079681,
+        "Zeus": -0.23652777777777775,
+        "njRAT": 0.04950276243093923
+      },
+      "wilcoxon_family_p": 0.25,
+      "sign_flip_family_p": 0.30078125,
+      "method": "exact Wilcoxon signed-rank and sign-flip permutation on family-mean differences; two-level bootstrap CI"
+    },
+    {
+      "a": "exact + synthetic neg",
+      "b": "ladder + synthetic neg",
+      "metric": "recall",
+      "mean_diff": 0.0485562512162679,
+      "diff_95ci": [
+        0.01140241965460016,
+        0.09127352049850113
+      ],
+      "families": 9,
+      "units": 450,
+      "family_mean_diffs": {
+        "Adload": 0.0,
+        "Emotet": 0.0052366109379427565,
+        "Lokibot": 0.02067153284671533,
+        "Qakbot": 0.06346055979643764,
+        "Swisyn": 0.003884452794739317,
+        "Trickbot": 0.010883233532934132,
+        "Ursnif": 0.02199203187250996,
+        "Zeus": 0.13555555555555557,
+        "njRAT": 0.17532228360957647
+      },
+      "wilcoxon_family_p": 0.0078125,
+      "sign_flip_family_p": 0.0078125,
+      "method": "exact Wilcoxon signed-rank and sign-flip permutation on family-mean differences; two-level bootstrap CI"
+    },
+    {
+      "a": "exact + real neg (oracle)",
+      "b": "ladder + real neg (oracle)",
+      "metric": "recall",
+      "mean_diff": 0.0038293841165651576,
+      "diff_95ci": [
+        -0.0033544270817242776,
+        0.011746477142782251
+      ],
+      "families": 9,
+      "units": 450,
+      "family_mean_diffs": {
+        "Adload": 0.0,
+        "Emotet": 0.000487390195522811,
+        "Lokibot": 0.0,
+        "Qakbot": 0.001577608142493634,
+        "Swisyn": 0.0038421794269610145,
+        "Trickbot": -0.00020958083832335332,
+        "Ursnif": 0.021513944223107567,
+        "Zeus": -0.0005555555555555553,
+        "njRAT": 0.007808471454880292
+      },
+      "wilcoxon_family_p": 0.109375,
+      "sign_flip_family_p": 0.09375,
+      "method": "exact Wilcoxon signed-rank and sign-flip permutation on family-mean differences; two-level bootstrap CI"
+    },
+    {
+      "a": "exact + real neg (oracle)",
+      "b": "ladder + real neg (oracle)",
+      "metric": "fpr",
+      "mean_diff": 6.846470119915913e-05,
+      "diff_95ci": [
+        1.3138156083418488e-05,
+        0.00016552020620979845
+      ],
+      "families": 9,
+      "units": 450,
+      "family_mean_diffs": {
+        "Adload": 0.0,
+        "Emotet": 5.0409577819785764e-05,
+        "Lokibot": 0.0,
+        "Qakbot": 3.974347394092675e-05,
+        "Swisyn": -2.7754648903691372e-06,
+        "Trickbot": 7.109004739336493e-05,
+        "Ursnif": 3.648969166210545e-06,
+        "Zeus": 5.300353356890463e-05,
+        "njRAT": 0.00040106217379360867
+      },
+      "wilcoxon_family_p": 0.03125,
+      "sign_flip_family_p": 0.03125,
+      "method": "exact Wilcoxon signed-rank and sign-flip permutation on family-mean differences; two-level bootstrap CI"
+    },
+    {
+      "a": "ladder + synthetic neg",
+      "b": "ladder + real neg (oracle)",
+      "metric": "recall",
+      "mean_diff": -0.06593061730228403,
+      "diff_95ci": [
+        -0.12135284278688284,
+        -0.016269771863622263
+      ],
+      "families": 9,
+      "units": 450,
+      "family_mean_diffs": {
+        "Adload": 0.0,
+        "Emotet": -0.1497081326154718,
+        "Lokibot": -0.02207299270072992,
+        "Qakbot": -0.035267175572519086,
+        "Swisyn": -4.697040864255708e-05,
+        "Trickbot": -0.011272455089820358,
+        "Ursnif": -0.00039840637450199216,
+        "Zeus": -0.14930555555555555,
+        "njRAT": -0.2253038674033149
+      },
+      "wilcoxon_family_p": 0.0078125,
+      "sign_flip_family_p": 0.0078125,
+      "method": "exact Wilcoxon signed-rank and sign-flip permutation on family-mean differences; two-level bootstrap CI"
+    },
+    {
+      "a": "ladder + synthetic neg",
+      "b": "ladder + real neg (oracle)",
+      "metric": "fpr",
+      "mean_diff": -0.09297317574364967,
+      "diff_95ci": [
+        -0.1663189464222883,
+        -0.03811819085659902
+      ],
+      "families": 9,
+      "units": 450,
+      "family_mean_diffs": {
+        "Adload": 0.0,
+        "Emotet": -0.010328922495274104,
+        "Lokibot": -0.03399758790240282,
+        "Qakbot": -0.3375124198356066,
+        "Swisyn": -0.0633721898417985,
+        "Trickbot": -0.06783767772511848,
+        "Ursnif": -0.05960043787629994,
+        "Zeus": -0.12276148409893992,
+        "njRAT": -0.1413478619174068
+      },
+      "wilcoxon_family_p": 0.0078125,
+      "sign_flip_family_p": 0.0078125,
+      "method": "exact Wilcoxon signed-rank and sign-flip permutation on family-mean differences; two-level bootstrap CI"
+    },
+    {
+      "a": "sigma-mvp",
+      "b": "sigma-mvp + real neg (oracle)",
+      "metric": "fpr",
+      "mean_diff": -0.017429540820079283,
+      "diff_95ci": [
+        -0.027520573839126577,
+        -0.008387804580262911
+      ],
+      "families": 9,
+      "units": 450,
+      "family_mean_diffs": {
+        "Adload": 0.0,
+        "Emotet": -0.004617517328292376,
+        "Lokibot": -0.003718341219037017,
+        "Qakbot": -0.028244964321199526,
+        "Swisyn": -0.0072772689425478765,
+        "Trickbot": -0.027363744075829387,
+        "Ursnif": -0.022411968618865172,
+        "Zeus": -0.04612190812720847,
+        "njRAT": -0.017110154747733725
+      },
+      "wilcoxon_family_p": 0.0078125,
+      "sign_flip_family_p": 0.0078125,
+      "method": "exact Wilcoxon signed-rank and sign-flip permutation on family-mean differences; two-level bootstrap CI"
+    },
+    {
+      "a": "packaged, true family excluded (oracle)",
+      "b": "packaged, predicted family excluded (shipped)",
+      "metric": "recall",
+      "mean_diff": 0.0,
+      "diff_95ci": [
+        0.0,
+        0.0
+      ],
+      "families": 9,
+      "units": 450,
+      "family_mean_diffs": {
+        "Adload": 0.0,
+        "Emotet": 0.0,
+        "Lokibot": 0.0,
+        "Qakbot": 0.0,
+        "Swisyn": 0.0,
+        "Trickbot": 0.0,
+        "Ursnif": 0.0,
+        "Zeus": 0.0,
+        "njRAT": 0.0
+      },
+      "wilcoxon_family_p": 1.0,
+      "sign_flip_family_p": 1.0,
+      "method": "exact Wilcoxon signed-rank and sign-flip permutation on family-mean differences; two-level bootstrap CI"
+    },
+    {
+      "a": "packaged, true family excluded (oracle)",
+      "b": "packaged, predicted family excluded (shipped)",
+      "metric": "fpr",
+      "mean_diff": 1.361206563061965e-05,
+      "diff_95ci": [
+        -1.6278525572546269e-06,
+        5.6076115079733215e-05
+      ],
+      "families": 9,
+      "units": 450,
+      "family_mean_diffs": {
+        "Adload": 0.0,
+        "Emotet": 0.0,
+        "Lokibot": 0.00012617125892939974,
+        "Qakbot": 0.0,
+        "Swisyn": 0.0,
+        "Trickbot": 0.0,
+        "Ursnif": 0.0,
+        "Zeus": 0.0,
+        "njRAT": -3.6626682538229103e-06
+      },
+      "wilcoxon_family_p": 1.0,
+      "sign_flip_family_p": 1.0,
+      "method": "exact Wilcoxon signed-rank and sign-flip permutation on family-mean differences; two-level bootstrap CI"
+    },
+    {
+      "a": "packaged, predicted family excluded (shipped)",
+      "b": "packaged, no exclusion (default install)",
+      "metric": "recall",
+      "mean_diff": -0.29282738524809493,
+      "diff_95ci": [
+        -0.5572760719828295,
+        -0.068619503235854
+      ],
+      "families": 9,
+      "units": 450,
+      "family_mean_diffs": {
+        "Adload": -0.02,
+        "Emotet": -0.0008500991782374609,
+        "Lokibot": -0.41690510948905113,
+        "Qakbot": -0.9365394402035624,
+        "Swisyn": -0.9976045091592297,
+        "Trickbot": -0.004805389221556887,
+        "Ursnif": -0.028764940239043826,
+        "Zeus": -0.08916666666666666,
+        "njRAT": -0.14081031307550643
+      },
+      "wilcoxon_family_p": 0.00390625,
+      "sign_flip_family_p": 0.00390625,
+      "method": "exact Wilcoxon signed-rank and sign-flip permutation on family-mean differences; two-level bootstrap CI"
+    },
+    {
+      "a": "packaged, predicted family excluded (shipped)",
+      "b": "packaged, no exclusion (default install)",
+      "metric": "fpr",
+      "mean_diff": -4.877340744469336e-05,
+      "diff_95ci": [
+        -9.621994722543624e-05,
+        -1.5579438658844486e-05
+      ],
+      "families": 9,
+      "units": 450,
+      "family_mean_diffs": {
+        "Adload": 0.0,
+        "Emotet": -0.0001058601134215501,
+        "Lokibot": -0.00012617125892939974,
+        "Qakbot": -7.226086171077589e-06,
+        "Swisyn": 2.7754648903691372e-06,
+        "Trickbot": -5.529225908372827e-05,
+        "Ursnif": -3.648969166210545e-06,
+        "Zeus": -8.127208480565371e-05,
+        "njRAT": -6.226536031498948e-05
+      },
+      "wilcoxon_family_p": 0.015625,
+      "sign_flip_family_p": 0.015625,
+      "method": "exact Wilcoxon signed-rank and sign-flip permutation on family-mean differences; two-level bootstrap CI"
+    },
+    {
+      "a": "ladder + real neg (oracle)",
+      "b": "packaged, predicted family excluded (shipped)",
+      "metric": "recall",
+      "mean_diff": -0.0031834158251315783,
+      "diff_95ci": [
+        -0.009754305629924066,
+        0.0007560322199405623
+      ],
+      "families": 9,
+      "units": 450,
+      "family_mean_diffs": {
+        "Adload": 0.0,
+        "Emotet": 3.400396712949844e-05,
+        "Lokibot": 0.0,
+        "Qakbot": -0.020661577608142495,
+        "Swisyn": 9.394081728513192e-06,
+        "Trickbot": -5.9880239520958076e-05,
+        "Ursnif": 0.0,
+        "Zeus": 0.0002777777777777779,
+        "njRAT": -0.008250460405156536
+      },
+      "wilcoxon_family_p": 0.5625,
+      "sign_flip_family_p": 0.375,
+      "method": "exact Wilcoxon signed-rank and sign-flip permutation on family-mean differences; two-level bootstrap CI"
     }
   ],
   "per_family": [
@@ -348,67 +1001,67 @@
       "family": "Emotet",
       "n_test": 3529,
       "recall": 0.0,
-      "fpr": 0.003463,
+      "fpr": 0.004617517328292376,
       "novel_recall": 0.0
     },
     {
       "variant": "sigma-mvp",
       "family": "Lokibot",
       "n_test": 685,
-      "recall": 0.0209,
-      "fpr": 0.01127,
-      "novel_recall": 0.0215
+      "recall": 0.007445255474452555,
+      "fpr": 0.003718341219037017,
+      "novel_recall": 0.007750759878419453
     },
     {
       "variant": "sigma-mvp",
       "family": "Qakbot",
       "n_test": 393,
-      "recall": 0.9873,
-      "fpr": 0.026014,
-      "novel_recall": 0.9873
+      "recall": 0.9875826972010178,
+      "fpr": 0.028244964321199526,
+      "novel_recall": 0.9875826972010178
     },
     {
       "variant": "sigma-mvp",
       "family": "Swisyn",
       "n_test": 4258,
-      "recall": 0.0,
-      "fpr": 0.0,
-      "novel_recall": 0.0
+      "recall": 0.0007139502113668389,
+      "fpr": 0.0072772689425478765,
+      "novel_recall": 0.008307692307692308
     },
     {
       "variant": "sigma-mvp",
       "family": "Trickbot",
       "n_test": 1336,
-      "recall": 0.0046,
-      "fpr": 0.024716,
-      "novel_recall": 0.006
+      "recall": 0.005104790419161678,
+      "fpr": 0.02736571879936809,
+      "novel_recall": 0.006602768903088392
     },
     {
       "variant": "sigma-mvp",
       "family": "Ursnif",
       "n_test": 502,
-      "recall": 0.0017,
-      "fpr": 0.029613,
-      "novel_recall": 0.0017
+      "recall": 0.0012749003984063745,
+      "fpr": 0.022411968618865172,
+      "novel_recall": 0.001277445109780439
     },
     {
       "variant": "sigma-mvp",
       "family": "Zeus",
       "n_test": 144,
-      "recall": 0.3128,
-      "fpr": 0.043993,
-      "novel_recall": 0.4579
+      "recall": 0.339861111111111,
+      "fpr": 0.04612190812720847,
+      "novel_recall": 0.46724137931034476
     },
     {
       "variant": "sigma-mvp",
       "family": "njRAT",
       "n_test": 543,
-      "recall": 0.2384,
-      "fpr": 0.027358,
-      "novel_recall": 0.2598
+      "recall": 0.14976058931860037,
+      "fpr": 0.017110154747733725,
+      "novel_recall": 0.16466257668711656
     },
     {
-      "variant": "sigma-mvp + real neg",
+      "variant": "sigma-mvp + real neg (oracle)",
       "family": "Adload",
       "n_test": 5,
       "recall": 0.0,
@@ -416,7 +1069,7 @@
       "novel_recall": 0.0
     },
     {
-      "variant": "sigma-mvp + real neg",
+      "variant": "sigma-mvp + real neg (oracle)",
       "family": "Emotet",
       "n_test": 3529,
       "recall": 0.0,
@@ -424,7 +1077,7 @@
       "novel_recall": 0.0
     },
     {
-      "variant": "sigma-mvp + real neg",
+      "variant": "sigma-mvp + real neg (oracle)",
       "family": "Lokibot",
       "n_test": 685,
       "recall": 0.0,
@@ -432,7 +1085,7 @@
       "novel_recall": 0.0
     },
     {
-      "variant": "sigma-mvp + real neg",
+      "variant": "sigma-mvp + real neg (oracle)",
       "family": "Qakbot",
       "n_test": 393,
       "recall": 0.0,
@@ -440,7 +1093,7 @@
       "novel_recall": 0.0
     },
     {
-      "variant": "sigma-mvp + real neg",
+      "variant": "sigma-mvp + real neg (oracle)",
       "family": "Swisyn",
       "n_test": 4258,
       "recall": 0.0,
@@ -448,15 +1101,15 @@
       "novel_recall": 0.0
     },
     {
-      "variant": "sigma-mvp + real neg",
+      "variant": "sigma-mvp + real neg (oracle)",
       "family": "Trickbot",
       "n_test": 1336,
       "recall": 0.0,
-      "fpr": 0.0,
+      "fpr": 1.9747235387045814e-06,
       "novel_recall": 0.0
     },
     {
-      "variant": "sigma-mvp + real neg",
+      "variant": "sigma-mvp + real neg (oracle)",
       "family": "Ursnif",
       "n_test": 502,
       "recall": 0.0,
@@ -464,7 +1117,7 @@
       "novel_recall": 0.0
     },
     {
-      "variant": "sigma-mvp + real neg",
+      "variant": "sigma-mvp + real neg (oracle)",
       "family": "Zeus",
       "n_test": 144,
       "recall": 0.0,
@@ -472,90 +1125,162 @@
       "novel_recall": 0.0
     },
     {
-      "variant": "sigma-mvp + real neg",
+      "variant": "sigma-mvp + real neg (oracle)",
       "family": "njRAT",
       "n_test": 543,
-      "recall": 0.0,
+      "recall": 3.683241252302026e-05,
       "fpr": 0.0,
-      "novel_recall": 0.0
+      "novel_recall": 4.08997955010225e-05
     },
     {
-      "variant": "exact + real neg",
+      "variant": "exact + synthetic neg",
       "family": "Adload",
       "n_test": 5,
-      "recall": 0.044,
+      "recall": 0.02,
       "fpr": 0.0,
       "novel_recall": 0.0
     },
     {
-      "variant": "exact + real neg",
+      "variant": "exact + synthetic neg",
       "family": "Emotet",
       "n_test": 3529,
-      "recall": 0.0004,
-      "fpr": 0.0,
-      "novel_recall": 0.0004
+      "recall": 0.145287616888637,
+      "fpr": 0.009477000630119721,
+      "novel_recall": 0.14812264969626843
     },
     {
-      "variant": "exact + real neg",
+      "variant": "exact + synthetic neg",
       "family": "Lokibot",
       "n_test": 685,
-      "recall": 0.4175,
-      "fpr": 1.9e-05,
-      "novel_recall": 0.4325
+      "recall": 0.41833576642335774,
+      "fpr": 0.005399387698302255,
+      "novel_recall": 0.43337386018237084
     },
     {
-      "variant": "exact + real neg",
+      "variant": "exact + synthetic neg",
       "family": "Qakbot",
       "n_test": 393,
-      "recall": 0.9376,
-      "fpr": 1.8e-05,
-      "novel_recall": 0.9376
+      "recall": 0.9290076335877862,
+      "fpr": 0.00803721434378105,
+      "novel_recall": 0.9290076335877862
     },
     {
-      "variant": "exact + real neg",
+      "variant": "exact + synthetic neg",
       "family": "Swisyn",
       "n_test": 4258,
-      "recall": 0.9976,
-      "fpr": 0.0,
-      "novel_recall": 0.9758
+      "recall": 0.9937717238139971,
+      "fpr": 0.00016375242853177907,
+      "novel_recall": 0.9700769230769231
     },
     {
-      "variant": "exact + real neg",
+      "variant": "exact + synthetic neg",
       "family": "Trickbot",
       "n_test": 1336,
-      "recall": 0.0046,
-      "fpr": 4.1e-05,
-      "novel_recall": 0.006
+      "recall": 0.005284431137724552,
+      "fpr": 0.0074328593996840445,
+      "novel_recall": 0.006858359957401491
     },
     {
-      "variant": "exact + real neg",
+      "variant": "exact + synthetic neg",
       "family": "Ursnif",
       "n_test": 502,
-      "recall": 0.0067,
-      "fpr": 0.0,
-      "novel_recall": 0.0067
+      "recall": 0.007211155378486056,
+      "fpr": 0.006971355592045247,
+      "novel_recall": 0.007225548902195609
     },
     {
-      "variant": "exact + real neg",
+      "variant": "exact + synthetic neg",
       "family": "Zeus",
       "n_test": 144,
-      "recall": 0.0563,
-      "fpr": 0.00059,
-      "novel_recall": 0.0369
+      "recall": 0.10333333333333332,
+      "fpr": 0.027240282685512363,
+      "novel_recall": 0.1082758620689655
     },
     {
-      "variant": "exact + real neg",
+      "variant": "exact + synthetic neg",
       "family": "njRAT",
       "n_test": 543,
-      "recall": 0.2146,
-      "fpr": 0.000106,
-      "novel_recall": 0.2242
+      "recall": 0.19926335174953963,
+      "fpr": 0.008464426334584744,
+      "novel_recall": 0.20163599182004088
+    },
+    {
+      "variant": "exact + real neg (oracle)",
+      "family": "Adload",
+      "n_test": 5,
+      "recall": 0.02,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "exact + real neg (oracle)",
+      "family": "Emotet",
+      "n_test": 3529,
+      "recall": 0.0003287050155851516,
+      "fpr": 0.0,
+      "novel_recall": 0.0003355510558287532
+    },
+    {
+      "variant": "exact + real neg (oracle)",
+      "family": "Lokibot",
+      "n_test": 685,
+      "recall": 0.4169343065693431,
+      "fpr": 0.0002393543000278319,
+      "novel_recall": 0.4319756838905775
+    },
+    {
+      "variant": "exact + real neg (oracle)",
+      "family": "Qakbot",
+      "n_test": 393,
+      "recall": 0.9556234096692111,
+      "fpr": 4.6969560112004334e-05,
+      "novel_recall": 0.9556234096692111
+    },
+    {
+      "variant": "exact + real neg (oracle)",
+      "family": "Swisyn",
+      "n_test": 4258,
+      "recall": 0.9937670267731329,
+      "fpr": 2.7754648903691372e-06,
+      "novel_recall": 0.97
+    },
+    {
+      "variant": "exact + real neg (oracle)",
+      "family": "Trickbot",
+      "n_test": 1336,
+      "recall": 0.005104790419161678,
+      "fpr": 5.1342812006319115e-05,
+      "novel_recall": 0.006602768903088392
+    },
+    {
+      "variant": "exact + real neg (oracle)",
+      "family": "Ursnif",
+      "n_test": 502,
+      "recall": 0.0072908366533864545,
+      "fpr": 1.0946907498631638e-05,
+      "novel_recall": 0.007305389221556886
+    },
+    {
+      "variant": "exact + real neg (oracle)",
+      "family": "Zeus",
+      "n_test": 144,
+      "recall": 0.0901388888888889,
+      "fpr": 0.0006784452296819789,
+      "novel_recall": 0.07551724137931033
+    },
+    {
+      "variant": "exact + real neg (oracle)",
+      "family": "njRAT",
+      "n_test": 543,
+      "recall": 0.1414732965009208,
+      "fpr": 9.339804047248421e-05,
+      "novel_recall": 0.1481799591002045
     },
     {
       "variant": "ladder + synthetic neg",
       "family": "Adload",
       "n_test": 5,
-      "recall": 0.044,
+      "recall": 0.02,
       "fpr": 0.0,
       "novel_recall": 0.0
     },
@@ -563,353 +1288,497 @@
       "variant": "ladder + synthetic neg",
       "family": "Emotet",
       "n_test": 3529,
-      "recall": 0.179,
-      "fpr": 0.014702,
-      "novel_recall": 0.1825
+      "recall": 0.15052422782657976,
+      "fpr": 0.01037933207309389,
+      "novel_recall": 0.15346253977437083
     },
     {
       "variant": "ladder + synthetic neg",
       "family": "Lokibot",
       "n_test": 685,
-      "recall": 0.4141,
-      "fpr": 0.017443,
-      "novel_recall": 0.4282
+      "recall": 0.439007299270073,
+      "fpr": 0.034236942202430655,
+      "novel_recall": 0.45407294832826745
     },
     {
       "variant": "ladder + synthetic neg",
       "family": "Qakbot",
       "n_test": 393,
-      "recall": 0.9925,
-      "fpr": 0.296521,
-      "novel_recall": 0.9925
+      "recall": 0.992468193384224,
+      "fpr": 0.3375991328696595,
+      "novel_recall": 0.992468193384224
     },
     {
       "variant": "ladder + synthetic neg",
       "family": "Swisyn",
       "n_test": 4258,
-      "recall": 0.9976,
-      "fpr": 0.071724,
-      "novel_recall": 0.9765
+      "recall": 0.9976561766087364,
+      "fpr": 0.0633721898417985,
+      "novel_recall": 0.9770000000000002
     },
     {
       "variant": "ladder + synthetic neg",
       "family": "Trickbot",
       "n_test": 1336,
-      "recall": 0.0151,
-      "fpr": 0.054392,
-      "novel_recall": 0.0209
+      "recall": 0.01616766467065868,
+      "fpr": 0.06796011058451817,
+      "novel_recall": 0.022321618743343978
     },
     {
       "variant": "ladder + synthetic neg",
       "family": "Ursnif",
       "n_test": 502,
-      "recall": 0.0241,
-      "fpr": 0.054968,
-      "novel_recall": 0.0242
+      "recall": 0.029203187250996018,
+      "fpr": 0.059615033752964786,
+      "novel_recall": 0.029261477045908185
     },
     {
       "variant": "ladder + synthetic neg",
       "family": "Zeus",
       "n_test": 144,
-      "recall": 0.2278,
-      "fpr": 0.111235,
-      "novel_recall": 0.4452
+      "recall": 0.2388888888888889,
+      "fpr": 0.12349293286219082,
+      "novel_recall": 0.4424137931034483
     },
     {
       "variant": "ladder + synthetic neg",
       "family": "njRAT",
       "n_test": 543,
-      "recall": 0.4491,
-      "fpr": 0.159024,
-      "novel_recall": 0.4569
+      "recall": 0.374585635359116,
+      "fpr": 0.1418423221316729,
+      "novel_recall": 0.3810633946830266
     },
     {
-      "variant": "ladder + real neg (v2)",
+      "variant": "ladder + real neg (oracle)",
       "family": "Adload",
       "n_test": 5,
-      "recall": 0.044,
+      "recall": 0.02,
       "fpr": 0.0,
       "novel_recall": 0.0
     },
     {
-      "variant": "ladder + real neg (v2)",
+      "variant": "ladder + real neg (oracle)",
       "family": "Emotet",
       "n_test": 3529,
-      "recall": 0.0009,
-      "fpr": 5.5e-05,
-      "novel_recall": 0.0009
+      "recall": 0.0008160952111079625,
+      "fpr": 5.0409577819785764e-05,
+      "novel_recall": 0.000833092276540353
     },
     {
-      "variant": "ladder + real neg (v2)",
+      "variant": "ladder + real neg (oracle)",
       "family": "Lokibot",
       "n_test": 685,
-      "recall": 0.4181,
-      "fpr": 2.4e-05,
-      "novel_recall": 0.4332
+      "recall": 0.4169343065693431,
+      "fpr": 0.0002393543000278319,
+      "novel_recall": 0.4319756838905775
     },
     {
-      "variant": "ladder + real neg (v2)",
+      "variant": "ladder + real neg (oracle)",
       "family": "Qakbot",
       "n_test": 393,
-      "recall": 0.9623,
-      "fpr": 7e-05,
-      "novel_recall": 0.9623
+      "recall": 0.9572010178117049,
+      "fpr": 8.671303405293108e-05,
+      "novel_recall": 0.9572010178117049
     },
     {
-      "variant": "ladder + real neg (v2)",
+      "variant": "ladder + real neg (oracle)",
       "family": "Swisyn",
       "n_test": 4258,
-      "recall": 0.9976,
+      "recall": 0.9976092062000939,
       "fpr": 0.0,
-      "novel_recall": 0.976
+      "novel_recall": 0.9762307692307692
     },
     {
-      "variant": "ladder + real neg (v2)",
+      "variant": "ladder + real neg (oracle)",
       "family": "Trickbot",
       "n_test": 1336,
-      "recall": 0.0044,
-      "fpr": 6.3e-05,
-      "novel_recall": 0.0058
+      "recall": 0.004895209580838324,
+      "fpr": 0.00012243285939968405,
+      "novel_recall": 0.006347177848775293
     },
     {
-      "variant": "ladder + real neg (v2)",
+      "variant": "ladder + real neg (oracle)",
       "family": "Ursnif",
       "n_test": 502,
-      "recall": 0.0239,
-      "fpr": 0.0,
-      "novel_recall": 0.024
+      "recall": 0.028804780876494025,
+      "fpr": 1.459587666484218e-05,
+      "novel_recall": 0.028862275449101794
     },
     {
-      "variant": "ladder + real neg (v2)",
+      "variant": "ladder + real neg (oracle)",
       "family": "Zeus",
       "n_test": 144,
-      "recall": 0.0574,
-      "fpr": 0.000693,
-      "novel_recall": 0.0397
+      "recall": 0.08958333333333332,
+      "fpr": 0.0007314487632508834,
+      "novel_recall": 0.07413793103448275
     },
     {
-      "variant": "ladder + real neg (v2)",
+      "variant": "ladder + real neg (oracle)",
       "family": "njRAT",
       "n_test": 543,
-      "recall": 0.2273,
-      "fpr": 0.000852,
-      "novel_recall": 0.2384
+      "recall": 0.14928176795580111,
+      "fpr": 0.0004944602142660928,
+      "novel_recall": 0.15644171779141103
     },
     {
-      "variant": "ladder + real neg, k=3",
+      "variant": "ladder + real neg, k=3 (oracle)",
       "family": "Adload",
       "n_test": 5,
-      "recall": 0.044,
+      "recall": 0.02,
       "fpr": 0.0,
       "novel_recall": 0.0
     },
     {
-      "variant": "ladder + real neg, k=3",
+      "variant": "ladder + real neg, k=3 (oracle)",
       "family": "Emotet",
       "n_test": 3529,
-      "recall": 0.0009,
-      "fpr": 5.5e-05,
-      "novel_recall": 0.0009
+      "recall": 0.0008160952111079625,
+      "fpr": 5.0409577819785764e-05,
+      "novel_recall": 0.000833092276540353
     },
     {
-      "variant": "ladder + real neg, k=3",
+      "variant": "ladder + real neg, k=3 (oracle)",
       "family": "Lokibot",
       "n_test": 685,
-      "recall": 0.2347,
-      "fpr": 1.3e-05,
-      "novel_recall": 0.243
+      "recall": 0.3437080291970803,
+      "fpr": 0.0002393543000278319,
+      "novel_recall": 0.35610942249240124
     },
     {
-      "variant": "ladder + real neg, k=3",
+      "variant": "ladder + real neg, k=3 (oracle)",
       "family": "Qakbot",
       "n_test": 393,
-      "recall": 0.6356,
+      "recall": 0.6167430025445293,
       "fpr": 0.0,
-      "novel_recall": 0.6356
+      "novel_recall": 0.6167430025445293
     },
     {
-      "variant": "ladder + real neg, k=3",
+      "variant": "ladder + real neg, k=3 (oracle)",
       "family": "Swisyn",
       "n_test": 4258,
-      "recall": 0.9955,
+      "recall": 0.9783701268201032,
       "fpr": 0.0,
-      "novel_recall": 0.9581
+      "novel_recall": 0.9380769230769233
     },
     {
-      "variant": "ladder + real neg, k=3",
+      "variant": "ladder + real neg, k=3 (oracle)",
       "family": "Trickbot",
       "n_test": 1336,
-      "recall": 0.002,
-      "fpr": 5.9e-05,
-      "novel_recall": 0.0027
+      "recall": 0.0018562874251497011,
+      "fpr": 0.00010663507109004738,
+      "novel_recall": 0.0025559105431309905
     },
     {
-      "variant": "ladder + real neg, k=3",
+      "variant": "ladder + real neg, k=3 (oracle)",
       "family": "Ursnif",
       "n_test": 502,
-      "recall": 0.0198,
+      "recall": 0.026015936254980075,
       "fpr": 0.0,
-      "novel_recall": 0.0198
+      "novel_recall": 0.026067864271457082
     },
     {
-      "variant": "ladder + real neg, k=3",
+      "variant": "ladder + real neg, k=3 (oracle)",
       "family": "Zeus",
       "n_test": 144,
-      "recall": 0.0447,
-      "fpr": 1.4e-05,
-      "novel_recall": 0.0083
+      "recall": 0.06902777777777777,
+      "fpr": 4.063604240282686e-05,
+      "novel_recall": 0.023103448275862068
     },
     {
-      "variant": "ladder + real neg, k=3",
+      "variant": "ladder + real neg, k=3 (oracle)",
       "family": "njRAT",
       "n_test": 543,
-      "recall": 0.0627,
-      "fpr": 0.000491,
-      "novel_recall": 0.0649
+      "recall": 0.07521178637200737,
+      "fpr": 0.00036260415712846815,
+      "novel_recall": 0.07787321063394684
     },
     {
-      "variant": "shipped (packaged corpus)",
+      "variant": "packaged, true family excluded (oracle)",
       "family": "Adload",
       "n_test": 5,
-      "recall": 0.044,
+      "recall": 0.02,
       "fpr": 0.0,
       "novel_recall": 0.0
     },
     {
-      "variant": "shipped (packaged corpus)",
+      "variant": "packaged, true family excluded (oracle)",
       "family": "Emotet",
       "n_test": 3529,
-      "recall": 0.001,
-      "fpr": 0.000121,
-      "novel_recall": 0.001
+      "recall": 0.0008500991782374609,
+      "fpr": 0.0001058601134215501,
+      "novel_recall": 0.0008678044547295344
     },
     {
-      "variant": "shipped (packaged corpus)",
+      "variant": "packaged, true family excluded (oracle)",
       "family": "Lokibot",
       "n_test": 685,
-      "recall": 0.4183,
-      "fpr": 7e-06,
-      "novel_recall": 0.4334
+      "recall": 0.4169343065693431,
+      "fpr": 0.0,
+      "novel_recall": 0.4319756838905775
     },
     {
-      "variant": "shipped (packaged corpus)",
+      "variant": "packaged, true family excluded (oracle)",
       "family": "Qakbot",
       "n_test": 393,
-      "recall": 0.9317,
-      "fpr": 9e-06,
-      "novel_recall": 0.9317
+      "recall": 0.9365394402035624,
+      "fpr": 1.9871736970463374e-05,
+      "novel_recall": 0.9365394402035624
     },
     {
-      "variant": "shipped (packaged corpus)",
+      "variant": "packaged, true family excluded (oracle)",
       "family": "Swisyn",
       "n_test": 4258,
-      "recall": 0.9976,
-      "fpr": 0.0,
-      "novel_recall": 0.9761
+      "recall": 0.9976186002818224,
+      "fpr": 2.7754648903691372e-06,
+      "novel_recall": 0.9763846153846154
     },
     {
-      "variant": "shipped (packaged corpus)",
+      "variant": "packaged, true family excluded (oracle)",
       "family": "Trickbot",
       "n_test": 1336,
-      "recall": 0.0044,
-      "fpr": 3.8e-05,
-      "novel_recall": 0.0058
+      "recall": 0.004835329341317365,
+      "fpr": 6.516587677725117e-05,
+      "novel_recall": 0.0062619808306709265
     },
     {
-      "variant": "shipped (packaged corpus)",
+      "variant": "packaged, true family excluded (oracle)",
       "family": "Ursnif",
       "n_test": 502,
-      "recall": 0.0239,
-      "fpr": 1.6e-05,
-      "novel_recall": 0.024
+      "recall": 0.028804780876494025,
+      "fpr": 3.831417624521073e-05,
+      "novel_recall": 0.028862275449101794
     },
     {
-      "variant": "shipped (packaged corpus)",
+      "variant": "packaged, true family excluded (oracle)",
       "family": "Zeus",
       "n_test": 144,
-      "recall": 0.0576,
-      "fpr": 3.2e-05,
-      "novel_recall": 0.0397
+      "recall": 0.08986111111111111,
+      "fpr": 8.657243816254417e-05,
+      "novel_recall": 0.07482758620689654
     },
     {
-      "variant": "shipped (packaged corpus)",
+      "variant": "packaged, true family excluded (oracle)",
       "family": "njRAT",
       "n_test": 543,
-      "recall": 0.2444,
-      "fpr": 0.000126,
-      "novel_recall": 0.2565
+      "recall": 0.14103130755064458,
+      "fpr": 7.874736745719256e-05,
+      "novel_recall": 0.1480163599182004
     },
     {
-      "variant": "v2, 5 runs pooled",
+      "variant": "packaged, predicted family excluded (shipped)",
       "family": "Adload",
       "n_test": 5,
-      "recall": 0.2,
+      "recall": 0.02,
       "fpr": 0.0,
       "novel_recall": 0.0
     },
     {
-      "variant": "v2, 5 runs pooled",
+      "variant": "packaged, predicted family excluded (shipped)",
       "family": "Emotet",
       "n_test": 3529,
-      "recall": 0.0019,
-      "fpr": 0.000101,
-      "novel_recall": 0.002
+      "recall": 0.0008500991782374609,
+      "fpr": 0.0001058601134215501,
+      "novel_recall": 0.0008678044547295344
     },
     {
-      "variant": "v2, 5 runs pooled",
+      "variant": "packaged, predicted family excluded (shipped)",
       "family": "Lokibot",
       "n_test": 685,
-      "recall": 0.6181,
-      "fpr": 0.000148,
-      "novel_recall": 0.6404
+      "recall": 0.4169343065693431,
+      "fpr": 0.00012617125892939974,
+      "novel_recall": 0.4319756838905775
     },
     {
-      "variant": "v2, 5 runs pooled",
+      "variant": "packaged, predicted family excluded (shipped)",
       "family": "Qakbot",
       "n_test": 393,
-      "recall": 0.9924,
-      "fpr": 0.000163,
-      "novel_recall": 0.9924
+      "recall": 0.9365394402035624,
+      "fpr": 1.9871736970463374e-05,
+      "novel_recall": 0.9365394402035624
     },
     {
-      "variant": "v2, 5 runs pooled",
+      "variant": "packaged, predicted family excluded (shipped)",
       "family": "Swisyn",
       "n_test": 4258,
-      "recall": 0.9977,
-      "fpr": 0.0,
-      "novel_recall": 0.9769
+      "recall": 0.9976186002818224,
+      "fpr": 2.7754648903691372e-06,
+      "novel_recall": 0.9763846153846154
     },
     {
-      "variant": "v2, 5 runs pooled",
+      "variant": "packaged, predicted family excluded (shipped)",
       "family": "Trickbot",
       "n_test": 1336,
-      "recall": 0.0082,
-      "fpr": 0.000217,
-      "novel_recall": 0.0106
+      "recall": 0.004835329341317365,
+      "fpr": 6.516587677725117e-05,
+      "novel_recall": 0.0062619808306709265
     },
     {
-      "variant": "v2, 5 runs pooled",
+      "variant": "packaged, predicted family excluded (shipped)",
       "family": "Ursnif",
       "n_test": 502,
-      "recall": 0.0438,
-      "fpr": 0.0,
-      "novel_recall": 0.0439
+      "recall": 0.028804780876494025,
+      "fpr": 3.831417624521073e-05,
+      "novel_recall": 0.028862275449101794
     },
     {
-      "variant": "v2, 5 runs pooled",
+      "variant": "packaged, predicted family excluded (shipped)",
       "family": "Zeus",
       "n_test": 144,
-      "recall": 0.2653,
-      "fpr": 0.001784,
-      "novel_recall": 0.0724
+      "recall": 0.08986111111111111,
+      "fpr": 8.657243816254417e-05,
+      "novel_recall": 0.07482758620689654
     },
     {
-      "variant": "v2, 5 runs pooled",
+      "variant": "packaged, predicted family excluded (shipped)",
       "family": "njRAT",
       "n_test": 543,
-      "recall": 0.3908,
-      "fpr": 0.0026,
-      "novel_recall": 0.411
+      "recall": 0.14103130755064458,
+      "fpr": 7.508469920336966e-05,
+      "novel_recall": 0.1480163599182004
+    },
+    {
+      "variant": "packaged, no exclusion (default install)",
+      "family": "Adload",
+      "n_test": 5,
+      "recall": 0.0,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "packaged, no exclusion (default install)",
+      "family": "Emotet",
+      "n_test": 3529,
+      "recall": 0.0,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "packaged, no exclusion (default install)",
+      "family": "Lokibot",
+      "n_test": 685,
+      "recall": 2.91970802919708e-05,
+      "fpr": 0.0,
+      "novel_recall": 3.0395136778115502e-05
+    },
+    {
+      "variant": "packaged, no exclusion (default install)",
+      "family": "Qakbot",
+      "n_test": 393,
+      "recall": 0.0,
+      "fpr": 1.2645650799385784e-05,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "packaged, no exclusion (default install)",
+      "family": "Swisyn",
+      "n_test": 4258,
+      "recall": 1.4091122592766558e-05,
+      "fpr": 5.5509297807382745e-06,
+      "novel_recall": 0.0002307692307692308
+    },
+    {
+      "variant": "packaged, no exclusion (default install)",
+      "family": "Trickbot",
+      "n_test": 1336,
+      "recall": 2.9940119760479045e-05,
+      "fpr": 9.873617693522906e-06,
+      "novel_recall": 4.259850905218318e-05
+    },
+    {
+      "variant": "packaged, no exclusion (default install)",
+      "family": "Ursnif",
+      "n_test": 502,
+      "recall": 3.9840637450199205e-05,
+      "fpr": 3.466520707900018e-05,
+      "novel_recall": 3.992015968063872e-05
+    },
+    {
+      "variant": "packaged, no exclusion (default install)",
+      "family": "Zeus",
+      "n_test": 144,
+      "recall": 0.0006944444444444445,
+      "fpr": 5.3003533568904585e-06,
+      "novel_recall": 0.001724137931034483
+    },
+    {
+      "variant": "packaged, no exclusion (default install)",
+      "family": "njRAT",
+      "n_test": 543,
+      "recall": 0.00022099447513812155,
+      "fpr": 1.2819338888380186e-05,
+      "novel_recall": 0.000245398773006135
+    },
+    {
+      "variant": "v2, 5 runs pooled (oracle)",
+      "family": "Adload",
+      "n_test": 5,
+      "recall": 0.08,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "v2, 5 runs pooled (oracle)",
+      "family": "Emotet",
+      "n_test": 3529,
+      "recall": 0.002040238027769907,
+      "fpr": 0.00015122873345935726,
+      "novel_recall": 0.002082730691350882
+    },
+    {
+      "variant": "v2, 5 runs pooled (oracle)",
+      "family": "Lokibot",
+      "n_test": 685,
+      "recall": 0.6131386861313869,
+      "fpr": 0.0,
+      "novel_recall": 0.6352583586626139
+    },
+    {
+      "variant": "v2, 5 runs pooled (oracle)",
+      "family": "Qakbot",
+      "n_test": 393,
+      "recall": 0.9923664122137404,
+      "fpr": 0.00010839129256616385,
+      "novel_recall": 0.9923664122137404
+    },
+    {
+      "variant": "v2, 5 runs pooled (oracle)",
+      "family": "Swisyn",
+      "n_test": 4258,
+      "recall": 0.9977454203851573,
+      "fpr": 0.0,
+      "novel_recall": 0.9784615384615384
+    },
+    {
+      "variant": "v2, 5 runs pooled (oracle)",
+      "family": "Trickbot",
+      "n_test": 1336,
+      "recall": 0.008233532934131737,
+      "fpr": 0.0002567140600315956,
+      "novel_recall": 0.010649627263045794
+    },
+    {
+      "variant": "v2, 5 runs pooled (oracle)",
+      "family": "Ursnif",
+      "n_test": 502,
+      "recall": 0.043824701195219126,
+      "fpr": 3.6489691662105454e-05,
+      "novel_recall": 0.043912175648702596
+    },
+    {
+      "variant": "v2, 5 runs pooled (oracle)",
+      "family": "Zeus",
+      "n_test": 144,
+      "recall": 0.3416666666666667,
+      "fpr": 0.0012014134275618374,
+      "novel_recall": 0.25517241379310346
+    },
+    {
+      "variant": "v2, 5 runs pooled (oracle)",
+      "family": "njRAT",
+      "n_test": 543,
+      "recall": 0.343646408839779,
+      "fpr": 0.002032780880871715,
+      "novel_recall": 0.3574642126789366
     },
     {
       "variant": "yara-imphash",
@@ -931,33 +1800,33 @@
       "variant": "yara-imphash",
       "family": "Lokibot",
       "n_test": 685,
-      "recall": 0.0009,
-      "fpr": 0.000271,
-      "novel_recall": 0.0008
+      "recall": 0.005897810218978101,
+      "fpr": 0.0007867149086186102,
+      "novel_recall": 0.006139817629179329
     },
     {
       "variant": "yara-imphash",
       "family": "Qakbot",
       "n_test": 393,
-      "recall": 0.0002,
+      "recall": 0.000356234096692112,
       "fpr": 0.0,
-      "novel_recall": 0.0002
+      "novel_recall": 0.000356234096692112
     },
     {
       "variant": "yara-imphash",
       "family": "Swisyn",
       "n_test": 4258,
-      "recall": 0.6303,
+      "recall": 0.6488727101925786,
       "fpr": 0.0,
-      "novel_recall": 0.5572
+      "novel_recall": 0.5646923076923076
     },
     {
       "variant": "yara-imphash",
       "family": "Trickbot",
       "n_test": 1336,
-      "recall": 0.0001,
-      "fpr": 0.0,
-      "novel_recall": 0.0
+      "recall": 0.0014371257485029938,
+      "fpr": 1.382306477093207e-05,
+      "novel_recall": 0.00046858359957401485
     },
     {
       "variant": "yara-imphash",
@@ -971,91 +1840,304 @@
       "variant": "yara-imphash",
       "family": "Zeus",
       "n_test": 144,
-      "recall": 0.0008,
-      "fpr": 9e-06,
-      "novel_recall": 0.0003
+      "recall": 0.0006944444444444445,
+      "fpr": 0.0,
+      "novel_recall": 0.0
     },
     {
       "variant": "yara-imphash",
       "family": "njRAT",
       "n_test": 543,
-      "recall": 0.0997,
-      "fpr": 0.001967,
-      "novel_recall": 0.0989
+      "recall": 0.0663720073664825,
+      "fpr": 0.0012251625309037634,
+      "novel_recall": 0.06531697341513291
     },
     {
-      "variant": "yara-v2",
+      "variant": "yara-v2 (oracle)",
       "family": "Adload",
       "n_test": 5,
-      "recall": 0.032,
-      "fpr": 4.7e-05,
-      "novel_recall": 0.04
+      "recall": 0.04,
+      "fpr": 1.570817697879396e-05,
+      "novel_recall": 0.05
     },
     {
-      "variant": "yara-v2",
+      "variant": "yara-v2 (oracle)",
       "family": "Emotet",
       "n_test": 3529,
-      "recall": 0.0,
-      "fpr": 5e-06,
+      "recall": 0.00020969113063190706,
+      "fpr": 0.0,
+      "novel_recall": 0.0002082730691350882
+    },
+    {
+      "variant": "yara-v2 (oracle)",
+      "family": "Lokibot",
+      "n_test": 685,
+      "recall": 0.007766423357664233,
+      "fpr": 0.00019482326746451432,
+      "novel_recall": 0.00702127659574468
+    },
+    {
+      "variant": "yara-v2 (oracle)",
+      "family": "Qakbot",
+      "n_test": 393,
+      "recall": 0.0007633587786259542,
+      "fpr": 0.0,
+      "novel_recall": 0.0007633587786259542
+    },
+    {
+      "variant": "yara-v2 (oracle)",
+      "family": "Swisyn",
+      "n_test": 4258,
+      "recall": 0.8247158290277126,
+      "fpr": 0.0,
+      "novel_recall": 0.7393076923076924
+    },
+    {
+      "variant": "yara-v2 (oracle)",
+      "family": "Trickbot",
+      "n_test": 1336,
+      "recall": 0.020718562874251497,
+      "fpr": 0.005244865718799368,
+      "novel_recall": 0.027497337593184238
+    },
+    {
+      "variant": "yara-v2 (oracle)",
+      "family": "Ursnif",
+      "n_test": 502,
+      "recall": 0.01043824701195219,
+      "fpr": 0.0007443897099069512,
+      "novel_recall": 0.010459081836327346
+    },
+    {
+      "variant": "yara-v2 (oracle)",
+      "family": "Zeus",
+      "n_test": 144,
+      "recall": 0.009444444444444445,
+      "fpr": 0.00030565371024734983,
+      "novel_recall": 0.0020689655172413794
+    },
+    {
+      "variant": "yara-v2 (oracle)",
+      "family": "njRAT",
+      "n_test": 543,
+      "recall": 0.03499079189686925,
+      "fpr": 0.0005860269206116656,
+      "novel_recall": 0.036973415132924334
+    },
+    {
+      "variant": "yara-v2, packaged, predicted family excluded (shipped)",
+      "family": "Adload",
+      "n_test": 5,
+      "recall": 0.18,
+      "fpr": 6.457806091281962e-05,
+      "novel_recall": 0.18
+    },
+    {
+      "variant": "yara-v2, packaged, predicted family excluded (shipped)",
+      "family": "Emotet",
+      "n_test": 3529,
+      "recall": 0.00020969113063190706,
+      "fpr": 7.561436672967864e-06,
+      "novel_recall": 0.0002082730691350882
+    },
+    {
+      "variant": "yara-v2, packaged, predicted family excluded (shipped)",
+      "family": "Lokibot",
+      "n_test": 685,
+      "recall": 0.07582481751824817,
+      "fpr": 0.0022321180072362927,
+      "novel_recall": 0.06930091185410335
+    },
+    {
+      "variant": "yara-v2, packaged, predicted family excluded (shipped)",
+      "family": "Qakbot",
+      "n_test": 393,
+      "recall": 0.009414758269720103,
+      "fpr": 1.8065215427693978e-05,
+      "novel_recall": 0.009414758269720103
+    },
+    {
+      "variant": "yara-v2, packaged, predicted family excluded (shipped)",
+      "family": "Swisyn",
+      "n_test": 4258,
+      "recall": 0.7967778299671207,
+      "fpr": 0.00015542603386067166,
+      "novel_recall": 0.6980769230769233
+    },
+    {
+      "variant": "yara-v2, packaged, predicted family excluded (shipped)",
+      "family": "Trickbot",
+      "n_test": 1336,
+      "recall": 0.03326347305389222,
+      "fpr": 0.01001382306477093,
+      "novel_recall": 0.03916932907348243
+    },
+    {
+      "variant": "yara-v2, packaged, predicted family excluded (shipped)",
+      "family": "Ursnif",
+      "n_test": 502,
+      "recall": 0.017171314741035858,
+      "fpr": 0.0014395183360700603,
+      "novel_recall": 0.017205588822355292
+    },
+    {
+      "variant": "yara-v2, packaged, predicted family excluded (shipped)",
+      "family": "Zeus",
+      "n_test": 144,
+      "recall": 0.008472222222222223,
+      "fpr": 4.593639575971731e-05,
       "novel_recall": 0.0
     },
     {
-      "variant": "yara-v2",
-      "family": "Lokibot",
-      "n_test": 685,
-      "recall": 0.0197,
-      "fpr": 0.000147,
-      "novel_recall": 0.0178
-    },
-    {
-      "variant": "yara-v2",
-      "family": "Qakbot",
-      "n_test": 393,
-      "recall": 0.0002,
-      "fpr": 2e-06,
-      "novel_recall": 0.0002
-    },
-    {
-      "variant": "yara-v2",
-      "family": "Swisyn",
-      "n_test": 4258,
-      "recall": 0.8153,
-      "fpr": 0.0,
-      "novel_recall": 0.7349
-    },
-    {
-      "variant": "yara-v2",
-      "family": "Trickbot",
-      "n_test": 1336,
-      "recall": 0.0179,
-      "fpr": 0.004568,
-      "novel_recall": 0.025
-    },
-    {
-      "variant": "yara-v2",
-      "family": "Ursnif",
-      "n_test": 502,
-      "recall": 0.0048,
-      "fpr": 0.000478,
-      "novel_recall": 0.0048
-    },
-    {
-      "variant": "yara-v2",
-      "family": "Zeus",
-      "n_test": 144,
-      "recall": 0.0029,
-      "fpr": 5.8e-05,
-      "novel_recall": 0.0031
-    },
-    {
-      "variant": "yara-v2",
+      "variant": "yara-v2, packaged, predicted family excluded (shipped)",
       "family": "njRAT",
       "n_test": 543,
-      "recall": 0.0437,
-      "fpr": 0.001062,
-      "novel_recall": 0.0472
+      "recall": 0.11576427255985268,
+      "fpr": 0.0024301803864115006,
+      "novel_recall": 0.11635991820040902
+    },
+    {
+      "variant": "yara-v2, packaged, no exclusion (default install)",
+      "family": "Adload",
+      "n_test": 5,
+      "recall": 0.0,
+      "fpr": 0.0,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "yara-v2, packaged, no exclusion (default install)",
+      "family": "Emotet",
+      "n_test": 3529,
+      "recall": 0.0003003683763105696,
+      "fpr": 7.561436672967864e-06,
+      "novel_recall": 0.00030083887763957185
+    },
+    {
+      "variant": "yara-v2, packaged, no exclusion (default install)",
+      "family": "Lokibot",
+      "n_test": 685,
+      "recall": 0.009693430656934307,
+      "fpr": 0.0018628815288987846,
+      "novel_recall": 0.009726443768996961
+    },
+    {
+      "variant": "yara-v2, packaged, no exclusion (default install)",
+      "family": "Qakbot",
+      "n_test": 393,
+      "recall": 0.0007633587786259542,
+      "fpr": 1.8065215427693975e-06,
+      "novel_recall": 0.0007633587786259542
+    },
+    {
+      "variant": "yara-v2, packaged, no exclusion (default install)",
+      "family": "Swisyn",
+      "n_test": 4258,
+      "recall": 0.6488727101925786,
+      "fpr": 0.00015542603386067166,
+      "novel_recall": 0.5646923076923076
+    },
+    {
+      "variant": "yara-v2, packaged, no exclusion (default install)",
+      "family": "Trickbot",
+      "n_test": 1336,
+      "recall": 0.004446107784431138,
+      "fpr": 0.003317535545023697,
+      "novel_recall": 0.004345047923322683
+    },
+    {
+      "variant": "yara-v2, packaged, no exclusion (default install)",
+      "family": "Ursnif",
+      "n_test": 502,
+      "recall": 0.01350597609561753,
+      "fpr": 0.00044882320744389707,
+      "novel_recall": 0.01353293413173653
+    },
+    {
+      "variant": "yara-v2, packaged, no exclusion (default install)",
+      "family": "Zeus",
+      "n_test": 144,
+      "recall": 0.009861111111111112,
+      "fpr": 2.8268551236749116e-05,
+      "novel_recall": 0.0
+    },
+    {
+      "variant": "yara-v2, packaged, no exclusion (default install)",
+      "family": "njRAT",
+      "n_test": 543,
+      "recall": 0.06773480662983425,
+      "fpr": 0.001521838659463419,
+      "novel_recall": 0.06674846625766871
     }
   ],
+  "benign_speakeasy": {
+    "reports": 32671,
+    "reports_with_rule_relevant_events": 5376,
+    "cache": "cache/speakeasy_benign.jsonl.gz",
+    "cache_meta": {
+      "repo": "dtrizna/quovadis-speakeasy",
+      "revision": "fc2e98fac0b4d43a5557ccab70c877af6cce9f4d",
+      "folders": [
+        "report_clean",
+        "report_windows_syswow64"
+      ],
+      "splits": [
+        "windows_emulation_trainset",
+        "windows_emulation_testset"
+      ],
+      "reports": 32671,
+      "failed": 0,
+      "reports_without_events": 0,
+      "non_json_files_skipped": [
+        "647fb5e5aa902cf19275c925e87c3740c29a15b1c27e99113ebbaec11d017c04.err",
+        "mmc.exe.config.err"
+      ],
+      "per_folder": {
+        "windows_emulation_testset/report_clean": 7944,
+        "windows_emulation_testset/report_windows_syswow64": 59,
+        "windows_emulation_trainset/report_clean": 24433,
+        "windows_emulation_trainset/report_windows_syswow64": 235
+      },
+      "reports_with_rule_relevant_events": 5376,
+      "event_types": {
+        "api_call": 5422438,
+        "registry_read": 7216,
+        "file_write": 5651,
+        "file_read": 2175,
+        "net_connect": 136,
+        "process_create": 55
+      },
+      "speakeasy_access_events": {
+        "open_key": 7136,
+        "create": 5493,
+        "open": 1971,
+        "read": 204,
+        "write": 149,
+        "read_value": 80,
+        "directory_create": 9
+      },
+      "cache_sha256": "99a6565fe0c4061188dcd147f5121230778d0ba7266df5834f530b74d99d0fa8",
+      "licence": "Apache-2.0",
+      "citation": "Trizna D. Quo Vadis: Hybrid Machine Learning Meta-Model Based on Contextual and Behavioral Malware Representations. AISec 2022, doi:10.1145/3560830.3563726"
+    },
+    "top_patterns_hitting_benign": [],
+    "caveat": "Speakeasy emulates the PE instead of running it, so it records fewer host actions than a CAPE sandbox: benign FPR here is a lower bound for sandbox traces."
+  },
   "units_file": "results/rules_avast_units.csv",
-  "markdown": "| synthesizer | sibling_recall_mean | recall_95ci | sibling_recall_median_family | novel_behaviour_recall | cross_family_fpr_mean | fpr_95ci | rules_per_run |\n|---|---|---|---|---|---|---|---|\n| sigma-mvp | 0.174 | [0.02689, 0.39598] | 0.0046 | 0.1927 | 0.018492 | [0.00914, 0.02887] | 0.62 |\n| sigma-mvp + real neg | 0.0 | [0.0, 0.0] | 0.0 | 0.0 | 0.0 | [0.0, 0.0] | 0.01 |\n| exact + real neg | 0.2977 | [0.06827, 0.56325] | 0.0563 | 0.2911 | 8.6e-05 | [1e-05, 0.00024] | 5.69 |\n| ladder + synthetic neg | 0.3715 | [0.15098, 0.62019] | 0.2278 | 0.3919 | 0.086668 | [0.03652, 0.14822] | 6.17 |\n| ladder + real neg (v2) | 0.304 | [0.07286, 0.57758] | 0.0574 | 0.2978 | 0.000195 | [2e-05, 0.00043] | 5.71 |\n| ladder + real neg, k=3 | 0.2266 | [0.03872, 0.45785] | 0.0447 | 0.2148 | 7e-05 | [1e-05, 0.00019] | 2.6 |\n| shipped (packaged corpus) | 0.3026 | [0.07549, 0.57111] | 0.0576 | 0.2964 | 3.9e-05 | [1e-05, 7e-05] | 5.68 |\n| v2, 5 runs pooled | 0.3909 | [0.16036, 0.63968] | 0.2653 | 0.35 | 0.000557 | [6e-05, 0.00126] | 5.97 |\n| yara-imphash | 0.0813 | [0.00016, 0.22429] | 0.0002 | 0.0731 | 0.00025 | [0.0, 0.00073] | 0.98 |\n| yara-v2 | 0.1041 | [0.00714, 0.28625] | 0.0179 | 0.097 | 0.000707 | [4e-05, 0.00195] | 0.94 |"
+  "units_variant_codes": {
+    "sigma-mvp": "mvp",
+    "sigma-mvp + real neg (oracle)": "mvp+real-o",
+    "exact + synthetic neg": "exact+syn",
+    "exact + real neg (oracle)": "exact+real-o",
+    "ladder + synthetic neg": "ladder+syn",
+    "ladder + real neg (oracle)": "v2-o",
+    "ladder + real neg, k=3 (oracle)": "v2k3-o",
+    "packaged, true family excluded (oracle)": "pkg-true-o",
+    "packaged, predicted family excluded (shipped)": "pkg-pred",
+    "packaged, no exclusion (default install)": "pkg-none",
+    "v2, 5 runs pooled (oracle)": "pool5-o",
+    "yara-imphash": "y-imphash",
+    "yara-v2 (oracle)": "y-v2-o",
+    "yara-v2, packaged, predicted family excluded (shipped)": "y-pkg-pred",
+    "yara-v2, packaged, no exclusion (default install)": "y-pkg-none"
+  }
 }
