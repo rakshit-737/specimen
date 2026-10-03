@@ -250,9 +250,9 @@ Specificity: 0 Sigma candidate(s) dropped because no generalisation rung was spe
   "trace_sha256": "febb79941f669497555e27d0547f2bdaf46bae8f2be10720fab2b851610eea60",
   "trace_run_id": "avast_emotet_1",
   "python": "3.14.3",
-  "specimen_version": "1.1.2",
+  "specimen_version": "1.1.3",
   "execution": "report-only (sandbox report replay; no sample bytes handled)",
-  "report_content_sha256": "95a88dcb94b87efa1231be46bbf663b14cdd9406622cfb8c4d4fca41c2062014",
+  "report_content_sha256": "dfb72fb556e73090a3fc44a684e4794cba25e0559318c2b27e5b2d49a2efe2e0",
   "report_sha256": "febb79941f669497555e27d0547f2bdaf46bae8f2be10720fab2b851610eea60",
   "sample_sha256_note": "not present in the (reduced) report; rule names use the report hash",
   "negative_corpus": {

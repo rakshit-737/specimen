@@ -6,6 +6,14 @@ uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.3] - 2026-10-03
+
+### Fixed
+- **Every generated result table was empty in 1.1.0-1.1.2.** `scripts/render_results.py` only matched blocks that already had content, so the empty `<!-- gen:... -->` blocks in the README and docs were never filled and `--check` passed vacuously; the README, Evaluation, How-it-works, Reproduce and home pages showed no numbers. Empty blocks are now matched and filled, and `tests/test_render_results.py` fails if any committed block is empty.
+- `results/rules_avast.json`, `results/rules_avast_units.csv` and `results/api_cross.json` were never refreshed with provenance; they are replaced by bench run 37109545948 (avast) and 37109548412 (api-cross) on commit `be11eac`, and the rule-generalisation figure comes from the same run. The family result from that run is identical to the committed one.
+- The synthetic-CAPE demo page leaked the builder's absolute checkout path and recorded the API-model hash of a CRLF checkout; `scripts/build_demo.py` now writes repo-relative paths and the page carries the hash of the committed (LF) file.
+- The static-gate footnote said `analyze` "detonates" every PE; it replays recorded runs.
+
 ## [1.1.2] - 2026-10-03
 
 ### Fixed

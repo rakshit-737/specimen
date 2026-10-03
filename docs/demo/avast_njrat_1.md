@@ -434,9 +434,9 @@ Specificity: 3 Sigma candidate(s) dropped because no generalisation rung was spe
   "trace_sha256": "2434c0af980a3a712b4ead907d2bdcd79682c37ce7c6c6a973f87c50d0698391",
   "trace_run_id": "avast_njrat_1",
   "python": "3.14.3",
-  "specimen_version": "1.1.2",
+  "specimen_version": "1.1.3",
   "execution": "report-only (sandbox report replay; no sample bytes handled)",
-  "report_content_sha256": "7ebf4732f58edd12d09e252c9e34e1d88992053f2e744fe8e785eef2ce3d3e55",
+  "report_content_sha256": "9624ade2a448257a448b702bd9978ebaab7a59ae5af2201f195136c6f769547e",
   "report_sha256": "2434c0af980a3a712b4ead907d2bdcd79682c37ce7c6c6a973f87c50d0698391",
   "sample_sha256_note": "not present in the (reduced) report; rule names use the report hash",
   "negative_corpus": {

@@ -143,17 +143,17 @@ Specificity: 0 Sigma candidate(s) dropped because no generalisation rung was spe
   "trace_sha256": "1c6780cf6a678c2cc7b0d0f74d9677973ae5e1129642ec16cbf156ade159800d",
   "trace_run_id": "full_cape_synthetic",
   "python": "3.14.3",
-  "specimen_version": "1.1.2",
+  "specimen_version": "1.1.3",
   "execution": "report-only (sandbox report replay; no sample bytes handled)",
-  "report_content_sha256": "778fa89cd4998700000bfe96ac43107344c66280501807631f7d4253cb546ac6",
+  "report_content_sha256": "1939e4ce34b21258e882de8e51377ddba5b20ff39c6629e41db7160578cd8b7a",
   "report_sha256": "1c6780cf6a678c2cc7b0d0f74d9677973ae5e1129642ec16cbf156ade159800d",
   "negative_corpus": {
     "packaged": true,
     "excluded_family": "Zeus"
   },
   "behaviour_model": {
-    "path": "D:\\cyber-portfolio\\repos\\specimen\\specimen\\data\\api_behaviour.json",
-    "sha256": "b9476f2c3813c4ed0df070f5e5a11956b96c7a82dffad80399cacd2b04491470"
+    "path": "specimen/data/api_behaviour.json",
+    "sha256": "2a4ee22390a10061ea420e7817fe1181f42f0c316d7f9537028b1d8c479a73f9"
   }
 }
 ```
