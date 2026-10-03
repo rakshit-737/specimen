@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use SPECIMEN, please cite it as below."
+message: "If you use SPECIMEN, please cite it as below, and cite the datasets and papers it builds on."
 title: "SPECIMEN: sample-to-story malware analysis with specificity-checked rule synthesis"
 type: software
 authors:
@@ -11,21 +11,114 @@ version: 1.1.0
 keywords: [malware analysis, sandbox, Sigma, YARA, provenance, CAPE]
 references:
   - type: article
-    title: "Avast-CTU Public CAPEv2 Dataset: Explainable Malware Analysis"
-    authors: [{family-names: "Bosansky"}, {family-names: "Kouba"}, {family-names: "Manhal"}, {family-names: "Pevny"}]
+    title: "Avast-CTU Public CAPE Dataset"
+    authors:
+      - {family-names: "Bošanský", given-names: "Branislav"}
+      - {family-names: "Kouba", given-names: "Dominik"}
+      - {family-names: "Maňhal", given-names: "Ondřej"}
+      - {family-names: "Sick", given-names: "Thorsten"}
+      - {family-names: "Lisý", given-names: "Viliam"}
+      - {family-names: "Křoustek", given-names: "Jakub"}
+      - {family-names: "Somol", given-names: "Petr"}
     year: 2022
-    identifiers: [{type: other, value: "arXiv:2209.03188"}]
+    doi: "10.48550/arXiv.2209.03188"
+    url: "https://github.com/avast/avast-ctu-cape-dataset"
+    notes: "Reduced CAPEv2 reports used for family attribution and the rule benchmark."
   - type: article
     title: "EMBER: An Open Dataset for Training Static PE Malware Machine Learning Models"
-    authors: [{family-names: "Anderson"}, {family-names: "Roth"}]
+    authors:
+      - {family-names: "Anderson", given-names: "Hyrum S."}
+      - {family-names: "Roth", given-names: "Phil"}
     year: 2018
-    identifiers: [{type: other, value: "arXiv:1804.04637"}]
+    doi: "10.48550/arXiv.1804.04637"
+    url: "https://github.com/elastic/ember"
   - type: article
     title: "MalDetConv: Automated Behaviour-based Malware Detection Framework Based on Natural Language Processing and Deep Learning Techniques"
-    authors: [{family-names: "Maniriho"}, {family-names: "Mahmood"}, {family-names: "Chowdhury"}]
+    authors:
+      - {family-names: "Maniriho", given-names: "Pascal"}
+      - {family-names: "Mahmood", given-names: "Abdun Naser"}
+      - {family-names: "Chowdhury", given-names: "Mohammad Jabed Morshed"}
     year: 2022
-    identifiers: [{type: other, value: "arXiv:2209.03547"}]
+    doi: "10.48550/arXiv.2209.03547"
+    notes: "Introduces the MalbehavD-V1 dataset (https://github.com/mpasco/MalbehavD-V1). Reproduced results: arXiv v1, Table 3, p. 19; architecture in Fig. 10 A-2, p. 17."
   - type: article
-    title: "Data Augmentation Based Malware Detection using Convolutional Neural Networks (Mal-API-2019)"
-    authors: [{family-names: "Catak"}, {family-names: "Ahmed"}, {family-names: "Sahinbas"}, {family-names: "Khan"}]
-    year: 2021
+    title: "API-MalDetect: Automated malware detection framework for windows based on API calls and deep learning techniques"
+    authors:
+      - {family-names: "Maniriho", given-names: "Pascal"}
+      - {family-names: "Mahmood", given-names: "Abdun Naser"}
+      - {family-names: "Chowdhury", given-names: "Mohammad Jabed Morshed"}
+    year: 2023
+    journal: "Journal of Network and Computer Applications"
+    volume: 218
+    start: 103704
+    doi: "10.1016/j.jnca.2023.103704"
+  - type: article
+    title: "A Benchmark API Call Dataset for Windows PE Malware Classification"
+    authors:
+      - {family-names: "Catak", given-names: "Ferhat Ozgur"}
+      - {family-names: "Yazı", given-names: "Ahmet Faruk"}
+    year: 2019
+    doi: "10.48550/arXiv.1905.01999"
+    url: "https://github.com/ocatak/malware_api_class"
+    notes: "Mal-API-2019 dataset."
+  - type: article
+    title: "Deep learning based Sequential model for malware analysis using Windows exe API Calls"
+    authors:
+      - {family-names: "Catak", given-names: "Ferhat Ozgur"}
+      - {family-names: "Yazı", given-names: "Ahmet Faruk"}
+      - {family-names: "Elezaj", given-names: "Ogerta"}
+      - {family-names: "Ahmed", given-names: "Javed"}
+    year: 2020
+    journal: "PeerJ Computer Science"
+    volume: 6
+    start: e285
+    doi: "10.7717/peerj-cs.285"
+    notes: "Mal-API-2019 dataset paper (journal version)."
+  - type: article
+    title: "Comprehensive evaluation of Mal-API-2019 dataset by machine learning in malware detection"
+    authors:
+      - {family-names: "Li", given-names: "Zhenglin"}
+      - {family-names: "Zhu", given-names: "Haibei"}
+      - {family-names: "Liu", given-names: "Houze"}
+      - {family-names: "Song", given-names: "Jintong"}
+      - {family-names: "Cheng", given-names: "Qishuo"}
+    year: 2024
+    journal: "International Journal of Computer Science and Information Technology"
+    volume: 2
+    issue: "1"
+    doi: "10.62051/ijcsit.v2n1.01"
+    notes: "Reproduced results: Table I, p. 6."
+  - type: data
+    title: "Malware Analysis Datasets: API Call Sequences"
+    authors:
+      - {family-names: "Oliveira", given-names: "Angelo"}
+    year: 2019
+    publisher: {name: "IEEE DataPort"}
+    doi: "10.21227/tqqm-aq14"
+    notes: "Also on Kaggle. SPECIMEN fetches a public re-host (github.com/Hellcake/malware-detection, file dynamic_api_call_sequence_per_malware_100_0_306.csv, pinned SHA-256 in scripts/download_data.py)."
+  - type: conference-paper
+    title: "Quo Vadis: Hybrid Machine Learning Meta-Model Based on Contextual and Behavioral Malware Representations"
+    authors:
+      - {family-names: "Trizna", given-names: "Dmitrijs"}
+    year: 2022
+    collection-title: "Proceedings of the 15th ACM Workshop on Artificial Intelligence and Security (AISec)"
+    doi: "10.1145/3560830.3563726"
+    url: "https://huggingface.co/datasets/dtrizna/quovadis-speakeasy"
+    notes: "Benign Speakeasy emulation reports used for the benign Sigma FPR."
+  - type: conference-paper
+    title: "Automatic Yara Rule Generation Using Biclustering"
+    authors:
+      - {family-names: "Raff", given-names: "Edward"}
+      - {family-names: "Zak", given-names: "Richard"}
+      - {family-names: "Lopez Munoz", given-names: "Gary"}
+      - {family-names: "Fleming", given-names: "William"}
+      - {family-names: "Anderson", given-names: "Hyrum S."}
+      - {family-names: "Filar", given-names: "Bobby"}
+      - {family-names: "Nicholas", given-names: "Charles"}
+      - {family-names: "Holt", given-names: "James"}
+    year: 2020
+    collection-title: "Proceedings of the 13th ACM Workshop on Artificial Intelligence and Security (AISec)"
+    start: 71
+    end: 82
+    doi: "10.1145/3411508.3421372"
+    notes: "Closest prior work on few-sample rule generation (prior art)."
