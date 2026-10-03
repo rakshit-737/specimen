@@ -46,6 +46,7 @@ jobs:
     permissions:
       contents: write
       packages: write
+      actions: read  # fetch_models.py may read the bench artefact that produced the models
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -53,6 +54,26 @@ jobs:
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: release
+      - name: Version without the leading v
+        id: ver
+        run: echo "v=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+      - name: Fetch the pinned model files (SHA-256 verified against scripts/model_assets.json)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/fetch_models.py --dest release-models
+      - name: Add the model SHA-256s to the release notes
+        run: |
+          {
+            echo
+            echo "### Model assets"
+            echo
+            echo "Trained models attached to this release (pinned in \`scripts/model_assets.json\`):"
+            echo
+            echo "| file | SHA-256 |"
+            echo "|---|---|"
+            for f in release-models/*; do echo "| \`$(basename "$f")\` | \`$(sha256sum "$f" | cut -d' ' -f1)\` |"; done
+          } >> notes.md
+          cat notes.md
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
       - name: Build the image and run it before pushing
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
@@ -72,8 +93,12 @@ jobs:
           push: true
           tags: |
             ghcr.io/rakshit-737/specimen:${{ github.ref_name }}
+            ghcr.io/rakshit-737/specimen:${{ steps.ver.outputs.v }}
             ghcr.io/rakshit-737/specimen:latest
+          labels: |
+            org.opencontainers.image.version=${{ steps.ver.outputs.v }}
+            org.opencontainers.image.revision=${{ github.sha }}
       - name: GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" dist/* --title "SPECIMEN $GITHUB_REF_NAME" --notes-file notes.md
+        run: gh release create "$GITHUB_REF_NAME" dist/* release-models/* --title "SPECIMEN $GITHUB_REF_NAME" --notes-file notes.md
