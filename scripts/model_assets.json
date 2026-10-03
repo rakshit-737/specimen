@@ -1,0 +1,16 @@
+{
+  "comment": "Pinned SHA-256 of the trained model files (too large for git). scripts/fetch_models.py downloads them from the release named here, else the latest release, else the bench run artefacts, and verifies every hash. Update after a bench run that retrains a model, and set 'release' once a release carries the files.",
+  "release": "v1.1.0",
+  "files": {
+    "family_model.npz": {"sha256": "3faaee72288696b2e38b75f8765402a8563673d358f4003486f3dbfc62d0e0ef",
+                         "what": "Avast-CTU family model (behaviour+static hashed LR)",
+                         "bench_run": {"run_id": 37004185054, "artifact": "bench-avast"}},
+    "family_meta.json": {"sha256": "13cf781e581ea4531dc3d7f7a2ba2ae95d06662e1919d1af0eb36f61a5f07d56",
+                         "what": "family model metadata (classes, abstain threshold)",
+                         "bench_run": {"run_id": 37004185054, "artifact": "bench-avast"}},
+    "static_lgbm.txt": {"sha256": "841ab136d3b452b98b5d283935d8c030df9fa4d54f2eb5f17a159bcaaa98ae18",
+                        "what": "EMBER LightGBM gate (triage-ember)"},
+    "static_meta.json": {"sha256": "57edf5226de910501d5c3e12f62433283c48adc84d6a71fed76eef27b5653bee",
+                         "what": "EMBER gate metadata and threshold"}
+  }
+}
