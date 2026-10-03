@@ -143,9 +143,9 @@ Specificity: 0 Sigma candidate(s) dropped because no generalisation rung was spe
   "trace_sha256": "1c6780cf6a678c2cc7b0d0f74d9677973ae5e1129642ec16cbf156ade159800d",
   "trace_run_id": "full_cape_synthetic",
   "python": "3.14.3",
-  "specimen_version": "1.1.0",
+  "specimen_version": "1.1.1",
   "execution": "report-only (sandbox report replay; no sample bytes handled)",
-  "report_content_sha256": "0ac9dde3b89cfbf27897abf4922cd21afb65d4b20cb087a1d3f0e6f923d731a7",
+  "report_content_sha256": "88dfdb4b1fcfbd36255658a7c2beb61167869fc76e13b37de590c38ae10914d5",
   "report_sha256": "1c6780cf6a678c2cc7b0d0f74d9677973ae5e1129642ec16cbf156ade159800d",
   "negative_corpus": {
     "packaged": true,

@@ -6,6 +6,8 @@ uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-10-03
+
 ### Fixed
 - **Security:** sandbox-controlled strings can no longer form Markdown links or images in reports: every Markdown-structural character is entity-encoded, and protocol-relative and numeric-IPv4 URLs are defanged. A rendering test with the docs-site Markdown extensions guards it.
 - **Evidence binding:** a Sysmon export whose event 1 `Hashes` do not include the sample's SHA-256 is refused; traces that record no sample hash are replayed as `unbound` with low confidence (`manifest.trace_binding`). The lab fixture now carries the dummy sample's hash.
