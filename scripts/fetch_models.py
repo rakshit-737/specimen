@@ -57,7 +57,7 @@ def from_run(run_id: int, artifact: str, names: list[str], tmp: Path) -> bool:
     if not shutil.which("gh"):
         print("  gh CLI not found")
         return False
-    out = tmp / "artifact"
+    out = tmp / "artifact" / f"{run_id}-{artifact}"
     r = subprocess.run(["gh", "run", "download", str(run_id), "-R", REPO, "-n", artifact, "-D", str(out)],
                        capture_output=True, text=True)
     if r.returncode:
