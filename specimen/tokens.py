@@ -140,5 +140,6 @@ def static_tokens(pe: dict[str, Any]) -> list[str]:
 
 
 def jaccard(a: Iterable[str], b: Iterable[str]) -> float:
+    """Jaccard similarity of two token collections (0 when both are empty)."""
     sa, sb = set(a), set(b)
     return len(sa & sb) / len(sa | sb) if sa | sb else 0.0

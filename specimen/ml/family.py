@@ -22,6 +22,7 @@ _HASHER = FeatureHasher(N_FEATURES, input_type="string", alternate_sign=False)
 
 
 def hash_tokens(docs: Sequence[Sequence[str]]) -> sparse.csr_matrix:
+    """Binary bag of hashed tokens (2^18 columns), L2-normalised per document."""
     X = _HASHER.transform(docs).tocsr()
     X.data[:] = 1.0
     # L2-normalise so long reports do not dominate
@@ -68,15 +69,18 @@ class FamilyModel:
         return cls(coef.astype(np.float32), icpt.astype(np.float32), [str(c) for c in lr.classes_])
 
     def proba(self, docs: Sequence[Sequence[str]]) -> np.ndarray:
+        """Class probabilities (softmax) for each token list, columns in ``classes`` order."""
         z = np.asarray(hash_tokens(docs) @ self.coef.T) + self.intercept
         z -= z.max(axis=1, keepdims=True)
         e = np.exp(z)
         return e / e.sum(axis=1, keepdims=True)
 
     def predict(self, docs: Sequence[Sequence[str]]) -> list[str]:
+        """Most probable family for each token list."""
         return [self.classes[i] for i in self.proba(docs).argmax(axis=1)]
 
     def explain(self, tokens: Sequence[str], family: str, k: int = 8) -> list[tuple[str, float]]:
+        """Top ``k`` tokens supporting ``family`` with their contribution to its logit."""
         ci = self.classes.index(family)
         uniq = sorted(set(tokens))
         if not uniq:
@@ -88,6 +92,7 @@ class FamilyModel:
         return [(t, round(c, 4)) for t, c in contrib[:k]]
 
     def save(self, path: Path, meta: dict[str, Any] | None = None) -> None:
+        """Write ``family_model.npz`` (numeric arrays only) and ``family_meta.json``."""
         path.mkdir(parents=True, exist_ok=True)
         np.savez_compressed(path / "family_model.npz", coef=self.coef, intercept=self.intercept,
                             classes=np.asarray(self.classes, dtype=str))
@@ -95,6 +100,7 @@ class FamilyModel:
 
     @classmethod
     def load(cls, path: Path) -> FamilyModel:
+        """Load a model written by :meth:`save` (no pickle)."""
         d = np.load(path / "family_model.npz")  # numeric/unicode arrays only, no pickle
         mp = path / "family_meta.json"
         meta = json.loads(mp.read_text()) if mp.exists() else {}

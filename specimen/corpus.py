@@ -28,6 +28,7 @@ def _benign_events(rng: random.Random, base: float) -> list[Event]:
 
 
 def behavior_events(tags: list[str], rng: random.Random, base: float = 0.0) -> list[Event]:
+    """Synthetic events for a list of behaviour tags (``vss``, ``persist`` ...), with random gaps after ``base``."""
     evs: list[Event] = []
     t = base
     for tag in tags:
@@ -60,6 +61,7 @@ def behavior_events(tags: list[str], rng: random.Random, base: float = 0.0) -> l
 
 
 def synthetic_corpus(n: int = 120, seed: int = 7) -> list[tuple[Trace, int, str | None]]:
+    """Deterministic synthetic corpus of ``(trace, label, family)``: half benign, half drawn from the MVP's synthetic families. Used by the MVP scorer and as synthetic benign negatives; never as an evaluation set."""
     rng = random.Random(seed)
     out: list[tuple[Trace, int, str | None]] = []
     fams = list(FAMILIES)

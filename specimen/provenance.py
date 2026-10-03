@@ -66,6 +66,7 @@ def api_name(target: str) -> str:
 
 
 def map_technique(ev: Event) -> tuple[str | None, str | None]:
+    """ATT&CK ``(technique, tactic)`` for one event, or ``(None, None)``."""
     t = (ev.target or "").lower()
     c = (ev.cmdline or "").lower()
     if ev.type == "api_call":
@@ -108,22 +109,27 @@ def map_technique(ev: Event) -> tuple[str | None, str | None]:
 
 
 class ProvenanceGraph:
+    """Process/file/registry/network provenance graph built from a trace."""
     def __init__(self) -> None:
         self.nodes: dict[str, Node] = {}
         self.edges: list[Edge] = []
 
     def add_node(self, nid: str, kind: str, label: str) -> str:
+        """Add a node once (first label wins) and return its id."""
         self.nodes.setdefault(nid, Node(nid, kind, label))
         return nid
 
     def children(self, nid: str) -> list[Edge]:
+        """Outgoing edges of a node."""
         return [e for e in self.edges if e.src == nid]
 
     def roots(self) -> list[str]:
+        """Process nodes with no incoming edge (the sample and other root processes)."""
         dst = {e.dst for e in self.edges}
         return [n for n, v in self.nodes.items() if v.kind == "process" and n not in dst]
 
     def descendants(self, nid: str) -> set[str]:
+        """Every node reachable from ``nid``."""
         adj = defaultdict(list)
         for e in self.edges:
             adj[e.src].append(e.dst)
@@ -136,6 +142,7 @@ class ProvenanceGraph:
         return seen
 
     def to_mermaid(self) -> str:
+        """Mermaid ``flowchart`` of the graph; labels are escaped and defanged."""
         ids = {nid: f"n{i}" for i, nid in enumerate(self.nodes)}
         lines = ["flowchart LR"]
         for nid, n in self.nodes.items():

@@ -1,12 +1,15 @@
+"""SHA-256 helpers and the size-capped reader for untrusted report and trace files."""
 import hashlib
 from pathlib import Path
 
 
 def sha256_bytes(b: bytes) -> str:
+    """Hex SHA-256 of a byte string."""
     return hashlib.sha256(b).hexdigest()
 
 
 def sha256_file(p: str | Path) -> str:
+    """Hex SHA-256 of a file, read in 64 KiB chunks (the whole file, never truncated)."""
     h = hashlib.sha256()
     with open(p, "rb") as f:
         for chunk in iter(lambda: f.read(65536), b""):

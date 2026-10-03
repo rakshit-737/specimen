@@ -30,6 +30,10 @@ SAMPLES = {
 
 
 def write_fixtures(out: str | Path) -> dict[str, tuple[Path, Path | None]]:
+    """Write the inert demo samples (text bytes, never executable) and their synthetic traces under ``out``.
+
+    :returns: ``{name: (sample_path, trace_path or None)}``.
+    """
     out = Path(out)
     (out / "samples").mkdir(parents=True, exist_ok=True)
     (out / "traces").mkdir(parents=True, exist_ok=True)

@@ -48,6 +48,7 @@ _EXE_RE = re.compile(r'^\s*"?([^"]+?\.(?:exe|com|bat|cmd|scr|dll|ps1|vbs|js))"?(
 
 
 class CapeFormatError(ValueError):
+    """A CAPE/Cuckoo report that cannot be turned into a trace (bad JSON or no behaviour)."""
     pass
 
 
@@ -269,6 +270,10 @@ def cape_to_trace(report: dict[str, Any], run_id: str | None = None, raw: bytes 
 
 
 def load_cape(path: str | Path) -> Trace:
+    """Read (size-capped), parse and convert a CAPE/Cuckoo JSON report file into a :class:`Trace`.
+
+    :raises CapeFormatError: on invalid JSON or a report without behaviour.
+    """
     raw = read_capped(path)
     try:
         doc = loads(raw, str(path))
@@ -278,6 +283,7 @@ def load_cape(path: str | Path) -> Trace:
 
 
 def looks_like_cape(doc: Any) -> bool:
+    """Whether a parsed JSON document is a CAPE/Cuckoo report rather than a native trace."""
     return isinstance(doc, dict) and "behavior" in doc and "events" not in doc
 
 

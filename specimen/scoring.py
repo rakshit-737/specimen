@@ -50,21 +50,25 @@ def featurize(trace: Trace) -> list[float]:
 
 
 def technique_set(trace: Trace) -> frozenset[str]:
+    """ATT&CK techniques present in a trace."""
     return frozenset(t for ev in trace.events if (t := map_technique(ev)[0]))
 
 
 class LogisticModel:
+    """Tiny pure-Python logistic regression (the MVP scorer, trained on synthetic traces)."""
     def __init__(self, n: int) -> None:
         self.w = [0.0] * n
         self.b = 0.0
 
     def predict(self, x: list[float]) -> float:
+        """Probability for one feature vector."""
         z = self.b + sum(wi * xi for wi, xi in zip(self.w, x))
         z = max(min(z, 30), -30)
         return 1 / (1 + math.exp(-z))
 
     def fit(self, X: list[list[float]], y: list[int], lr: float = 0.3,
             epochs: int = 400, l2: float = 0.01) -> LogisticModel:
+        """Full-batch gradient descent with L2 regularisation; returns ``self``."""
         n = len(X)
         for _ in range(epochs):
             gw = [0.0] * len(self.w)
@@ -81,6 +85,7 @@ class LogisticModel:
 
 @lru_cache(maxsize=1)
 def trained() -> tuple[LogisticModel, dict[str, list[frozenset[str]]], Counter]:
+    """The MVP scorer trained on the synthetic corpus, the family prototypes and technique frequencies (cached)."""
     corpus = synthetic_corpus()
     X = [featurize(t) for t, _, _ in corpus]
     y = [lab for _, lab, _ in corpus]
@@ -97,6 +102,7 @@ def trained() -> tuple[LogisticModel, dict[str, list[frozenset[str]]], Counter]:
 
 
 def jaccard(a: frozenset[str], b: frozenset[str]) -> float:
+    """Jaccard similarity of two technique sets (0 when both are empty)."""
     return len(a & b) / len(a | b) if a | b else 0.0
 
 

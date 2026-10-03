@@ -58,12 +58,14 @@ def _imports(row: dict[str, Any]) -> dict[str, list[str]]:
 
 
 def feature_groups() -> list[tuple[str, int]]:
+    """``(group, width)`` of every block of the 2,440-dimension EMBER feature vector."""
     return [("histogram", 256), ("byteentropy", 256), ("strings", 104), ("general", 10),
             ("header", 62), ("section", 255), ("imports", 1280), ("exports", 128),
             ("datadirectories", 30), ("named", len(NOTABLE_APIS) + len(PACKER_NAMES) + 1)]
 
 
 def feature_names() -> list[str]:
+    """Human-readable name of every feature (used in TreeSHAP explanations)."""
     names: list[str] = []
     names += [f"histogram[{i}]" for i in range(256)]
     names += [f"byteentropy[{i}]" for i in range(256)]
@@ -93,12 +95,14 @@ def feature_names() -> list[str]:
 
 
 def file_entropy(row: dict[str, Any]) -> float:
+    """Whole-file Shannon entropy (bits per byte) from an EMBER byte histogram."""
     h = _norm(row.get("histogram") or [0] * 256)
     nz = h[h > 0]
     return float(-(nz * np.log2(nz)).sum()) if nz.size else 0.0
 
 
 def vectorize(row: dict[str, Any]) -> np.ndarray:
+    """EMBER raw-feature JSON row -> fixed 2,440-dimension float32 vector (CRC32-hashed imports/exports/sections plus named API and packer flags)."""
     parts: list[np.ndarray] = []
     parts.append(_norm(row.get("histogram") or [0] * 256))
     parts.append(_norm(row.get("byteentropy") or [0] * 256))
@@ -198,26 +202,31 @@ class StaticModel:
         self.names = feature_names()
 
     def predict(self, X: np.ndarray) -> np.ndarray:
+        """Malicious probability for each row of ``X``."""
         return self.booster.predict(X)
 
     def explain(self, x: np.ndarray, k: int = 8) -> list[tuple[str, float]]:
+        """Top ``k`` TreeSHAP contributions ``(feature, value)`` for one vector."""
         contrib = self.booster.predict(x.reshape(1, -1), pred_contrib=True)[0][:-1]
         idx = np.argsort(-np.abs(contrib))[:k]
         return [(self.names[i], round(float(contrib[i]), 4)) for i in idx if contrib[i]]
 
     def save(self, path: Path) -> None:
+        """Write ``static_lgbm.txt`` (LightGBM text model) and ``static_meta.json`` (meta + threshold)."""
         path.mkdir(parents=True, exist_ok=True)
         self.booster.save_model(str(path / "static_lgbm.txt"))
         (path / "static_meta.json").write_text(json.dumps({**self.meta, "threshold": self.threshold}, indent=2))
 
     @classmethod
     def load(cls, path: Path) -> StaticModel:
+        """Load a model written by :meth:`save` (text formats only, no pickle)."""
         import lightgbm as lgb
         meta = json.loads((path / "static_meta.json").read_text())
         return cls(lgb.Booster(model_file=str(path / "static_lgbm.txt")), meta["threshold"], meta)
 
 
 def train(X: np.ndarray, y: np.ndarray, seed: int = 0, rounds: int = 600) -> Any:
+    """Train the LightGBM gate (binary objective, fixed hyperparameters, ``rounds`` boosting rounds)."""
     import lightgbm as lgb
     params = {"objective": "binary", "learning_rate": 0.05, "num_leaves": 64, "min_data_in_leaf": 20,
               "feature_fraction": 0.5, "bagging_fraction": 0.8, "bagging_freq": 1, "seed": seed,

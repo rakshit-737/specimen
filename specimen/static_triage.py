@@ -56,6 +56,7 @@ def load_sample(path: str | Path) -> tuple[Sample, bytes]:
 
 
 def shannon_entropy(data: bytes) -> float:
+    """Shannon entropy of a byte string in bits per byte (0-8)."""
     if not data:
         return 0.0
     counts = [0] * 256
@@ -66,10 +67,12 @@ def shannon_entropy(data: bytes) -> float:
 
 
 def extract_strings(data: bytes, limit: int = 2000) -> list[str]:
+    """Printable ASCII strings of length >= 5 (at most ``limit``)."""
     return [m.group().decode("ascii") for m in STR_RE.finditer(data)][:limit]
 
 
 def triage(data: bytes) -> StaticVerdict:
+    """Additive, explainable static gate on raw sample bytes: score, label, detonate decision, contributions, strings and IOCs. Reads bytes only; never executes anything."""
     strings = extract_strings(data)
     blob = "\n".join(strings)
     reasons: list[Contribution] = []

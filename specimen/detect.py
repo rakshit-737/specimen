@@ -140,6 +140,7 @@ def literal_len(pattern: str) -> int:
 
 @lru_cache(maxsize=65536)
 def to_regex(pattern: str) -> re.Pattern[str]:
+    """Compile an internal wildcard pattern (``*`` = any run) into an anchored, case-insensitive, multi-line regex (cached)."""
     body = ".*".join(re.escape(part) for part in pattern.split("*"))
     return re.compile(rf"(?im)^{body}$")
 
@@ -150,6 +151,7 @@ def to_regex(pattern: str) -> re.Pattern[str]:
 
 @dataclass(frozen=True)
 class SigmaRule:
+    """One synthesised Sigma selection: log category, ``(field, wildcard pattern)`` pairs, the generalisation rung it came from and the source value."""
     category: str
     fields: tuple[tuple[str, str], ...]     # (field, wildcard pattern)
     rung: int = 0
@@ -157,12 +159,14 @@ class SigmaRule:
 
     @property
     def line_pattern(self) -> str:
+        """The pattern in the shared line format (``Image<TAB>CommandLine`` for process creation, else the single field)."""
         d = dict(self.fields)
         if self.category == "process_creation":
             return f"{d.get('Image', '*')}\t{d.get('CommandLine', '*')}"
         return next(iter(d.values()))
 
     def matches(self, blob: dict[str, str]) -> bool:
+        """Whether the rule fires on a per-category blob (see :func:`blobs`)."""
         text = blob.get(self.category, "")
         return bool(text) and to_regex(self.line_pattern).search(text) is not None
 
@@ -217,6 +221,7 @@ def _literal_ok(rule: SigmaRule) -> bool:
 
 @dataclass
 class SynthesisResult:
+    """Rules kept by :func:`synthesize_sigma`, plus counts of candidates and of candidates rejected because no rung was specific enough."""
     rules: list[SigmaRule] = field(default_factory=list)
     rejected_nonspecific: int = 0
     candidates: int = 0
@@ -268,11 +273,13 @@ def synthesize_sigma(events: Iterable[Sequence[str]], negatives: Sequence[dict[s
 
 @dataclass(frozen=True)
 class YaraPeRule:
+    """YARA rule over PE metadata: ``pe.imphash()`` and/or at least ``need`` of a set of rare imports."""
     imphash: str
     imports: tuple[tuple[str, str], ...]   # (dll, function)
     need: int
 
     def matches(self, static_tokens: set[str]) -> bool:
+        """Whether the rule fires on a set of static tokens (``imphash:...``, ``imp:dll:func``)."""
         if self.imphash and f"imphash:{self.imphash}" in static_tokens:
             return True
         if not self.imports:

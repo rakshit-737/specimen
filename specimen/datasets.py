@@ -24,6 +24,7 @@ DATA_ENV = "SPECIMEN_DATA"
 
 
 def data_root() -> Path:
+    """Dataset root: ``$SPECIMEN_DATA`` if set, else ``./data`` (always outside the repository)."""
     return Path(os.environ.get(DATA_ENV, "data"))
 
 
@@ -37,6 +38,7 @@ class _Buf:
         self._buf = bytearray()
 
     def read(self, n: int) -> bytes:
+        """Return up to ``n`` bytes, pulling chunks from the underlying iterator as needed."""
         while len(self._buf) < n:
             try:
                 self._buf += next(self._it)
@@ -47,6 +49,7 @@ class _Buf:
         return out
 
     def unread(self, b: bytes) -> None:
+        """Push bytes back so the next :meth:`read` returns them first."""
         self._buf[:0] = b
 
 
@@ -143,6 +146,7 @@ AVAST_SPLIT_DATE = "2019-08-01"  # train/test split used by Bosansky et al. 2022
 
 @dataclass(frozen=True)
 class AvastLabel:
+    """One row of the Avast-CTU label file: hash, family, malware type and first-seen date."""
     sha256: str
     family: str
     mtype: str
@@ -150,10 +154,12 @@ class AvastLabel:
 
     @property
     def split(self) -> str:
+        """``train`` before the authors' split date (2019-08-01), else ``test``."""
         return "train" if self.date < AVAST_SPLIT_DATE else "test"
 
 
 def parse_avast_labels(text: str) -> dict[str, AvastLabel]:
+    """Parse the Avast-CTU label CSV into ``{sha256: AvastLabel}``."""
     out = {}
     for row in csv.DictReader(io.StringIO(text)):
         out[row["sha256"]] = AvastLabel(row["sha256"], row["classification_family"],
@@ -242,6 +248,7 @@ MALBEHAVD_CSV = "malbehavd/MalBehavD-V1-dataset.csv"
 
 
 def iter_malbehavd(path: Path | None = None) -> Iterator[tuple[str, int, list[str]]]:
+    """Yield ``(sha256, label, api_calls)`` rows of the MalbehavD-V1 CSV (label 1 = malicious)."""
     path = path or data_root() / MALBEHAVD_CSV
     with open(path, newline="", encoding="utf-8") as f:
         r = csv.reader(f)

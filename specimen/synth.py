@@ -17,6 +17,7 @@ def _yara_escape(s: str) -> str:
 
 
 def pick_yara_strings(verdict: StaticVerdict, benign_blobs: list[bytes], k: int = 6) -> list[str]:
+    """Up to ``k`` distinctive strings of a sample for a YARA rule, skipping generic ones and any found in ``benign_blobs``."""
     ranked: list[str] = []
     keys = list(SUSPICIOUS_APIS) + list(SUSPICIOUS_TOKENS) + list(PACKER_MARKERS)
     for s in verdict.strings:
@@ -38,6 +39,7 @@ def pick_yara_strings(verdict: StaticVerdict, benign_blobs: list[bytes], k: int 
 
 
 def yara_rule(name: str, sha256: str, strings: list[str]) -> str | None:
+    """String-based YARA rule text (``need`` = half of the strings), or ``None`` without strings."""
     if not strings:
         return None
     body = "\n".join(f'        $s{i} = "{_yara_escape(s)}" ascii wide' for i, s in enumerate(strings))
@@ -48,6 +50,7 @@ def yara_rule(name: str, sha256: str, strings: list[str]) -> str | None:
 
 
 def yara_matches(strings: list[str], need: int, blob: bytes) -> bool:
+    """Whether at least ``need`` of the strings occur (ASCII or UTF-16LE) in a blob."""
     hits = sum(1 for s in strings if s.encode() in blob or s.encode("utf-16-le") in blob)
     return hits >= need
 
@@ -76,6 +79,7 @@ def _sigma_selection(ev: Event) -> tuple[str, dict[str, str]] | None:
 
 
 def sigma_rules(trace: Trace, sha256: str) -> list[tuple[str, str, dict[str, str], str]]:
+    """MVP Sigma rules: exact values of technique-mapped events, as ``(category, technique, selection, yaml)``."""
     seen = set()
     out = []
     for ev in trace.events:
@@ -106,6 +110,7 @@ _FIELD = {"Image": lambda e: "\\" + (e.target or ""), "CommandLine": lambda e: e
 
 
 def sigma_matches(cat: str, sel: dict[str, str], ev: Event) -> bool:
+    """Whether an MVP selection (``field|endswith``/``contains``) matches one event."""
     if _CAT_OF.get(ev.type) != cat:
         return False
     for k, v in sel.items():
@@ -120,6 +125,7 @@ def sigma_matches(cat: str, sel: dict[str, str], ev: Event) -> bool:
 
 def synthesize(verdict: StaticVerdict, sha256: str, trace: Trace | None,
                benign_blobs: list[bytes], benign_traces: list[Trace]) -> Detections:
+    """MVP detections: string YARA from the sample bytes and technique-gated Sigma, each dropped if it hits the benign blobs/traces."""
     strs = pick_yara_strings(verdict, benign_blobs)
     rule = yara_rule(f"SPECIMEN_{sha256[:12]}", sha256, strs) if verdict.label != "benign" else None
     need = max(1, (len(strs) + 1) // 2)

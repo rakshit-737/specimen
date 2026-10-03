@@ -25,6 +25,7 @@ CACHE = "cache/avast_tokens.jsonl.gz"
 
 
 def report_record(report: dict[str, Any], run_id: str) -> dict[str, Any] | None:
+    """Compact cache record of one Avast-CTU report: behaviour and static tokens and the host-action rows the rule synthesizer needs."""
     try:
         trace = cape_to_trace(report, run_id=run_id)
     except CapeFormatError:
@@ -80,6 +81,7 @@ def build_cache(zip_path: Path | None = None, out: Path | None = None, limit: in
 
 
 def load_cache(path: Path | None = None) -> Iterator[dict[str, Any]]:
+    """Stream the Avast-CTU token cache (one dict per report)."""
     path = path or data_root() / CACHE
     with gzip.open(path, "rt", encoding="utf-8") as f:
         for line in f:
