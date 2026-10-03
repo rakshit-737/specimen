@@ -66,7 +66,7 @@ jobs:
         with:
           path: ${{ env.BENIGN_DIR }}/cache
           # keyed on the pinned Hugging Face revision and the adapter version
-          key: speakeasy-fc2e98fa-adapter-v1
+          key: speakeasy-fc2e98fa-adapter-v2
       - name: Download the benign Quo Vadis Speakeasy reports (pinned revision) and build the cache
         if: contains(fromJSON('["rules","avast","all"]'), inputs.suite) && steps.benign.outputs.cache-hit != 'true'
         run: python scripts/build_speakeasy_cache.py --dest "$BENIGN_DIR"

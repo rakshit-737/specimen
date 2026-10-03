@@ -70,14 +70,17 @@ def main(argv: list[str] | None = None) -> int:
     if not a.skip_download:
         download(raw)
     print(f"download done in {time.time() - t0:.0f}s", flush=True)
-    files = sorted(p for s in SPLITS for f in FOLDERS for p in (raw / s / f).glob("*.json"))
+    # the train-set clean reports sit in numbered sub-folders (report_clean/0, /1, ...): search recursively
+    files = sorted(p for s in SPLITS for f in FOLDERS for p in (raw / s / f).rglob("*.json"))
+    other = sorted(p.name for s in SPLITS for f in FOLDERS for p in (raw / s / f).rglob("*")
+                   if p.is_file() and p.suffix != ".json")
     if a.max:
         files = files[:a.max]
     out = a.dest / "cache" / "speakeasy_benign.jsonl.gz"
     out.parent.mkdir(parents=True, exist_ok=True)
     types: Counter = Counter()
     access: Counter = Counter()
-    failed = 0
+    failed = empty = rule_rel = 0
     per_folder: Counter = Counter()
     with gzip.open(out, "wt", encoding="utf-8", compresslevel=6) as fo:
         for i, p in enumerate(files):
@@ -92,7 +95,10 @@ def main(argv: list[str] | None = None) -> int:
             types.update(e.type for e in trace.events)
             access.update(str(e.extra.get("speakeasy_event")) for e in trace.events if e.extra.get("speakeasy_event"))
             per_folder[rel.split("/")[0] + "/" + rel.split("/")[1]] += 1
+            if not trace.events:
+                empty += 1
             ev = [[e.type, e.target or "", e.cmdline or ""] for e in trace.events if e.type in RULE_TYPES][:MAX_EVENTS]
+            rule_rel += bool(ev)
             fo.write(json.dumps({"file": rel, "split": "train" if "trainset" in rel else "test",
                                  "folder": rel.split("/")[1], "events": ev, "n_events": len(trace.events)},
                                 separators=(",", ":")) + "\n")
@@ -100,7 +106,9 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"  {i + 1}/{len(files)} converted ({time.time() - t0:.0f}s)", flush=True)
     sha = hashlib.sha256(out.read_bytes()).hexdigest()
     meta = {"repo": REPO, "revision": REVISION, "folders": FOLDERS, "splits": SPLITS,
-            "reports": sum(per_folder.values()), "failed": failed, "per_folder": dict(sorted(per_folder.items())),
+            "reports": sum(per_folder.values()), "failed": failed, "reports_without_events": empty,
+            "non_json_files_skipped": other, "per_folder": dict(sorted(per_folder.items())),
+            "reports_with_rule_relevant_events": rule_rel,
             "event_types": dict(types.most_common()), "speakeasy_access_events": dict(access.most_common()),
             "cache_sha256": sha, "licence": "Apache-2.0",
             "citation": "Trizna D. Quo Vadis: Hybrid Machine Learning Meta-Model Based on Contextual and "

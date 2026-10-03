@@ -275,8 +275,17 @@ class BenignEvaluator:
         self.blobs = [blobs(r["events"]) for r in records]
         self.merged = merge(self.blobs)
         self.n = len(self.blobs)
+        self.with_rule_events = sum(any(b.values()) for b in self.blobs)
         self._memo: dict[tuple, np.ndarray] = {}
         self.pattern_hits: Counter = Counter()
+        self.union: dict[str, np.ndarray] = {}
+
+    def record(self, variant: str, hit: np.ndarray) -> None:
+        """Track the benign reports hit by *any* run of a variant (for a conservative interval)."""
+        if variant in self.union:
+            self.union[variant] |= hit
+        else:
+            self.union[variant] = hit.copy()
 
     def sigma_hits(self, rules: list[SigmaRule]) -> np.ndarray:
         hit = np.zeros(self.n, dtype=bool)
@@ -424,6 +433,7 @@ def main() -> int:
                                   "predicted_family": own, **ev.score(ev.sigma_hits(rules), fam)})
                     if benign_ev is not None:
                         bh = benign_ev.sigma_hits(rules)
+                        benign_ev.record(name, bh)
                         benign_units.append({"seed": seed, "family": fam, "ref": ri, "variant": name,
                                              "benign_fp": int(bh.sum()), "benign_n": benign_ev.n,
                                              "benign_fpr": float(bh.mean())})
@@ -447,6 +457,7 @@ def main() -> int:
                           **ev.score(ev.sigma_hits(pooled), fam)})
             if benign_ev is not None:
                 bh = benign_ev.sigma_hits(pooled)
+                benign_ev.record("v2, 5 runs pooled (oracle)", bh)
                 benign_units.append({"seed": seed, "family": fam, "ref": 0, "variant": "v2, 5 runs pooled (oracle)",
                                      "benign_fp": int(bh.sum()), "benign_n": benign_ev.n, "benign_fpr": float(bh.mean())})
             print(f"seed {seed} {fam:9s}", flush=True)
@@ -475,10 +486,13 @@ def main() -> int:
         }
         bus = [u for u in benign_units if u["variant"] == name]
         if bus:
-            bfp, bn = sum(u["benign_fp"] for u in bus), sum(u["benign_n"] for u in bus)
+            # every run is checked against the same benign reports, so pooled counts are not independent:
+            # the interval is Wilson on the reports hit by ANY run of the variant (an upper bound per run)
+            k_any = int(benign_ev.union[name].sum()) if name in benign_ev.union else 0
             row.update({"benign_fpr_mean": float(np.mean([u["benign_fpr"] for u in bus])),
                         "benign_fpr_95ci": boot_ci(bus, "benign_fpr"),
-                        "benign_fpr_pooled_wilson": list(wilson(bfp, bn)),
+                        "benign_reports_hit_by_any_run": k_any,
+                        "benign_any_run_wilson": list(wilson(k_any, benign_ev.n)),
                         "benign_units_with_any_hit": float(np.mean([u["benign_fp"] > 0 for u in bus]))})
         summary.append(row)
         for f, m in fam_means.items():
@@ -513,7 +527,8 @@ def main() -> int:
     benign_info = None
     if benign_ev is not None:
         meta_p = bpath.with_suffix("").with_suffix(".meta.json")
-        benign_info = {"reports": benign_ev.n, "cache": BENIGN_CACHE,
+        benign_info = {"reports": benign_ev.n, "reports_with_rule_relevant_events": benign_ev.with_rule_events,
+                       "cache": BENIGN_CACHE,
                        "cache_meta": json.loads(meta_p.read_text()) if meta_p.exists() else None,
                        "top_patterns_hitting_benign": [
                            {"category": c, "pattern": p, "benign_reports_hit": n}
