@@ -40,6 +40,9 @@ def test_environment_and_muicache_prefixes_are_not_specific():
     assert literal_len(r"HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\*") < 10
     # a named value under Environment (e.g. a logon script) is still specific enough
     assert literal_len(r"HKEY_CURRENT_USER\Environment\UserInitMprLogonScript") >= 10
+    # MUI resource references under MuiCache are generic Windows strings
+    mui = r"HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\*\*\@%SystemRoot%\system*\*"
+    assert literal_len(mui) < 10
     env = ["registry_set", r"HKEY_CURRENT_USER\Environment\abcdef12", ""]
     res = synthesize_sigma([env], [])
     assert all(r.fields[0][1].lower() != r"hkey_current_user\environment\*" for r in res.rules)

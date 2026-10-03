@@ -132,9 +132,14 @@ def ladder(value: str, kind: str) -> list[str]:
     return out
 
 
+# Tokens that occur in benign values everywhere (environment variables, system folders,
+# MUI resource references such as "@%SystemRoot%\system32\shell32.dll,-21"): not specific.
+_GENERIC_TOKEN = re.compile(r"(?i)%[a-z0-9_()]+%|(?<![a-z])(system32|syswow64|sysnative)(?![a-z])|@")
+
+
 def literal_len(pattern: str) -> int:
-    """Literal characters left after removing wildcards and generic prefixes."""
-    p = _GENERIC_PREFIX.sub("", pattern)
+    """Literal characters left after removing wildcards, generic prefixes and generic tokens."""
+    p = _GENERIC_TOKEN.sub("", _GENERIC_PREFIX.sub("", pattern))
     return len(p.replace("*", "").replace("\\", "").replace(".", ""))
 
 
