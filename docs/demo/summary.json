@@ -56,7 +56,7 @@
      "excluded_family": "Emotet",
      "packaged": true
     },
-    "specimen_version": "1.1.1",
+    "specimen_version": "1.1.2",
     "trace_binding": null
    },
    "sigma_rules": 2,
@@ -171,7 +171,7 @@
      "excluded_family": "Lokibot",
      "packaged": true
     },
-    "specimen_version": "1.1.1",
+    "specimen_version": "1.1.2",
     "trace_binding": null
    },
    "sigma_rules": 6,
@@ -289,7 +289,7 @@
      "excluded_family": "njRAT",
      "packaged": true
     },
-    "specimen_version": "1.1.1",
+    "specimen_version": "1.1.2",
     "trace_binding": null
    },
    "sigma_rules": 10,
@@ -391,7 +391,7 @@
      "excluded_family": "Zeus",
      "packaged": true
     },
-    "specimen_version": "1.1.1",
+    "specimen_version": "1.1.2",
     "trace_binding": null
    },
    "sigma_rules": 3,
@@ -495,7 +495,7 @@
      "excluded_family": null,
      "packaged": true
     },
-    "specimen_version": "1.1.1",
+    "specimen_version": "1.1.2",
     "trace_binding": "bound: the trace records this sample's SHA-256"
    },
    "sigma_rules": 4,
@@ -548,5 +548,5 @@
    "yara": false
   }
  },
- "specimen_version": "1.1.1"
+ "specimen_version": "1.1.2"
 }

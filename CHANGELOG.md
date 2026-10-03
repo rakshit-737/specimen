@@ -6,6 +6,11 @@ uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-10-03
+
+### Fixed
+- Re-release of 1.1.1: the `v1.1.1` tag published nothing (no GitHub Release, no image) because its release workflow failed on the model-fetch bug fixed below. 1.1.2 contains the fix; use 1.1.2.
+
 ## [1.1.1] - 2026-10-03
 
 ### Fixed

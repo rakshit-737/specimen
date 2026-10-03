@@ -327,9 +327,9 @@ Specificity: 1 Sigma candidate(s) dropped because no generalisation rung was spe
   "trace_sha256": "3783825d9e860c7860aa20c4eb521338ec5c03e21cbcc3efd5ac4533a6ebc8cb",
   "trace_run_id": "avast_lokibot_1",
   "python": "3.14.3",
-  "specimen_version": "1.1.1",
+  "specimen_version": "1.1.2",
   "execution": "report-only (sandbox report replay; no sample bytes handled)",
-  "report_content_sha256": "eb6936517ea40f87159f72f5bf3d9b560dbd7c99a12201ff4e912dd4b48e4a07",
+  "report_content_sha256": "31aa75222028d45e02c5ec15fd5b06a2807e2c726bda197729b7ffa9dfe9d01f",
   "report_sha256": "3783825d9e860c7860aa20c4eb521338ec5c03e21cbcc3efd5ac4533a6ebc8cb",
   "sample_sha256_note": "not present in the (reduced) report; rule names use the report hash",
   "negative_corpus": {
