@@ -10,22 +10,49 @@ Accepts what you get out of a Windows lab box without extra tooling:
   ``EventData`` (winlogbeat/NXLog style exports).
 
 Binary ``.evtx`` is not parsed here (it would need a third-party parser);
-export it to XML first. Parsing uses ``xml.etree`` on untrusted input, so
-DTDs/entities are refused before parsing and sizes are capped.
+export it to XML first. UTF-8, UTF-16 and UTF-32 exports are accepted (with
+or without a byte-order mark; Windows PowerShell 5.1 ``>`` writes UTF-16LE).
+Parsing uses ``xml.etree`` on untrusted input, so DTDs/entities are refused
+before parsing, sizes are capped and malformed XML becomes a ``ValueError``.
+
+Evidence binding: when process-creation events (ID 1) carry a ``Hashes``
+field with ``SHA256=...``, the export is bound to those hashes and
+:func:`sysmon_to_trace` refuses a sample whose SHA-256 is not among them.
 """
 from __future__ import annotations
 
-import json
 import re
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from typing import Any
 
+from ..coerce import loads
 from ..models import Event, Trace
 
 MAX_BYTES = 50 * 1024 * 1024
 MAX_EVENTS = 200_000
 _NS = re.compile(r"\{[^}]*\}")
+_SHA256 = re.compile(r"(?i)(?:^|[,\s])SHA256=([0-9a-f]{64})(?:$|[,\s])")
+
+
+def decode_export(raw: bytes) -> str:
+    """Decode a Sysmon export: UTF-32/UTF-16/UTF-8 byte-order marks, or BOM-less
+    UTF-16 detected from NUL-interleaved ASCII; otherwise UTF-8 (errors replaced)."""
+    for bom, enc in ((b"\xff\xfe\x00\x00", "utf-32-le"), (b"\x00\x00\xfe\xff", "utf-32-be"),
+                     (b"\xff\xfe", "utf-16-le"), (b"\xfe\xff", "utf-16-be"), (b"\xef\xbb\xbf", "utf-8")):
+        if raw.startswith(bom):
+            return raw[len(bom):].decode(enc, errors="replace")
+    head = raw[:64]
+    if len(head) >= 4 and head[1:2] == b"\x00" and head[3:4] == b"\x00" and head[0:1] != b"\x00":
+        return raw.decode("utf-16-le", errors="replace")
+    if len(head) >= 4 and head[0:1] == b"\x00" and head[2:3] == b"\x00" and head[1:2] != b"\x00":
+        return raw.decode("utf-16-be", errors="replace")
+    return raw.decode("utf-8", errors="replace")
+
+
+def process_hashes(trace: Trace) -> set[str]:
+    """SHA-256 values recorded by Sysmon event 1 (``Hashes`` field) in a trace."""
+    return {str(e.extra["sha256"]) for e in trace.events if e.type == "process_create" and e.extra.get("sha256")}
 
 
 def _pid(v: Any) -> int:
@@ -53,9 +80,12 @@ def _event(eid: int, d: dict[str, str]) -> tuple[str, dict[str, Any]] | None:
     pid = _pid(d.get("ProcessId") or d.get("SourceProcessId"))
     base: dict[str, Any] = {"pid": pid, "image": image, "extra": {"sysmon_id": eid}}
     if eid == 1:
+        extra: dict[str, Any] = {"sysmon_id": 1, "child_pid": pid}
+        m = _SHA256.search(d.get("Hashes") or "")
+        if m:
+            extra["sha256"] = m.group(1).lower()
         return "process_create", {"pid": _pid(d.get("ParentProcessId")), "image": d.get("ParentImage") or "?",
-                                  "target": image, "cmdline": d.get("CommandLine"),
-                                  "extra": {"sysmon_id": 1, "child_pid": pid}}
+                                  "target": image, "cmdline": d.get("CommandLine"), "extra": extra}
     if eid == 3:
         ip, port = d.get("DestinationIp") or d.get("DestinationHostname"), d.get("DestinationPort")
         return "net_connect", {**base, "target": f"{ip}:{port}" if port else ip}
@@ -86,7 +116,10 @@ def _xml_records(text: str) -> list[tuple[int, dict[str, str]]]:
     if "<!DOCTYPE" in text or "<!ENTITY" in text:
         raise ValueError("DTD/entity declarations are not accepted in Sysmon XML")
     body = re.sub(r"<\?xml[^>]*\?>", "", text)
-    root = ET.fromstring(f"<Events>{body}</Events>")
+    try:
+        root = ET.fromstring(f"<Events>{body}</Events>")
+    except ET.ParseError as e:
+        raise ValueError(f"malformed Sysmon XML: {e}") from e
     out = []
     for ev in root.iter():
         if _NS.sub("", ev.tag) != "Event":
@@ -108,7 +141,7 @@ def _json_records(text: str) -> list[tuple[int, dict[str, str]]]:
         line = line.strip()
         if not line:
             continue
-        o = json.loads(line)
+        o = loads(line, "Sysmon JSON line")
         if not isinstance(o, dict):
             continue
         data = o.get("EventData") if isinstance(o.get("EventData"), dict) else o
@@ -119,15 +152,20 @@ def _json_records(text: str) -> list[tuple[int, dict[str, str]]]:
 def sysmon_to_trace(text: str | bytes, run_id: str = "sysmon", sample_sha256: str = "") -> Trace:
     """Convert a Sysmon export (``wevtutil /f:xml`` XML or JSON lines) into a :class:`Trace`.
 
-    :param text: export contents; DTDs are refused and size is capped.
+    :param text: export contents (bytes in UTF-8/16/32); DTDs are refused and size is capped.
     :param run_id: run identifier stored in the trace.
-    :param sample_sha256: SHA-256 of the sample the run belongs to, if known.
-    :raises ValueError: on oversized or malformed input.
+    :param sample_sha256: SHA-256 of the sample the run is claimed to belong to. If the
+        export records process hashes (event 1 ``Hashes``), it must be one of them and the
+        trace is bound to it; if the export records no hashes the trace stays unbound
+        (``sample_sha256 == ""``).
+    :raises ValueError: on oversized or malformed input, or when the export's process
+        hashes do not include ``sample_sha256`` (evidence mismatch).
     """
     if isinstance(text, bytes):
         if len(text) > MAX_BYTES:
             raise ValueError("Sysmon export too large")
-        text = text.decode("utf-8-sig", errors="replace")
+        text = decode_export(text)
+    text = text.removeprefix("\ufeff")
     stripped = text.lstrip()
     recs = _xml_records(text) if stripped.startswith("<") else _json_records(text)
     rows = []
@@ -146,4 +184,12 @@ def sysmon_to_trace(text: str | bytes, run_id: str = "sysmon", sample_sha256: st
         ts = round((t - t0) if t is not None else i * 1e-3, 6)
         evs.append(Event(max(ts, 0.0), etype, kw.pop("pid"), kw.pop("image"), extra=extra, **kw))
     evs.sort(key=lambda e: e.ts)
-    return Trace(run_id, sample_sha256, "sysmon", evs)
+    trace = Trace(run_id, "", "sysmon", evs)
+    hashes = process_hashes(trace)
+    want = (sample_sha256 or "").lower()
+    if want and hashes:
+        if want not in hashes:
+            raise ValueError("evidence mismatch: the Sysmon export's process hashes (event 1 Hashes SHA256) "
+                             f"do not include the sample's SHA-256 {want[:16]}...")
+        trace.sample_sha256 = want
+    return trace

@@ -1,7 +1,6 @@
 """Orchestration: triage -> (trace replay) -> reconstruct -> score -> synthesize -> report."""
 from __future__ import annotations
 
-import json
 import logging
 import os
 from functools import lru_cache
@@ -9,11 +8,12 @@ from pathlib import Path
 from typing import Any
 
 from .adapters.cape import cape_to_trace, static_pe
-from .adapters.sysmon import sysmon_to_trace
+from .adapters.sysmon import decode_export, sysmon_to_trace
+from .coerce import loads
 from .corpus import synthetic_corpus
 from .detect import blobs, synthesize_sigma, synthesize_yara_pe
 from .hashing import read_capped, sha256_bytes, sha256_file
-from .models import Detections, Sample, Trace
+from .models import Detections, Sample, StaticVerdict, Trace
 from .negatives import import_prevalence, negative_blob
 from .provenance import map_technique, reconstruct
 from .report import build_report
@@ -21,7 +21,7 @@ from .scoring import event_anomaly, score
 from .static_triage import load_sample, triage, triage_pe_metadata
 from .synth import synthesize
 from .tokens import behavior_tokens, static_tokens
-from .trace import load_trace
+from .trace import parse_trace
 
 log = logging.getLogger(__name__)
 
@@ -92,12 +92,13 @@ def behaviour_score(trace: Trace) -> Any:
 
 
 def is_sysmon(raw: bytes) -> bool:
-    """Sysmon XML export, or JSON lines whose first object carries an ``EventID``."""
-    head = raw[:4096].removeprefix(b"\xef\xbb\xbf").lstrip()
-    if head.startswith(b"<"):
-        return b"Microsoft-Windows-Sysmon" in raw[:65536] or b"<Event" in head
-    first = head.splitlines()[0] if head else b""
-    return first.startswith(b"{") and b'"EventID"' in first
+    """Sysmon XML export, or JSON lines whose first object carries an ``EventID``
+    (UTF-8, UTF-16 or UTF-32, with or without a byte-order mark)."""
+    text = decode_export(raw[:65536]).removeprefix("\ufeff").lstrip()
+    if text.startswith("<"):
+        return "Microsoft-Windows-Sysmon" in text or "<Event" in text[:4096]
+    first = text.splitlines()[0] if text else ""
+    return first.startswith("{") and '"EventID"' in first
 
 
 def _benign_traces() -> list[Trace]:
@@ -116,30 +117,100 @@ def _replay(trace: Trace) -> tuple[Any, list, Any]:
 
 def run(sample_path: str | Path, trace_path: str | Path | None = None,
         benign_blobs: list[bytes] | None = None, force_detonate: bool = False) -> dict[str, Any]:
-    """Sample bytes + optional recorded trace (native SPECIMEN or CAPE JSON)."""
+    """Full pipeline on sample bytes plus an optional recorded run.
+
+    The trace may be a native SPECIMEN trace, a CAPE/Cuckoo JSON report or a
+    Sysmon XML / JSON-lines export. Sigma rules come from the same
+    specificity-checked v2 synthesizer as :func:`run_report` (packaged negative
+    corpus minus the predicted family); YARA comes from the report's PE metadata
+    when present, otherwise from strings in the sample bytes.
+
+    :param sample_path: file read as bytes (never executed).
+    :param trace_path: recorded run to replay; ``None`` = static triage only.
+    :param benign_blobs: benign byte blobs that string-based YARA must not match.
+    :param force_detonate: replay the trace even if the static gate says skip.
+    :returns: the report dict (see :func:`specimen.report.build_report`).
+    :raises ValueError: on malformed input or when the trace is bound to a different sample.
+    """
     sample, data = load_sample(sample_path)
     static = triage(data)
     trace = graph = behavior = None
     timeline: list = []
+    pe: dict[str, Any] = {}
+    binding = None
     if (static.detonate or force_detonate) and trace_path:
         raw = read_capped(trace_path)
-        doc = None
         if is_sysmon(raw):
+            # bound to the sample when the export records process hashes (event 1 Hashes)
             trace = sysmon_to_trace(raw, run_id=Path(trace_path).stem, sample_sha256=sample.sha256)
             trace.source_sha256 = sha256_bytes(raw)
         else:
-            doc = json.loads(raw)
+            doc = loads(raw, str(trace_path))
             if isinstance(doc, dict) and "behavior" in doc and "events" not in doc:
                 trace = cape_to_trace(doc, run_id=Path(trace_path).stem, raw=raw)
+                pe = static_pe(doc)
             else:
-                trace = load_trace(trace_path)
-        if trace.sample_sha256 and trace.sample_sha256 != sample.sha256:
+                trace = parse_trace(raw)
+        if trace.sample_sha256 and trace.sample_sha256.lower() != sample.sha256:
             raise ValueError("trace sample_sha256 does not match sample (evidence mismatch)")
+        binding = ("bound: the trace records this sample's SHA-256" if trace.sample_sha256 else
+                   "unbound: the trace records no sample hash, so it cannot be tied to this sample")
         graph, timeline, behavior = _replay(trace)
         if trace.sandbox.startswith("cape"):  # the family model is trained on CAPE reports
-            _attach_family(behavior, trace, static_tokens(static_pe(doc)))
-    det = synthesize(static, sample.sha256, trace, benign_blobs or DEFAULT_BENIGN_BLOBS, _benign_traces())
-    return build_report(sample, static, trace, graph, timeline, behavior, det)
+            _attach_family(behavior, trace, static_tokens(pe))
+    det, corpus = _detections(sample.sha256, static, trace, behavior, pe, benign_blobs or DEFAULT_BENIGN_BLOBS)
+    rep = build_report(sample, static, trace, graph, timeline, behavior, det, trace_binding=binding)
+    if corpus is not None:
+        rep["manifest"]["negative_corpus"] = corpus
+    return rep
+
+
+def _predicted_family(behavior: Any) -> str | None:
+    """The family the trained model predicted (or was closest to), else ``None``."""
+    if behavior is not None and str(getattr(behavior, "family_model", "")).startswith("avast"):
+        return str(behavior.family).removeprefix("unknown (closest: ").rstrip(")")
+    return None
+
+
+def _detections(sha: str, static: StaticVerdict, trace: Trace | None, behavior: Any, pe: dict[str, Any],
+                benign_bytes: list[bytes] | None = None, negatives: list[dict[str, str]] | None = None,
+                use_packaged_negatives: bool = True) -> tuple[Detections, dict[str, Any] | None]:
+    """Specificity-checked rules shared by ``analyze`` and ``report``.
+
+    Sigma: v2 ladder over every host action of the trace, checked against the
+    synthetic benign traces plus the packaged Avast-CTU negative corpus with the
+    predicted family left out (nothing is left out without a family model).
+    YARA: ``pe.imphash`` / rare imports from PE metadata when the report has it,
+    otherwise strings from the sample bytes (``benign_bytes`` must not match).
+
+    :returns: ``(detections, negative-corpus manifest entry or None without a trace)``.
+    """
+    own = _predicted_family(behavior)
+    sigma_text: list[str] = []
+    fp_notes: list[str] = []
+    corpus = None
+    if trace is not None:
+        benign = [blobs([[e.type, e.target or "", e.cmdline or ""] for e in t.events]) for t in _benign_traces()]
+        real = negative_blob(own) if use_packaged_negatives else None
+        negs = benign + ([real] if real else []) + list(negatives or [])
+        events = [[e.type, e.target or "", e.cmdline or ""] for e in trace.events]
+        sig = synthesize_sigma(events, negs)
+        techs = {(e.target or e.cmdline or "").lower(): map_technique(e)[0] for e in trace.events}
+        sigma_text = [r.to_sigma(sha, technique=techs.get(r.source.lower())) for r in sig.rules]
+        fp_notes = [f"rejected_nonspecific:{sig.rejected_nonspecific}"]
+        corpus = {"packaged": bool(real), "excluded_family": own}
+    yara_fp: list[str] = []
+    stoks = static_tokens(pe)
+    if stoks:
+        yr = synthesize_yara_pe(stoks, [], import_prevalence(own) if use_packaged_negatives else None)
+        case = {str(f.get("name", "")).lower(): str(f.get("name", ""))
+                for d in pe.get("imports") or [] if isinstance(d, dict)
+                for f in d.get("imports") or [] if isinstance(f, dict)}
+        yara = (yr.to_yara(f"SPECIMEN_{sha[:12]}", sha, case) or None) if yr else None
+    else:  # raw sample bytes: string-based YARA from the MVP synthesizer
+        mvp = synthesize(static, sha, None, benign_bytes or [], [])
+        yara, yara_fp = mvp.yara, mvp.yara_fp_hits
+    return Detections(yara, sigma_text, yara_fp, fp_notes), corpus
 
 
 DEFAULT_ABSTAIN = 0.5  # used when the model file predates the open-set calibration
@@ -180,38 +251,23 @@ def run_report(report_path: str | Path, negatives: list[dict[str, str]] | None =
         imports by its prevalence table.
     :returns: the report dict (see :func:`specimen.report.build_report`)."""
     raw = read_capped(report_path)
-    doc = json.loads(raw)
+    doc = loads(raw, str(report_path))
     trace = cape_to_trace(doc, run_id=Path(report_path).stem, raw=raw)
     pe = static_pe(doc)
     sha = trace.sample_sha256 or sha256_bytes(raw)
     sample = Sample(str(report_path), sha, "", 0)
     static = triage_pe_metadata(pe, sha)
     graph, timeline, behavior = _replay(trace)
-    stoks = static_tokens(pe)
-    _attach_family(behavior, trace, stoks)
-    benign = [blobs([[e.type, e.target or "", e.cmdline or ""] for e in t.events]) for t in _benign_traces()]
-    own = None
-    if behavior is not None and str(getattr(behavior, "family_model", "")).startswith("avast"):
-        own = str(behavior.family).removeprefix("unknown (closest: ").rstrip(")")
-    real = negative_blob(own) if use_packaged_negatives else None
-    negs = benign + ([real] if real else []) + list(negatives or [])
-    events = [[e.type, e.target or "", e.cmdline or ""] for e in trace.events]
-    sig = synthesize_sigma(events, negs)
-    techs = {(e.target or e.cmdline or "").lower(): map_technique(e)[0] for e in trace.events}
-    sigma_text = [r.to_sigma(sha, technique=techs.get(r.source.lower())) for r in sig.rules]
-    yr = synthesize_yara_pe(stoks, [], import_prevalence(own) if use_packaged_negatives else None)
-    case = {str(f.get("name", "")).lower(): str(f.get("name", ""))
-            for d in pe.get("imports") or [] if isinstance(d, dict)
-            for f in d.get("imports") or [] if isinstance(f, dict)}
-    yara = (yr.to_yara(f"SPECIMEN_{sha[:12]}", sha, case) or None) if yr else None
-    det = Detections(yara, sigma_text, [], [f"rejected_nonspecific:{sig.rejected_nonspecific}"])
+    _attach_family(behavior, trace, static_tokens(pe))
+    det, corpus = _detections(sha, static, trace, behavior, pe, negatives=negatives,
+                              use_packaged_negatives=use_packaged_negatives)
     rep = build_report(sample, static, trace, graph, timeline, behavior, det)
     rep["manifest"]["execution"] = "report-only (sandbox report replay; no sample bytes handled)"
     rep["manifest"]["report_sha256"] = sha256_bytes(raw)
     if not trace.sample_sha256:  # reduced report without target hash: do not label the report hash as the sample's
         rep["manifest"]["sample_sha256"] = None
         rep["manifest"]["sample_sha256_note"] = "not present in the (reduced) report; rule names use the report hash"
-    rep["manifest"]["negative_corpus"] = {"packaged": bool(real), "excluded_family": own}
+    rep["manifest"]["negative_corpus"] = corpus
     am = api_model()
     if am is not None and rep["behavior"] and str(rep["behavior"].get("scorer", "")).startswith("api-ngram"):
         rep["manifest"]["behaviour_model"] = am.meta.get("model_file")

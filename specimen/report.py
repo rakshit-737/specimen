@@ -37,12 +37,18 @@ def fuse(static: StaticVerdict, behavior: BehaviorScore | None) -> tuple[str, st
 
 def build_report(sample: Sample, static: StaticVerdict, trace: Trace | None,
                  graph: ProvenanceGraph | None, timeline: list[TimelineEntry],
-                 behavior: BehaviorScore | None, det: Detections) -> dict[str, Any]:
+                 behavior: BehaviorScore | None, det: Detections,
+                 trace_binding: str | None = None) -> dict[str, Any]:
     """Assemble the JSON report: fused verdict, static reasons, timeline, graph, IOCs, rules.
 
+    :param trace_binding: ``"bound: ..."`` / ``"unbound: ..."`` when a trace was replayed
+        against sample bytes (``analyze``); an unbound trace lowers the verdict confidence
+        and is recorded in the manifest. ``None`` for report-only analysis.
     :returns: a JSON-serialisable dict; the manifest is added by the pipeline.
     """
     label, conf, final = fuse(static, behavior)
+    if trace is not None and trace_binding and trace_binding.startswith("unbound"):
+        conf = f"low (trace not bound to the sample; was {conf})"
     iocs = dict(static.iocs)
     if trace:
         iocs["network"] = sorted({e.target for e in trace.events if e.type == "net_connect" and e.target})
@@ -75,7 +81,10 @@ def build_report(sample: Sample, static: StaticVerdict, trace: Trace | None,
         "specimen_version": __version__,
         "execution": "trace-replay (no live detonation)",
     }
-    body = json.dumps({k: v for k, v in rep.items() if k != "generated_utc"}, sort_keys=True, default=str)
+    if trace_binding:
+        rep["manifest"]["trace_binding"] = trace_binding
+    body = json.dumps({k: v for k, v in rep.items() if k != "generated_utc"}, sort_keys=True, default=str,
+                      allow_nan=False)
     rep["manifest"]["report_content_sha256"] = sha256_bytes(body.encode())
     return rep
 

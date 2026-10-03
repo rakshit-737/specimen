@@ -38,10 +38,49 @@ def test_rejects_dtd():
         sysmon_to_trace(b'<!DOCTYPE x [<!ENTITY a "b">]><Event/>')
 
 
-def test_pipeline_accepts_sysmon_trace(tmp_path):
-    s = tmp_path / "sample.bin"
-    s.write_bytes(b"MZ" + b"\x00" * 64 + b"powershell -enc http://203.0.113.10/a VirtualAllocEx")
+SAMPLE = FX.parent / "lab_sample.bin"
+
+
+def test_pipeline_accepts_bound_sysmon_trace():
     assert is_sysmon(FX.read_bytes()) and not is_sysmon(b'{"run_id": "x", "events": []}')
-    rep = run(s, FX, force_detonate=True)
+    rep = run(SAMPLE, FX, force_detonate=True)
     assert rep["detonated"] and rep["graph"]["nodes"] > 3
     assert "T1547.001" in rep["techniques"]
+    assert rep["manifest"]["trace_binding"].startswith("bound")
+    assert rep["manifest"]["sample_sha256"] == "b81a2a0872b6f42e1237dd33a08f48f687d7e1a4747be20c8805117148039bba"
+
+
+def test_sysmon_hashes_bind_the_trace_to_its_sample(tmp_path):
+    other = tmp_path / "other.bin"
+    other.write_bytes(b"an unrelated 34-byte text file....")
+    with pytest.raises(ValueError, match="evidence mismatch"):
+        run(other, FX, force_detonate=True)
+    t = sysmon_to_trace(FX.read_bytes())
+    assert t.sample_sha256 == ""  # no claimed sample -> unbound, hashes still recorded on the events
+    assert any(e.extra.get("sha256") for e in t.events)
+
+
+def test_sysmon_export_without_hashes_is_unbound_and_low_confidence(tmp_path):
+    raw = FX.read_bytes().replace(b'<Data Name="Hashes">', b'<Data Name="NotHashes">')
+    p = tmp_path / "nohash.xml"
+    p.write_bytes(raw)
+    other = tmp_path / "other.bin"
+    other.write_bytes(b"MZ" + b"\x00" * 64)
+    rep = run(other, p, force_detonate=True)
+    assert rep["manifest"]["trace_binding"].startswith("unbound")
+    assert rep["verdict"]["confidence"].startswith("low (trace not bound")
+
+
+@pytest.mark.parametrize("encoding", ["utf-16", "utf-16-le", "utf-16-be", "utf-32", "utf-8-sig"])
+def test_utf16_and_utf32_exports(tmp_path, encoding):
+    """Windows PowerShell 5.1 '>' writes UTF-16LE with a BOM; plain utf-16-le/-be have none."""
+    p = tmp_path / f"lab_{encoding}.xml"
+    p.write_bytes(FX.read_bytes().decode("utf-8").encode(encoding))
+    assert is_sysmon(p.read_bytes())
+    rep = run(SAMPLE, p, force_detonate=True)
+    assert rep["detonated"] and "T1547.001" in rep["techniques"]
+
+
+def test_malformed_xml_is_a_value_error():
+    with pytest.raises(ValueError, match="malformed Sysmon XML"):
+        sysmon_to_trace(b"<Event><EventData><Data Name='x'>unclosed</EventData>")
