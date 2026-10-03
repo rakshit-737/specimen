@@ -6,6 +6,13 @@ uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.4] - 2026-10-03
+
+### Changed
+- The repository was renamed to `rakshit-737/specimen-malware-analysis`. Repo, docs-site (<https://rakshit-737.github.io/specimen-malware-analysis/>), badge, CITATION, mkdocs, issue-template, Dockerfile-label and `gh release download` links now use the new name, and the container image is published as `ghcr.io/rakshit-737/specimen-malware-analysis`. No code or result changes. 1.1.3 stays the current results release.
+
+> Note: entries below predate the rename and keep the old name (`rakshit-737/specimen`, `ghcr.io/rakshit-737/specimen`); GitHub redirects the old repo URL, but the old Pages URL returns 404.
+
 ## [1.1.3] - 2026-10-03
 
 ### Fixed
