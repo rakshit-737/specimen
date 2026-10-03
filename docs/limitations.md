@@ -4,30 +4,31 @@
 
 - **No live detonation.** The detonation controller (QEMU/KVM snapshot and revert, egress verification) and live eBPF capture are not built: they need an isolated lab host and must never run on this development machine. SPECIMEN replays recorded runs instead ([ADR 0001](adr/0001-report-replay-instead-of-live-detonation.md)). Recorded Sysmon exports are supported offline; binary `.evtx` must be exported to XML first.
 - **Reduced reports have no timing.** Events from them are ordered deterministically and flagged `synthetic_ts`.
-- **Negatives for rule specificity** are other malware families (a packaged sample of Avast-CTU training runs) plus a small synthetic benign set. Benign false-positive rates are unmeasured; the corpora searched and why none was adopted are listed on [Datasets](datasets.md#benign-behaviour-corpora-searched-round-3).
-- **The EMBER LightGBM gate is standalone** (`triage-ember` on EMBER raw features). `analyze` has no PE-to-EMBER feature extractor and still detonates every PE.
-- **Under temporal drift the gate is weaker**: AUC 0.989 and TPR 0.49 at 0.1 % FPR on Nov-Dec 2018 when trained on Jan-Sep (vs 0.997 / 0.85 on a random split). Detonations saved depend on the malware share of submissions.
-- **Family attribution is closed-set over 10 families**; in leave-one-family-out tests, 30 % of unseen-family reports still pass the 0.6 abstain threshold (below it, reports say `unknown (closest: X)`). The threshold was picked on the test split, not on a separate validation slice.
-- **MalbehavD-V1 contains exact duplicate sequences** (1,601 distinct of 2,570); random splits, including the published ones, partly measure memorisation. The duplicate-free accuracy is 93.4 %.
-- **The API behaviour scorer is trained on MalbehavD-V1** (Cuckoo API names, 2,570 samples). It only runs on traces with a real call sequence; reduced reports (no call logs) still use the MVP scorer, which is known to transfer poorly (see Benchmarks).
-- **Known gaps at v1.1.0.** The rules FPR row with the *predicted*-family exclusion (what `analyze` does) is not yet measured; 0.004 % is the oracle true-family setting and 0.020 % the seeded headline. The Li et al. 2024 reproduction uses unigram TF-IDF + SVD with default hyperparameters (no grid search, likely the ~4-point gap to the paper's 0.68), while SPECIMEN uses uni+bigram LR, so that comparison mixes features and model. The round-3 family model is a `bench` artefact, not a release asset; `gh release download v1.0.0` still fetches the older behaviour-only model. Docs dependencies are unpinned. CITATION.cff omits Oliveira 2019 and Li et al. 2024. About 75 public functions lack docstrings. No Speakeasy benign-FPR adapter yet.
+- **Benign false positives are measured on emulation reports.** The benign Sigma FPR uses 32,673 benign Quo Vadis Speakeasy reports. Speakeasy emulates the binary instead of running it, so it records fewer host actions (and no real registry state or full process tree) than a CAPE sandbox: the benign FPR is a lower bound for sandbox traces. The cross-family FPR uses real CAPE reports of other malware families.
+- **Rule quality depends on the family model.** The shipped synthesizer leaves the *predicted* family out of the packaged negative corpus. Without a family model (the default pip and Docker install) nothing is left out, and rules that also match the sample's own family are dropped, which costs recall ([Evaluation](benchmarks.md#3-do-auto-rules-from-one-run-generalise)).
+- **The EMBER LightGBM gate is standalone** (`triage-ember` on EMBER raw features). `analyze` has no PE-to-EMBER feature extractor and still replays every PE.
+- **Under temporal drift the gate is weaker** than on a random split, and it is trained on a 132k-row subsample with SPECIMEN's own features, so it is well below the upstream 600k-row EMBER model on the same months.
+- **Family attribution is closed-set over 10 families**; some unseen-family reports still pass the abstain threshold, which is chosen on a validation slice ([Evaluation](benchmarks.md#2-family-attribution-on-avast-ctu-capev2)).
+- **MalbehavD-V1 contains exact duplicate sequences** (1,601 distinct of 2,570); random splits, including the published ones, partly measure memorisation.
+- **The API behaviour scorer is trained on MalbehavD-V1** (Cuckoo API names, 2,570 samples). It only runs on traces with a real call sequence; reduced reports (no call logs) still use the MVP scorer, which is known to transfer poorly.
+- **Paper reproductions are re-implementations.** Settings the papers do not state (MalDetConv's epochs and batch size; Li et al.'s grid-search ranges, PCA size and network widths) are guessed and recorded in the result files; no grid search is run.
 - No adversarial robustness evaluation of any model.
 
 ## Roadmap
 
 - [x] Static gate wired into reconstruction on pre-captured logs (CAPE adapters, 49k real runs)
-- [x] Detection synthesizer with measured generalisation
-- [x] Unified report with evidence manifest; batch queue
-- [x] Family attribution; job queue
+- [x] Detection synthesizer with measured generalisation, shared by `analyze` and `report`
+- [x] Unified report with evidence manifest and trace-to-sample binding; batch queue
+- [x] Family attribution with an open-set threshold chosen on validation
 - [x] Real-data behaviour scorer in the pipeline (API n-grams, pure-Python inference)
 - [x] Emitted rules validated with pySigma and yara-python in CI
-- [x] Sysmon (XML / JSON lines) to trace adapter
-- [x] Seeds and confidence intervals for the static and behaviour benchmarks
+- [x] Sysmon (XML / JSON lines, UTF-8/16/32) to trace adapter
+- [x] Temporal EMBER evaluation on the full 2018 set (GitHub Actions)
+- [x] Seeded rule benchmark with ablation and family-clustered tests
+- [x] More API-call datasets (Mal-API-2019, Oliveira) and paper reproductions (MalDetConv, Li et al. 2024)
+- [x] Benign behaviour corpus for Sigma FP measurement (Quo Vadis Speakeasy adapter)
 - [ ] Stage 4: detonation controller with EICAR and benign binaries only, fail-closed without verified egress isolation (needs a lab hypervisor)
 - [ ] Live eBPF capture (needs a Linux lab host)
-- [x] Temporal EMBER evaluation on the full 2018 set (GitHub Actions)
-- [x] Seeded rule benchmark with ablation; family variant chosen on a validation slice
-- [x] More API-call datasets (Mal-API-2019, Oliveira) and paper reproductions (MalDetConv, Li et al. 2024)
-- [ ] Benign behaviour corpus for Sigma FP measurement (Quo Vadis Speakeasy adapter)
 - [ ] PE-to-EMBER feature extraction so `analyze` uses the trained gate
+- [ ] Benign *sandbox* (CAPE) reports for a tighter benign FPR
 - [ ] Adversarial robustness checks

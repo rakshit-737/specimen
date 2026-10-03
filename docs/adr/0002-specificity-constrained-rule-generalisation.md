@@ -32,14 +32,23 @@ fails in two ways:
   case-insensitive regexes, so validating against thousands of traces is
   cheap.
 
-The negative corpus is the synthetic benign traces, plus other-family runs
-when they are available (the benchmark uses 1,500 of them).
+The negative corpus is the synthetic benign traces plus the packaged
+Avast-CTU corpus (`specimen/data/negatives.json.gz`, 200 training runs per
+family) with the family the trained model *predicts* left out, so that a
+sample's own siblings do not veto its rules. Without a family model nothing
+is left out. `analyze` and `report` use the same synthesizer and corpus.
 
 ## Consequences
 
 - Rule quality is measured instead of assumed (`benchmarks/bench_rules.py`),
-  with sibling recall and cross-family FPR on a later time split.
-- Other families are a proxy for "benign" and are not a substitute for a
-  real benign behaviour corpus. That limitation is documented.
+  with sibling recall and cross-family FPR on a later time split, and benign
+  FPR on 32,673 benign Speakeasy emulation reports (a lower bound, because an
+  emulator records fewer host actions than a sandbox).
+- The benchmark separates the shipped setting (predicted family left out,
+  using out-of-fold family predictions) from *oracle* settings that leave
+  out the true family, which the product cannot know.
+- Generic prefixes that carry no family signal (hive roots, `\Environment`,
+  `Local Settings\MuiCache`, user profile folders) do not count towards the
+  10 literal characters.
 - Rules stay plain Sigma: wildcards in values, standard logsource
   categories, `status: experimental`.

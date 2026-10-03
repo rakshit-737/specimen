@@ -18,7 +18,15 @@ The core package is standard-library only; `specimen.ml` needs the `[ml]` extra.
 
 ::: specimen.adapters.sysmon
     options:
-      members: [sysmon_to_trace]
+      members: [sysmon_to_trace, decode_export, process_hashes]
+
+::: specimen.adapters.speakeasy
+    options:
+      members: [speakeasy_to_trace]
+
+## Hostile-input helpers
+
+::: specimen.coerce
 
 ## Behaviour scoring
 

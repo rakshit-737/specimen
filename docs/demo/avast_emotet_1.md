@@ -21,63 +21,63 @@ P(malicious)=0.5685 label=suspicious scorer=mvp-synthetic-logreg (ATT&CK feature
 - n&#95;delete = 1.6094, impact +0.00
 
 ### Family evidence
-Top tokens supporting **Emotet** (avast-ctu-logreg (behaviour+static)):
+Top tokens supporting **Emotet** (avast-ctu-logreg &#40;behaviour+static&#41;):
 
-- mutex&#95;create:global\i#&lt;hex&gt; (+0.485)
-- mutex&#95;create:global\m#&lt;hex&gt; (+0.485)
-- file&#95;delete&#95;ext:exe (+0.332)
-- exec:&lt;hex&gt;.exe (+0.329)
-- tactic:defense-evasion (+0.289)
-- dll:gdi32.dll (+0.243)
+- mutex&#95;create:global&#92;i&#35;&lt;hex&gt; &#40;+0.485&#41;
+- mutex&#95;create:global&#92;m&#35;&lt;hex&gt; &#40;+0.485&#41;
+- file&#95;delete&#95;ext:exe &#40;+0.332&#41;
+- exec:&lt;hex&gt;.exe &#40;+0.329&#41;
+- tactic:defense-evasion &#40;+0.289&#41;
+- dll:gdi32.dll &#40;+0.243&#41;
 
 ## Timeline
 | t | event | ATT&CK | anomaly |
 |---|---|---|---|
 | 0.00 | sample.exe created PEM9B4 |   | 1.0 |
 | 0.00 | sample.exe created PEM938 |   | 1.0 |
-| 0.00 | sample.exe created Global\I5C3A8244 |   | 1.0 |
-| 0.00 | sample.exe created Global\M5C3A8244 |   | 1.0 |
-| 0.01 | sample.exe spawned DF4FD49DC53618D7F3A1.exe &#96;"C:\Users\comp\AppData\Local\Temp\DF4FD49DC53618D7F3A1.exe"&#96; |   | 1.0 |
-| 0.01 | sample.exe read C:\Windows\Globalization\Sorting\sortdefault.nls |   | 0.0 |
-| 0.01 | sample.exe read C:\Users\comp\AppData\Local\Temp\DF4FD49DC53618D7F3A1.exe |   | 0.0 |
-| 0.01 | sample.exe read \Device\KsecDD |   | 0.0 |
-| 0.01 | sample.exe read C:\Windows\SysWOW64\shell32.dll |   | 0.0 |
-| 0.01 | sample.exe read C:\ |   | 0.0 |
-| 0.01 | sample.exe read C:\Users\comp\AppData\Local\Microsoft\Windows\Caches\cversions.1.db |   | 0.0 |
-| 0.01 | sample.exe read C:\Users\comp\AppData\Local\Microsoft\Windows\Caches\{AFBF9F1A-8EE8-4C77-AF34-C647E37CA0D9}.1.ver0x0000000000000003.db |   | 0.0 |
-| 0.01 | sample.exe read C:\Users\desktop.ini |   | 0.0 |
-| 0.01 | sample.exe read C:\Users |   | 0.0 |
-| 0.01 | sample.exe read C:\Users\comp |   | 0.0 |
-| 0.02 | sample.exe read C:\Users\comp\AppData |   | 0.0 |
-| 0.02 | sample.exe read C:\Users\comp\AppData\Local |   | 0.0 |
-| 0.02 | sample.exe read C:\Users\ |   | 0.0 |
-| 0.02 | sample.exe read C:\Users\comp\ |   | 0.0 |
-| 0.02 | sample.exe read C:\Users\comp\AppData\ |   | 0.0 |
-| 0.02 | sample.exe read C:\Users\comp\AppData\Local\ |   | 0.0 |
-| 0.02 | sample.exe read C:\Users\comp\AppData\Local\iproppass\ |   | 0.0 |
-| 0.02 | sample.exe wrote C:\Users\comp\AppData\Local\iproppass\iproppass.exe | T1105 command-and-control | 0.537 |
-| 0.02 | sample.exe deleted C:\Users\comp\AppData\Local\spcmachine\spcmachine.exe | T1070.004 defense-evasion | 1.0 |
-| 0.03 | sample.exe deleted C:\Users\comp\AppData\Local\Microsoft\Windows\iproppass.exe | T1070.004 defense-evasion | 1.0 |
-| 0.03 | sample.exe deleted C:\Users\comp\AppData\Local\Microsoft\Windows\spcmachine.exe | T1070.004 defense-evasion | 1.0 |
-| 0.03 | sample.exe deleted C:\Users\comp\AppData\Local\Temp\DF4FD49DC53618D7F3A1.exe | T1070.004 defense-evasion | 1.0 |
-| 0.03 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\FileSystem\Win31FileSystem |   | 1.0 |
+| 0.00 | sample.exe created Global&#92;I5C3A8244 |   | 1.0 |
+| 0.00 | sample.exe created Global&#92;M5C3A8244 |   | 1.0 |
+| 0.01 | sample.exe spawned DF4FD49DC53618D7F3A1.exe &#96;"C:&#92;Users&#92;comp&#92;AppData&#92;Local&#92;Temp&#92;DF4FD49DC53618D7F3A1.exe"&#96; |   | 1.0 |
+| 0.01 | sample.exe read C:&#92;Windows&#92;Globalization&#92;Sorting&#92;sortdefault.nls |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Users&#92;comp&#92;AppData&#92;Local&#92;Temp&#92;DF4FD49DC53618D7F3A1.exe |   | 0.0 |
+| 0.01 | sample.exe read &#92;Device&#92;KsecDD |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Windows&#92;SysWOW64&#92;shell32.dll |   | 0.0 |
+| 0.01 | sample.exe read C:&#92; |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Users&#92;comp&#92;AppData&#92;Local&#92;Microsoft&#92;Windows&#92;Caches&#92;cversions.1.db |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Users&#92;comp&#92;AppData&#92;Local&#92;Microsoft&#92;Windows&#92;Caches&#92;{AFBF9F1A-8EE8-4C77-AF34-C647E37CA0D9}.1.ver0x0000000000000003.db |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Users&#92;desktop.ini |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Users |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Users&#92;comp |   | 0.0 |
+| 0.02 | sample.exe read C:&#92;Users&#92;comp&#92;AppData |   | 0.0 |
+| 0.02 | sample.exe read C:&#92;Users&#92;comp&#92;AppData&#92;Local |   | 0.0 |
+| 0.02 | sample.exe read C:&#92;Users&#92; |   | 0.0 |
+| 0.02 | sample.exe read C:&#92;Users&#92;comp&#92; |   | 0.0 |
+| 0.02 | sample.exe read C:&#92;Users&#92;comp&#92;AppData&#92; |   | 0.0 |
+| 0.02 | sample.exe read C:&#92;Users&#92;comp&#92;AppData&#92;Local&#92; |   | 0.0 |
+| 0.02 | sample.exe read C:&#92;Users&#92;comp&#92;AppData&#92;Local&#92;iproppass&#92; |   | 0.0 |
+| 0.02 | sample.exe wrote C:&#92;Users&#92;comp&#92;AppData&#92;Local&#92;iproppass&#92;iproppass.exe | T1105 command-and-control | 0.537 |
+| 0.02 | sample.exe deleted C:&#92;Users&#92;comp&#92;AppData&#92;Local&#92;spcmachine&#92;spcmachine.exe | T1070.004 defense-evasion | 1.0 |
+| 0.03 | sample.exe deleted C:&#92;Users&#92;comp&#92;AppData&#92;Local&#92;Microsoft&#92;Windows&#92;iproppass.exe | T1070.004 defense-evasion | 1.0 |
+| 0.03 | sample.exe deleted C:&#92;Users&#92;comp&#92;AppData&#92;Local&#92;Microsoft&#92;Windows&#92;spcmachine.exe | T1070.004 defense-evasion | 1.0 |
+| 0.03 | sample.exe deleted C:&#92;Users&#92;comp&#92;AppData&#92;Local&#92;Temp&#92;DF4FD49DC53618D7F3A1.exe | T1070.004 defense-evasion | 1.0 |
+| 0.03 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SYSTEM&#92;ControlSet001&#92;Control&#92;FileSystem&#92;Win31FileSystem |   | 1.0 |
 | 0.03 | sample.exe read DisableUserModeCallbackFilter |   | 1.0 |
-| 0.03 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\Nls\CustomLocale\en-US |   | 1.0 |
-| 0.03 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\Nls\ExtendedLocale\en-US |   | 1.0 |
-| 0.03 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\Nls\Sorting\Versions\00060101.00060101 |   | 1.0 |
-| 0.03 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\GRE&#95;Initialize\DisableMetaFiles |   | 1.0 |
-| 0.03 | sample.exe read HKEY&#95;CURRENT&#95;USER\Software\Microsoft\Windows\CurrentVersion\Explorer\NoFileFolderConnection |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoPropertiesMyComputer |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoPropertiesRecycleBin |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoControlPanel |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoSetFolders |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoInternetIcon |   | 1.0 |
+| 0.03 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SYSTEM&#92;ControlSet001&#92;Control&#92;Nls&#92;CustomLocale&#92;en-US |   | 1.0 |
+| 0.03 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SYSTEM&#92;ControlSet001&#92;Control&#92;Nls&#92;ExtendedLocale&#92;en-US |   | 1.0 |
+| 0.03 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SYSTEM&#92;ControlSet001&#92;Control&#92;Nls&#92;Sorting&#92;Versions&#92;00060101&#91;.&#93;00060101 |   | 1.0 |
+| 0.03 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SOFTWARE&#92;Microsoft&#92;Windows NT&#92;CurrentVersion&#92;GRE&#95;Initialize&#92;DisableMetaFiles |   | 1.0 |
+| 0.03 | sample.exe read HKEY&#95;CURRENT&#95;USER&#92;Software&#92;Microsoft&#92;Windows&#92;CurrentVersion&#92;Explorer&#92;NoFileFolderConnection |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SOFTWARE&#92;Microsoft&#92;Windows&#92;CurrentVersion&#92;Policies&#92;Explorer&#92;NoPropertiesMyComputer |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SOFTWARE&#92;Microsoft&#92;Windows&#92;CurrentVersion&#92;Policies&#92;Explorer&#92;NoPropertiesRecycleBin |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SOFTWARE&#92;Microsoft&#92;Windows&#92;CurrentVersion&#92;Policies&#92;Explorer&#92;NoControlPanel |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SOFTWARE&#92;Microsoft&#92;Windows&#92;CurrentVersion&#92;Policies&#92;Explorer&#92;NoSetFolders |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SOFTWARE&#92;Microsoft&#92;Windows&#92;CurrentVersion&#92;Policies&#92;Explorer&#92;NoInternetIcon |   | 1.0 |
 | 0.04 | sample.exe read HKEY&#95;CURRENT&#95;USER |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\System\CurrentControlSet\Control\Nls\CustomLocale |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\System\CurrentControlSet\Control\Nls\ExtendedLocale |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\Software\Microsoft\Windows NT\CurrentVersion\GRE&#95;Initialize |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\Software\Microsoft\Windows\CurrentVersion\SideBySide |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SYSTEM&#92;CurrentControlSet&#92;Control&#92;FileSystem |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;System&#92;CurrentControlSet&#92;Control&#92;Nls&#92;CustomLocale |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;System&#92;CurrentControlSet&#92;Control&#92;Nls&#92;ExtendedLocale |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;Software&#92;Microsoft&#92;Windows NT&#92;CurrentVersion&#92;GRE&#95;Initialize |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;Software&#92;Microsoft&#92;Windows&#92;CurrentVersion&#92;SideBySide |   | 1.0 |
 
 ## Provenance graph
 ```mermaid
@@ -113,7 +113,7 @@ flowchart LR
   n28["registry: DisableUserModeCallbackFilter"]
   n29["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~Control\Nls\CustomLocale\en-US"]
   n30["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~ntrol\Nls\ExtendedLocale\en-US"]
-  n31["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~ing\Versions\00060101.00060101"]
+  n31["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~ing\Versions\00060101[.]00060101"]
   n32["registry: HKEY_LOCAL_MACHINE\SOFTWARE\M~RE_Initialize\DisableMetaFiles"]
   n33["registry: HKEY_CURRENT_USER\Software\Mi~xplorer\NoFileFolderConnection"]
   n34["registry: HKEY_LOCAL_MACHINE\SOFTWARE\M~xplorer\NoPropertiesMyComputer"]
@@ -175,7 +175,7 @@ flowchart LR
 ```
 
 ## IOCs (defanged)
-- **dropped_files**: C:\Users\comp\AppData\Local\iproppass\iproppass.exe
+- **dropped_files**: C:&#92;Users&#92;comp&#92;AppData&#92;Local&#92;iproppass&#92;iproppass.exe
 
 ## YARA
 ```yara
@@ -250,9 +250,9 @@ Specificity: 0 Sigma candidate(s) dropped because no generalisation rung was spe
   "trace_sha256": "febb79941f669497555e27d0547f2bdaf46bae8f2be10720fab2b851610eea60",
   "trace_run_id": "avast_emotet_1",
   "python": "3.14.3",
-  "specimen_version": "1.0.0",
+  "specimen_version": "1.1.0",
   "execution": "report-only (sandbox report replay; no sample bytes handled)",
-  "report_content_sha256": "8c2aa80827956464c7957b0387bc518fb83963be687aec344d9f1f3963c3a6a7",
+  "report_content_sha256": "7fcc7c73217673b3317a86c4aaa0c11e50e85bfaa4cc806068da30750556da66",
   "report_sha256": "febb79941f669497555e27d0547f2bdaf46bae8f2be10720fab2b851610eea60",
   "sample_sha256_note": "not present in the (reduced) report; rule names use the report hash",
   "negative_corpus": {

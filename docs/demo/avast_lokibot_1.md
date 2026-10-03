@@ -13,7 +13,7 @@ score 0.3363 / entropy 7.46
 - high&#95;section&#95;entropy impact +0.52
 
 ## Behavior
-P(malicious)=0.9201 label=malicious scorer=mvp-synthetic-logreg (ATT&CK features) | family match **unknown (closest: Lokibot)** (p=0.514, avast-ctu-logreg (behaviour+static))
+P(malicious)=0.9201 label=malicious scorer=mvp-synthetic-logreg (ATT&CK features) | family match **unknown &#40;closest: Lokibot&#41;** (p=0.514, avast-ctu-logreg (behaviour+static))
 
 - n&#95;drop = 1.0986, impact +2.76
 - n&#95;persist = 0.6931, impact +1.18
@@ -22,66 +22,66 @@ P(malicious)=0.9201 label=malicious scorer=mvp-synthetic-logreg (ATT&CK features
 - n&#95;delete = 1.0986, impact +0.00
 
 ### Family evidence
-Top tokens supporting **unknown (closest: Lokibot)** (avast-ctu-logreg (behaviour+static)):
+Top tokens supporting **unknown &#40;closest: Lokibot&#41;** (avast-ctu-logreg &#40;behaviour+static&#41;):
 
-- pe&#95;year:2019 (+0.218)
-- file&#95;read&#95;dir:%system% (+0.139)
-- reg&#95;open:hklm\software\microsoft\windows\currentversion\sidebyside (+0.124)
-- dll:winmm.dll (+0.106)
-- reg&#95;open:hklm\software\microsoft\oleaut (+0.104)
-- reg&#95;open&#95;parent:hklm\software\microsoft (+0.096)
+- pe&#95;year:2019 &#40;+0.218&#41;
+- file&#95;read&#95;dir:%system% &#40;+0.139&#41;
+- reg&#95;open:hklm&#92;software&#92;microsoft&#92;windows&#92;currentversion&#92;sidebyside &#40;+0.124&#41;
+- dll:winmm.dll &#40;+0.106&#41;
+- reg&#95;open:hklm&#92;software&#92;microsoft&#92;oleaut &#40;+0.104&#41;
+- reg&#95;open&#95;parent:hklm&#92;software&#92;microsoft &#40;+0&#91;.&#93;096&#41;
 
 ## Timeline
 | t | event | ATT&CK | anomaly |
 |---|---|---|---|
 | 0.00 | sample.exe created 14E11E0BF783BCDB0BD10C30 |   | 1.0 |
-| 0.00 | sample.exe spawned svchost.exe &#96;"C:\Windows\SysWOW64\svchost.exe"&#96; |   | 1.0 |
-| 0.00 | sample.exe read C:\Windows\WindowsShell.Manifest |   | 0.0 |
-| 0.00 | sample.exe read \Device\KsecDD |   | 0.0 |
-| 0.01 | sample.exe read C:\Users\comp\AppData\Local\Temp\505B6E5E429EC62B3351.exe |   | 0.0 |
-| 0.01 | sample.exe read C:\Windows\Globalization\Sorting\sortdefault.nls |   | 0.0 |
-| 0.01 | sample.exe read C:\Windows\System32\UxTheme.dll[.]Config |   | 0.0 |
-| 0.01 | sample.exe read C:\Windows\System32\uxtheme.dll |   | 0.0 |
-| 0.01 | sample.exe read C:\Windows\AppPatch\sysmain[.]sdb |   | 0.0 |
-| 0.01 | sample.exe read C:\Windows\SysWOW64\ |   | 0.0 |
-| 0.01 | sample.exe read C:\Windows\SysWOW64\svchost.exe |   | 0.0 |
-| 0.01 | sample.exe read C:\Users\comp\AppData\Local\Google\Chrome\User Data\Default\Login Data | T1555.003 credential-access | 0.3 |
-| 0.01 | sample.exe read C:\Windows\SysWOW64\netapi32.dll |   | 0.0 |
-| 0.01 | sample.exe read C:\Windows\SysWOW64\netutils.dll |   | 0.0 |
-| 0.01 | sample.exe read C:\Users |   | 0.0 |
-| 0.02 | sample.exe read C:\Users\comp |   | 0.0 |
-| 0.02 | sample.exe read C:\Users\comp\AppData |   | 0.0 |
-| 0.02 | sample.exe read C:\Users\comp\AppData\Local |   | 0.0 |
-| 0.02 | sample.exe read C:\Users\comp\AppData\Local\Temp |   | 0.0 |
-| 0.02 | sample.exe read C:\Users\comp\AppData\Local\Temp\505B6E5E429EC62B3351.exe.Local\ |   | 0.0 |
-| 0.02 | sample.exe wrote C:\Users\comp\CertEnroll\windeploy.bat | T1105 command-and-control | 0.537 |
-| 0.02 | sample.exe wrote C:\Users\comp\AppData\Roaming\BF783B\BCDB0B[.]lck |   | 0.237 |
-| 0.02 | sample.exe wrote C:\Users\comp\AppData\Roaming\BF783B\BCDB0B.exe | T1105 command-and-control | 0.537 |
-| 0.02 | sample.exe deleted C:\Users\comp\AppData\Roaming\BF783B\BCDB0B[.]lck | T1070.004 defense-evasion | 1.0 |
-| 0.03 | sample.exe deleted C:\Windows\SysWOW64\svchost.exe | T1070.004 defense-evasion | 1.0 |
-| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER\Software\Microsoft\Windows\CurrentVersion\Run\0x433A5C55736572735C636F6D705C43657274456E726F6C6C | T1547.001 persistence | 1.0 |
-| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER\hxxp://mbfgq[.]ga/Dboy/five/fre.php |   | 1.0 |
-| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER\hxxp://mbfgq[.]ga/Dboy/five/fre.php\BF783B |   | 1.0 |
-| 0.03 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Internet Settings\DisableImprovedZoneCheck |   | 1.0 |
-| 0.03 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Security&#95;HKLM&#95;only |   | 1.0 |
+| 0.00 | sample.exe spawned svchost.exe &#96;"C:&#92;Windows&#92;SysWOW64&#92;svchost.exe"&#96; |   | 1.0 |
+| 0.00 | sample.exe read C:&#92;Windows&#92;WindowsShell.Manifest |   | 0.0 |
+| 0.00 | sample.exe read &#92;Device&#92;KsecDD |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Users&#92;comp&#92;AppData&#92;Local&#92;Temp&#92;505B6E5E429EC62B3351.exe |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Windows&#92;Globalization&#92;Sorting&#92;sortdefault.nls |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Windows&#92;System32&#92;UxTheme.dll&#91;.&#93;Config |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Windows&#92;System32&#92;uxtheme.dll |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Windows&#92;AppPatch&#92;sysmain&#91;.&#93;sdb |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Windows&#92;SysWOW64&#92; |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Windows&#92;SysWOW64&#92;svchost.exe |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Users&#92;comp&#92;AppData&#92;Local&#92;Google&#92;Chrome&#92;User Data&#92;Default&#92;Login Data | T1555.003 credential-access | 0.3 |
+| 0.01 | sample.exe read C:&#92;Windows&#92;SysWOW64&#92;netapi32.dll |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Windows&#92;SysWOW64&#92;netutils.dll |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Users |   | 0.0 |
+| 0.02 | sample.exe read C:&#92;Users&#92;comp |   | 0.0 |
+| 0.02 | sample.exe read C:&#92;Users&#92;comp&#92;AppData |   | 0.0 |
+| 0.02 | sample.exe read C:&#92;Users&#92;comp&#92;AppData&#92;Local |   | 0.0 |
+| 0.02 | sample.exe read C:&#92;Users&#92;comp&#92;AppData&#92;Local&#92;Temp |   | 0.0 |
+| 0.02 | sample.exe read C:&#92;Users&#92;comp&#92;AppData&#92;Local&#92;Temp&#92;505B6E5E429EC62B3351.exe.Local&#92; |   | 0.0 |
+| 0.02 | sample.exe wrote C:&#92;Users&#92;comp&#92;CertEnroll&#92;windeploy.bat | T1105 command-and-control | 0.537 |
+| 0.02 | sample.exe wrote C:&#92;Users&#92;comp&#92;AppData&#92;Roaming&#92;BF783B&#92;BCDB0B&#91;.&#93;lck |   | 0.237 |
+| 0.02 | sample.exe wrote C:&#92;Users&#92;comp&#92;AppData&#92;Roaming&#92;BF783B&#92;BCDB0B.exe | T1105 command-and-control | 0.537 |
+| 0.02 | sample.exe deleted C:&#92;Users&#92;comp&#92;AppData&#92;Roaming&#92;BF783B&#92;BCDB0B&#91;.&#93;lck | T1070.004 defense-evasion | 1.0 |
+| 0.03 | sample.exe deleted C:&#92;Windows&#92;SysWOW64&#92;svchost.exe | T1070.004 defense-evasion | 1.0 |
+| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER&#92;Software&#92;Microsoft&#92;Windows&#92;CurrentVersion&#92;Run&#92;0x433A5C55736572735C636F6D705C43657274456E726F6C6C | T1547.001 persistence | 1.0 |
+| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER&#92;hxxp://mbfgq&#91;.&#93;ga/Dboy/five/fre.php |   | 1.0 |
+| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER&#92;hxxp://mbfgq&#91;.&#93;ga/Dboy/five/fre.php&#92;BF783B |   | 1.0 |
+| 0.03 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SOFTWARE&#92;Wow6432Node&#92;Microsoft&#92;Windows&#92;CurrentVersion&#92;Internet Settings&#92;DisableImprovedZoneCheck |   | 1.0 |
+| 0.03 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SOFTWARE&#92;Policies&#92;Microsoft&#92;Windows&#92;CurrentVersion&#92;Internet Settings&#92;Security&#95;HKLM&#95;only |   | 1.0 |
 | 0.03 | sample.exe read DisableUserModeCallbackFilter |   | 1.0 |
-| 0.03 | sample.exe read HKEY&#95;CURRENT&#95;USER\Control Panel\Mouse\SwapMouseButtons |   | 1.0 |
-| 0.03 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\Nls\CustomLocale\en-US |   | 1.0 |
-| 0.03 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\Nls\ExtendedLocale\en-US |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\Nls\Sorting\Versions\00060101.00060101 |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\Nls\Locale\00000409 |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\Nls\Language Groups\1 |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Policies\Microsoft\Windows\safer\codeidentifiers\TransparentEnabled |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Policies\Microsoft\Windows\safer\codeidentifiers\AuthenticodeEnabled |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;CURRENT&#95;USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders\Cache |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\Software\Microsoft\Windows\CurrentVersion\SideBySide |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\system\CurrentControlSet\control\NetworkProvider\HwOrder |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Microsoft\OLEAUT |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\Software\Microsoft\Windows\CurrentVersion\Internet Settings |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings |   | 1.0 |
-| 0.05 | sample.exe read HKEY&#95;CURRENT&#95;USER\Control Panel\Mouse |   | 1.0 |
-| 0.05 | sample.exe read HKEY&#95;CURRENT&#95;USER\Software\AutoIt v3\AutoIt |   | 1.0 |
-| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\System\CurrentControlSet\Control\Nls\CustomLocale |   | 1.0 |
+| 0.03 | sample.exe read HKEY&#95;CURRENT&#95;USER&#92;Control Panel&#92;Mouse&#92;SwapMouseButtons |   | 1.0 |
+| 0.03 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SYSTEM&#92;ControlSet001&#92;Control&#92;Nls&#92;CustomLocale&#92;en-US |   | 1.0 |
+| 0.03 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SYSTEM&#92;ControlSet001&#92;Control&#92;Nls&#92;ExtendedLocale&#92;en-US |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SYSTEM&#92;ControlSet001&#92;Control&#92;Nls&#92;Sorting&#92;Versions&#92;00060101&#91;.&#93;00060101 |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SYSTEM&#92;ControlSet001&#92;Control&#92;Nls&#92;Locale&#92;00000409 |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SYSTEM&#92;ControlSet001&#92;Control&#92;Nls&#92;Language Groups&#92;1 |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SOFTWARE&#92;Policies&#92;Microsoft&#92;Windows&#92;safer&#92;codeidentifiers&#92;TransparentEnabled |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SOFTWARE&#92;Policies&#92;Microsoft&#92;Windows&#92;safer&#92;codeidentifiers&#92;AuthenticodeEnabled |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;CURRENT&#95;USER&#92;Software&#92;Microsoft&#92;Windows&#92;CurrentVersion&#92;Explorer&#92;Shell Folders&#92;Cache |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;Software&#92;Microsoft&#92;Windows&#92;CurrentVersion&#92;SideBySide |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;system&#92;CurrentControlSet&#92;control&#92;NetworkProvider&#92;HwOrder |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SOFTWARE&#92;Microsoft&#92;OLEAUT |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;Software&#92;Microsoft&#92;Windows&#92;CurrentVersion&#92;Internet Settings |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;Software&#92;Policies&#92;Microsoft&#92;Windows&#92;CurrentVersion&#92;Internet Settings |   | 1.0 |
+| 0.05 | sample.exe read HKEY&#95;CURRENT&#95;USER&#92;Control Panel&#92;Mouse |   | 1.0 |
+| 0.05 | sample.exe read HKEY&#95;CURRENT&#95;USER&#92;Software&#92;AutoIt v3&#92;AutoIt |   | 1.0 |
+| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;System&#92;CurrentControlSet&#92;Control&#92;Nls&#92;CustomLocale |   | 1.0 |
 | 0.05 | sample.exe started VaultSvc | T1569.002 execution | 1.0 |
 
 ## Provenance graph
@@ -120,7 +120,7 @@ flowchart LR
   n30["registry: HKEY_CURRENT_USER\Control Panel\Mouse\SwapMouseButtons"]
   n31["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~Control\Nls\CustomLocale\en-US"]
   n32["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~ntrol\Nls\ExtendedLocale\en-US"]
-  n33["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~ing\Versions\00060101.00060101"]
+  n33["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~ing\Versions\00060101[.]00060101"]
   n34["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~01\Control\Nls\Locale\00000409"]
   n35["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~\Control\Nls\Language Groups\1"]
   n36["registry: HKEY_LOCAL_MACHINE\SOFTWARE\P~identifiers\TransparentEnabled"]
@@ -187,8 +187,8 @@ flowchart LR
 ```
 
 ## IOCs (defanged)
-- **dropped_files**: C:\Users\comp\AppData\Roaming\BF783B\BCDB0B.exe
-- **registry**: HKEY&#95;CURRENT&#95;USER\Software\Microsoft\Windows\CurrentVersion\Run\0x433A5C55736572735C636F6D705C43657274456E726F6C6C, HKEY&#95;CURRENT&#95;USER\hxxp://mbfgq[.]ga/Dboy/five/fre.php, HKEY&#95;CURRENT&#95;USER\hxxp://mbfgq[.]ga/Dboy/five/fre.php\BF783B
+- **dropped_files**: C:&#92;Users&#92;comp&#92;AppData&#92;Roaming&#92;BF783B&#92;BCDB0B.exe
+- **registry**: HKEY&#95;CURRENT&#95;USER&#92;Software&#92;Microsoft&#92;Windows&#92;CurrentVersion&#92;Run&#92;0x433A5C55736572735C636F6D705C43657274456E726F6C6C, HKEY&#95;CURRENT&#95;USER&#92;hxxp://mbfgq&#91;.&#93;ga/Dboy/five/fre.php, HKEY&#95;CURRENT&#95;USER&#92;hxxp://mbfgq&#91;.&#93;ga/Dboy/five/fre.php&#92;BF783B
 
 ## YARA
 ```yara
@@ -327,9 +327,9 @@ Specificity: 1 Sigma candidate(s) dropped because no generalisation rung was spe
   "trace_sha256": "3783825d9e860c7860aa20c4eb521338ec5c03e21cbcc3efd5ac4533a6ebc8cb",
   "trace_run_id": "avast_lokibot_1",
   "python": "3.14.3",
-  "specimen_version": "1.0.0",
+  "specimen_version": "1.1.0",
   "execution": "report-only (sandbox report replay; no sample bytes handled)",
-  "report_content_sha256": "2bc9951606ba6bf22eebd18388473a9aaa1be4dbf86b78926aef294371dd37e9",
+  "report_content_sha256": "6fabe3de219bad1697fade3ae9b72e09e0cfb3033d876bbb75ed120fd89c4771",
   "report_sha256": "3783825d9e860c7860aa20c4eb521338ec5c03e21cbcc3efd5ac4533a6ebc8cb",
   "sample_sha256_note": "not present in the (reduced) report; rule names use the report hash",
   "negative_corpus": {

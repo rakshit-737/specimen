@@ -6,10 +6,27 @@ uses [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- **Security:** sandbox-controlled strings can no longer form Markdown links or images in reports: every Markdown-structural character is entity-encoded, and protocol-relative and numeric-IPv4 URLs are defanged. A rendering test with the docs-site Markdown extensions guards it.
+- **Evidence binding:** a Sysmon export whose event 1 `Hashes` do not include the sample's SHA-256 is refused; traces that record no sample hash are replayed as `unbound` with low confidence (`manifest.trace_binding`). The lab fixture now carries the dummy sample's hash.
+- **`analyze` uses the v2 rule synthesizer** with the packaged negative corpus (minus the predicted family), like `report`; it used to emit MVP rules checked only against synthetic negatives.
+- Hostile input: `NaN`/`Infinity`/`1e999` numbers, wrong types, deeply nested JSON and malformed XML give one error line or are coerced instead of tracebacks; report files are strict JSON; UTF-16/32 Sysmon exports are read; `batch --workers` must be >= 1 before the ledger is touched.
+- Rule synthesis treats `HKCU\Environment`, `Local Settings\MuiCache`, environment variables, system folders and MUI references as generic, so near-generic rules (e.g. `HKEY_CURRENT_USER\Environment\*`) are no longer emitted.
+- v1.1.0 shipped without its trained models; they are now attached to the v1.1.0 release with SHA-256s, pinned in `scripts/model_assets.json` and fetched (hash-verified) by `scripts/fetch_models.py`, the docs workflow and the release workflow.
+
+### Changed
+- **Rules benchmark:** the true-family exclusion rows are labelled *oracle*; new *shipped* (predicted family left out, out-of-fold family model) and *default install* (no family model) rows; reference runs exclude the packaged corpus's own runs; paired comparisons use family-clustered tests; a candidate-generation ablation row; benign FPR on 32,673 benign Quo Vadis Speakeasy reports (new adapter).
+- **Family model:** the open-set abstain threshold is chosen on the temporal validation slice (it was chosen on test) and is now 0.85.
+- **Static gate:** the released `triage-ember` model is the temporal model behind the headline; the heuristic baseline is scored on the same temporal test rows; seed t-intervals replace min-max.
+- **Paper reproductions:** MalDetConv uses the architecture of its Fig. 10 A-2 (embedding 100, not 10); Li et al. 2024 adds the TF-IDF+PCA rows of its Table I, feature-matched SPECIMEN rows and corrected paired t-tests; no grid search, stated.
+- Every result file records its GitHub Actions run id, commit, command and runtime; all suites run in the `bench` workflow; README and docs tables are generated from `results/*.json` and checked in CI.
+- Docs: How-it-works numbers come from the regenerated demo, the reproduce page lists run ids and runtimes, CITATION.cff and the data citations are corrected and completed (Avast-CTU authors, Oliveira 2019, Li et al. 2024, both Mal-API-2019 papers, Quo Vadis, AutoYara), AutoYara and Polygraph/Autograph added to prior art, the MkDocs 2.0 banner is silenced, threat model and security policy updated.
+- CI: ruff D1 docstring rules for `specimen/`; release images also get a plain-semver tag and OCI version/revision labels; bench inputs are validated and passed via env; the whole EMBER archive hash is enforced.
+
 ## [1.1.0] - 2026-10-02
 
 ### Changed
-- Rules headline uses the non-oracle seeded 0.020 % FPR; the oracle 0.004 % row is labelled as such; THREAT_MODEL updated.
+- Rules headline uses the seeded 0.020 % FPR and labels the 0.004 % packaged-corpus row as oracle; THREAT_MODEL updated. (Correction, see Unreleased: the 0.020 % row also removed the true family from its negatives, so it was an oracle setting too, and the 'shipped' configuration had not been measured.)
 - Static-gate headline states that `analyze` still detonates every PE.
 
 ### Added

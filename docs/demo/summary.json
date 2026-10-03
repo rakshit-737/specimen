@@ -1,0 +1,552 @@
+{
+ "family_model": "family model `behaviour+static`, abstain below 0.85",
+ "inputs": {
+  "avast_emotet_1": {
+   "behaviour_p": 0.5685,
+   "behaviour_scorer": "mvp-synthetic-logreg (ATT&CK features)",
+   "behaviour_top": [
+    {
+     "feature": "n_drop",
+     "impact": 1.7397,
+     "value": 0.6931,
+     "weight": 2.51
+    },
+    {
+     "feature": "frac_suspicious",
+     "impact": 0.113,
+     "value": 0.0702,
+     "weight": 1.6097
+    },
+    {
+     "feature": "n_file_write",
+     "impact": -0.0193,
+     "value": 0.6931,
+     "weight": -0.0278
+    }
+   ],
+   "family": "Emotet",
+   "family_evidence": [
+    [
+     "mutex_create:global\\i#<hex>",
+     0.4854
+    ],
+    [
+     "mutex_create:global\\m#<hex>",
+     0.4846
+    ],
+    [
+     "file_delete_ext:exe",
+     0.3324
+    ],
+    [
+     "exec:<hex>.exe",
+     0.3285
+    ]
+   ],
+   "family_model": "avast-ctu-logreg (behaviour+static)",
+   "family_p": 0.999,
+   "first_sigma": "title: 'SPECIMEN auto - file_event pattern'\nstatus: experimental\ndescription: Auto-synthesized from one sandbox run of febb79941f669497; generalisation rung 2; zero hits on the negative corpus at synthesis time. Review before deploy.\nauthor: SPECIMEN\ntags:\n    - attack.t1105\nlogsource:\n    product: windows\n    category: file_event\ndetection:\n    selection:\n        TargetFilename: 'C:\\\\Users\\\\*\\\\AppData\\\\Local\\\\*\\\\iproppass.exe'\n    condition: selection\nlevel: medium\n",
+   "graph": {
+    "edges": 45,
+    "mermaid": "flowchart LR\n  n0[\"process: sample.exe (1000)\"]\n  n1[\"mutex: PEM9B4\"]\n  n2[\"mutex: PEM938\"]\n  n3[\"mutex: Global\\I5C3A8244\"]\n  n4[\"mutex: Global\\M5C3A8244\"]\n  n5[\"process: DF4FD49DC53618D7F3A1.exe (1001)\"]\n  n6[\"file: C:\\Windows\\Globalization\\Sorting\\sortdefault.nls\"]\n  n7[\"file: C:\\Users\\comp\\AppData\\Local\\Temp\\DF4FD49DC53618D7F3A1.exe\"]\n  n8[\"file: \\Device\\KsecDD\"]\n  n9[\"file: C:\\Windows\\SysWOW64\\shell32.dll\"]\n  n10[\"file: C:\\\"]\n  n11[\"file: C:\\Users\\comp\\AppData\\Local\\M~\\Windows\\Caches\\cversions.1.db\"]\n  n12[\"file: C:\\Users\\comp\\AppData\\Local\\M~D9).1.ver0x0000000000000003.db\"]\n  n13[\"file: C:\\Users\\desktop.ini\"]\n  n14[\"file: C:\\Users\"]\n  n15[\"file: C:\\Users\\comp\"]\n  n16[\"file: C:\\Users\\comp\\AppData\"]\n  n17[\"file: C:\\Users\\comp\\AppData\\Local\"]\n  n18[\"file: C:\\Users\\\"]\n  n19[\"file: C:\\Users\\comp\\\"]\n  n20[\"file: C:\\Users\\comp\\AppData\\\"]\n  n21[\"file: C:\\Users\\comp\\AppData\\Local\\\"]\n  n22[\"file: C:\\Users\\comp\\AppData\\Local\\iproppass\\\"]\n  n23[\"file: C:\\Users\\comp\\AppData\\Local\\iproppass\\iproppass.exe\"]\n  n24[\"file: C:\\Users\\comp\\AppData\\Local\\spcmachine\\spcmachine.exe\"]\n  n25[\"file: C:\\Users\\comp\\AppData\\Local\\Microsoft\\Windows\\iproppass.exe\"]\n  n26[\"file: C:\\Users\\comp\\AppData\\Local\\Microsoft\\Windows\\spcmachine.exe\"]\n  n27[\"registry: HKEY_LOCAL_MACHINE\\SYSTEM\\Con~rol\\FileSystem\\Win31FileSystem\"]\n  n28[\"registry: DisableUserModeCallbackFilter\"]\n  n29[\"registry: HKEY_LOCAL_MACHINE\\SYSTEM\\Con~Control\\Nls\\CustomLocale\\en-US\"]\n  n30[\"registry: HKEY_LOCAL_MACHINE\\SYSTEM\\Con~ntrol\\Nls\\ExtendedLocale\\en-US\"]\n  n31[\"registry: HKEY_LOCAL_MACHINE\\SYSTEM\\Con~ing\\Versions\\00060101[.]00060101\"]\n  n32[\"registry: HKEY_LOCAL_MACHINE\\SOFTWARE\\M~RE_Initialize\\DisableMetaFiles\"]\n  n33[\"registry: HKEY_CURRENT_USER\\Software\\Mi~xplorer\\NoFileFolderConnection\"]\n  n34[\"registry: HKEY_LOCAL_MACHINE\\SOFTWARE\\M~xplorer\\NoPropertiesMyComputer\"]\n  n35[\"registry: HKEY_LOCAL_MACHINE\\SOFTWARE\\M~xplorer\\NoPropertiesRecycleBin\"]\n  n36[\"registry: HKEY_LOCAL_MACHINE\\SOFTWARE\\M~licies\\Explorer\\NoControlPanel\"]\n  n37[\"registry: HKEY_LOCAL_MACHINE\\SOFTWARE\\M~Policies\\Explorer\\NoSetFolders\"]\n  n38[\"registry: HKEY_LOCAL_MACHINE\\SOFTWARE\\M~licies\\Explorer\\NoInternetIcon\"]\n  n39[\"registry: HKEY_CURRENT_USER\"]\n  n40[\"registry: HKEY_LOCAL_MACHINE\\SYSTEM\\Cur~tControlSet\\Control\\FileSystem\"]\n  n41[\"registry: HKEY_LOCAL_MACHINE\\System\\Cur~olSet\\Control\\Nls\\CustomLocale\"]\n  n42[\"registry: HKEY_LOCAL_MACHINE\\System\\Cur~Set\\Control\\Nls\\ExtendedLocale\"]\n  n43[\"registry: HKEY_LOCAL_MACHINE\\Software\\M~\\CurrentVersion\\GRE_Initialize\"]\n  n44[\"registry: HKEY_LOCAL_MACHINE\\Software\\M~dows\\CurrentVersion\\SideBySide\"]\n  n0 -->|\"created\"| n1\n  n0 -->|\"created\"| n2\n  n0 -->|\"created\"| n3\n  n0 -->|\"created\"| n4\n  n0 -->|\"spawned\"| n5\n  n0 -->|\"read\"| n6\n  n0 -->|\"read\"| n7\n  n0 -->|\"read\"| n8\n  n0 -->|\"read\"| n9\n  n0 -->|\"read\"| n10\n  n0 -->|\"read\"| n11\n  n0 -->|\"read\"| n12\n  n0 -->|\"read\"| n13\n  n0 -->|\"read\"| n14\n  n0 -->|\"read\"| n15\n  n0 -->|\"read\"| n16\n  n0 -->|\"read\"| n17\n  n0 -->|\"read\"| n18\n  n0 -->|\"read\"| n19\n  n0 -->|\"read\"| n20\n  n0 -->|\"read\"| n21\n  n0 -->|\"read\"| n22\n  n0 -->|\"wrote\"| n23\n  n0 -->|\"deleted\"| n24\n  n0 -->|\"deleted\"| n25\n  n0 -->|\"deleted\"| n26\n  n0 -->|\"deleted\"| n7\n  n0 -->|\"read\"| n27\n  n0 -->|\"read\"| n28\n  n0 -->|\"read\"| n29\n  n0 -->|\"read\"| n30\n  n0 -->|\"read\"| n31\n  n0 -->|\"read\"| n32\n  n0 -->|\"read\"| n33\n  n0 -->|\"read\"| n34\n  n0 -->|\"read\"| n35\n  n0 -->|\"read\"| n36\n  n0 -->|\"read\"| n37\n  n0 -->|\"read\"| n38\n  n0 -->|\"read\"| n39\n  n0 -->|\"read\"| n40\n  n0 -->|\"read\"| n41\n  n0 -->|\"read\"| n42\n  n0 -->|\"read\"| n43\n  n0 -->|\"read\"| n44",
+    "nodes": 45
+   },
+   "manifest": {
+    "negative_corpus": {
+     "excluded_family": "Emotet",
+     "packaged": true
+    },
+    "specimen_version": "1.1.0",
+    "trace_binding": null
+   },
+   "sigma_rules": 2,
+   "static_score": 0.53,
+   "static_top": [
+    {
+     "feature": "high_section_entropy",
+     "impact": 1.32,
+     "value": 0.66,
+     "weight": 2.0
+    },
+    {
+     "feature": "pe_executable",
+     "impact": 0.8,
+     "value": 1.0,
+     "weight": 0.8
+    }
+   ],
+   "techniques": [
+    "T1070.004",
+    "T1105"
+   ],
+   "timeline_head": [
+    {
+     "anomaly": 0.537,
+     "description": "sample.exe wrote C:\\Users\\comp\\AppData\\Local\\iproppass\\iproppass.exe",
+     "tactic": "command-and-control",
+     "technique": "T1105",
+     "ts": 0.023
+    },
+    {
+     "anomaly": 1.0,
+     "description": "sample.exe deleted C:\\Users\\comp\\AppData\\Local\\spcmachine\\spcmachine.exe",
+     "tactic": "defense-evasion",
+     "technique": "T1070.004",
+     "ts": 0.024
+    },
+    {
+     "anomaly": 1.0,
+     "description": "sample.exe deleted C:\\Users\\comp\\AppData\\Local\\Microsoft\\Windows\\iproppass.exe",
+     "tactic": "defense-evasion",
+     "technique": "T1070.004",
+     "ts": 0.025
+    },
+    {
+     "anomaly": 1.0,
+     "description": "sample.exe deleted C:\\Users\\comp\\AppData\\Local\\Microsoft\\Windows\\spcmachine.exe",
+     "tactic": "defense-evasion",
+     "technique": "T1070.004",
+     "ts": 0.026
+    }
+   ],
+   "verdict": {
+    "confidence": "high",
+    "label": "suspicious",
+    "score": 0.5685
+   },
+   "yara": true
+  },
+  "avast_lokibot_1": {
+   "behaviour_p": 0.9201,
+   "behaviour_scorer": "mvp-synthetic-logreg (ATT&CK features)",
+   "behaviour_top": [
+    {
+     "feature": "n_drop",
+     "impact": 2.7575,
+     "value": 1.0986,
+     "weight": 2.51
+    },
+    {
+     "feature": "n_persist",
+     "impact": 1.1776,
+     "value": 0.6931,
+     "weight": 1.6991
+    },
+    {
+     "feature": "frac_suspicious",
+     "impact": 0.1056,
+     "value": 0.0656,
+     "weight": 1.6097
+    }
+   ],
+   "family": "unknown (closest: Lokibot)",
+   "family_evidence": [
+    [
+     "pe_year:2019",
+     0.2182
+    ],
+    [
+     "file_read_dir:%system%",
+     0.1389
+    ],
+    [
+     "reg_open:hklm\\software\\microsoft\\windows\\currentversion\\sidebyside",
+     0.124
+    ],
+    [
+     "dll:winmm.dll",
+     0.1059
+    ]
+   ],
+   "family_model": "avast-ctu-logreg (behaviour+static)",
+   "family_p": 0.514,
+   "first_sigma": "title: 'SPECIMEN auto - file_event pattern'\nstatus: experimental\ndescription: Auto-synthesized from one sandbox run of 3783825d9e860c78; generalisation rung 2; zero hits on the negative corpus at synthesis time. Review before deploy.\nauthor: SPECIMEN\ntags:\n    - attack.t1105\nlogsource:\n    product: windows\n    category: file_event\ndetection:\n    selection:\n        TargetFilename: 'C:\\\\Users\\\\*\\\\*\\\\windeploy.bat'\n    condition: selection\nlevel: medium\n",
+   "graph": {
+    "edges": 49,
+    "mermaid": "flowchart LR\n  n0[\"process: sample.exe (1000)\"]\n  n1[\"mutex: 14E11E0BF783BCDB0BD10C30\"]\n  n2[\"process: svchost.exe (1001)\"]\n  n3[\"file: C:\\Windows\\WindowsShell.Manifest\"]\n  n4[\"file: \\Device\\KsecDD\"]\n  n5[\"file: C:\\Users\\comp\\AppData\\Local\\Temp\\505B6E5E429EC62B3351.exe\"]\n  n6[\"file: C:\\Windows\\Globalization\\Sorting\\sortdefault.nls\"]\n  n7[\"file: C:\\Windows\\System32\\UxTheme.dll[.]Config\"]\n  n8[\"file: C:\\Windows\\System32\\uxtheme.dll\"]\n  n9[\"file: C:\\Windows\\AppPatch\\sysmain[.]sdb\"]\n  n10[\"file: C:\\Windows\\SysWOW64\\\"]\n  n11[\"file: C:\\Windows\\SysWOW64\\svchost.exe\"]\n  n12[\"file: C:\\Users\\comp\\AppData\\Local\\G~e\\User Data\\Default\\Login Data\"]\n  n13[\"file: C:\\Windows\\SysWOW64\\netapi32.dll\"]\n  n14[\"file: C:\\Windows\\SysWOW64\\netutils.dll\"]\n  n15[\"file: C:\\Users\"]\n  n16[\"file: C:\\Users\\comp\"]\n  n17[\"file: C:\\Users\\comp\\AppData\"]\n  n18[\"file: C:\\Users\\comp\\AppData\\Local\"]\n  n19[\"file: C:\\Users\\comp\\AppData\\Local\\Temp\"]\n  n20[\"file: C:\\Users\\comp\\AppData\\Local\\T~05B6E5E429EC62B3351.exe.Local\\\"]\n  n21[\"file: C:\\Users\\comp\\CertEnroll\\windeploy.bat\"]\n  n22[\"file: C:\\Users\\comp\\AppData\\Roaming\\BF783B\\BCDB0B[.]lck\"]\n  n23[\"file: C:\\Users\\comp\\AppData\\Roaming\\BF783B\\BCDB0B.exe\"]\n  n24[\"registry: HKEY_CURRENT_USER\\Software\\Mi~636F6D705C43657274456E726F6C6C\"]\n  n25[\"registry: HKEY_CURRENT_USER\\hxxp://mbfgq[.]ga/Dboy/five/fre.php\"]\n  n26[\"registry: HKEY_CURRENT_USER\\hxxp://mbfgq[.]ga/Dboy/five/fre.php\\BF783B\"]\n  n27[\"registry: HKEY_LOCAL_MACHINE\\SOFTWARE\\W~tings\\DisableImprovedZoneCheck\"]\n  n28[\"registry: HKEY_LOCAL_MACHINE\\SOFTWARE\\P~et Settings\\Security_HKLM_only\"]\n  n29[\"registry: DisableUserModeCallbackFilter\"]\n  n30[\"registry: HKEY_CURRENT_USER\\Control Panel\\Mouse\\SwapMouseButtons\"]\n  n31[\"registry: HKEY_LOCAL_MACHINE\\SYSTEM\\Con~Control\\Nls\\CustomLocale\\en-US\"]\n  n32[\"registry: HKEY_LOCAL_MACHINE\\SYSTEM\\Con~ntrol\\Nls\\ExtendedLocale\\en-US\"]\n  n33[\"registry: HKEY_LOCAL_MACHINE\\SYSTEM\\Con~ing\\Versions\\00060101[.]00060101\"]\n  n34[\"registry: HKEY_LOCAL_MACHINE\\SYSTEM\\Con~01\\Control\\Nls\\Locale\\00000409\"]\n  n35[\"registry: HKEY_LOCAL_MACHINE\\SYSTEM\\Con~\\Control\\Nls\\Language Groups\\1\"]\n  n36[\"registry: HKEY_LOCAL_MACHINE\\SOFTWARE\\P~identifiers\\TransparentEnabled\"]\n  n37[\"registry: HKEY_LOCAL_MACHINE\\SOFTWARE\\P~dentifiers\\AuthenticodeEnabled\"]\n  n38[\"registry: HKEY_CURRENT_USER\\Software\\Mi~n\\Explorer\\Shell Folders\\Cache\"]\n  n39[\"registry: HKEY_LOCAL_MACHINE\\Software\\M~dows\\CurrentVersion\\SideBySide\"]\n  n40[\"registry: HKEY_LOCAL_MACHINE\\system\\Cur~ontrol\\NetworkProvider\\HwOrder\"]\n  n41[\"registry: HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\OLEAUT\"]\n  n42[\"registry: HKEY_LOCAL_MACHINE\\Software\\M~rrentVersion\\Internet Settings\"]\n  n43[\"registry: HKEY_LOCAL_MACHINE\\Software\\P~rrentVersion\\Internet Settings\"]\n  n44[\"registry: HKEY_CURRENT_USER\\Control Panel\\Mouse\"]\n  n45[\"registry: HKEY_CURRENT_USER\\Software\\AutoIt v3\\AutoIt\"]\n  n46[\"registry: HKEY_LOCAL_MACHINE\\System\\Cur~olSet\\Control\\Nls\\CustomLocale\"]\n  n47[\"service: VaultSvc\"]\n  n0 -->|\"created\"| n1\n  n0 -->|\"spawned\"| n2\n  n0 -->|\"read\"| n3\n  n0 -->|\"read\"| n4\n  n0 -->|\"read\"| n5\n  n0 -->|\"read\"| n6\n  n0 -->|\"read\"| n7\n  n0 -->|\"read\"| n8\n  n0 -->|\"read\"| n9\n  n0 -->|\"read\"| n10\n  n0 -->|\"read\"| n11\n  n0 -->|\"read\"| n12\n  n0 -->|\"read\"| n13\n  n0 -->|\"read\"| n14\n  n0 -->|\"read\"| n15\n  n0 -->|\"read\"| n16\n  n0 -->|\"read\"| n17\n  n0 -->|\"read\"| n18\n  n0 -->|\"read\"| n19\n  n0 -->|\"read\"| n20\n  n0 -->|\"wrote\"| n21\n  n0 -->|\"wrote\"| n22\n  n0 -->|\"wrote\"| n23\n  n0 -->|\"deleted\"| n22\n  n0 -->|\"deleted\"| n11\n  n0 -->|\"set\"| n24\n  n0 -->|\"set\"| n25\n  n0 -->|\"set\"| n26\n  n0 -->|\"read\"| n27\n  n0 -->|\"read\"| n28\n  n0 -->|\"read\"| n29\n  n0 -->|\"read\"| n30\n  n0 -->|\"read\"| n31\n  n0 -->|\"read\"| n32\n  n0 -->|\"read\"| n33\n  n0 -->|\"read\"| n34\n  n0 -->|\"read\"| n35\n  n0 -->|\"read\"| n36\n  n0 -->|\"read\"| n37\n  n0 -->|\"read\"| n38\n  n0 -->|\"read\"| n39\n  n0 -->|\"read\"| n40\n  n0 -->|\"read\"| n41\n  n0 -->|\"read\"| n42\n  n0 -->|\"read\"| n43\n  n0 -->|\"read\"| n44\n  n0 -->|\"read\"| n45\n  n0 -->|\"read\"| n46\n  n0 -->|\"started\"| n47",
+    "nodes": 48
+   },
+   "manifest": {
+    "negative_corpus": {
+     "excluded_family": "Lokibot",
+     "packaged": true
+    },
+    "specimen_version": "1.1.0",
+    "trace_binding": null
+   },
+   "sigma_rules": 6,
+   "static_score": 0.3363,
+   "static_top": [
+    {
+     "feature": "pe_executable",
+     "impact": 0.8,
+     "value": 1.0,
+     "weight": 0.8
+    },
+    {
+     "feature": "high_section_entropy",
+     "impact": 0.52,
+     "value": 0.26,
+     "weight": 2.0
+    }
+   ],
+   "techniques": [
+    "T1070.004",
+    "T1105",
+    "T1547.001",
+    "T1555.003",
+    "T1569.002"
+   ],
+   "timeline_head": [
+    {
+     "anomaly": 0.3,
+     "description": "sample.exe read C:\\Users\\comp\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data",
+     "tactic": "credential-access",
+     "technique": "T1555.003",
+     "ts": 0.012
+    },
+    {
+     "anomaly": 0.537,
+     "description": "sample.exe wrote C:\\Users\\comp\\CertEnroll\\windeploy.bat",
+     "tactic": "command-and-control",
+     "technique": "T1105",
+     "ts": 0.021
+    },
+    {
+     "anomaly": 0.537,
+     "description": "sample.exe wrote C:\\Users\\comp\\AppData\\Roaming\\BF783B\\BCDB0B.exe",
+     "tactic": "command-and-control",
+     "technique": "T1105",
+     "ts": 0.023
+    },
+    {
+     "anomaly": 1.0,
+     "description": "sample.exe deleted C:\\Users\\comp\\AppData\\Roaming\\BF783B\\BCDB0B.lck",
+     "tactic": "defense-evasion",
+     "technique": "T1070.004",
+     "ts": 0.024
+    }
+   ],
+   "verdict": {
+    "confidence": "medium (behavior-driven)",
+    "label": "malicious",
+    "score": 0.9201
+   },
+   "yara": true
+  },
+  "avast_njrat_1": {
+   "behaviour_p": 0.9133,
+   "behaviour_scorer": "mvp-synthetic-logreg (ATT&CK features)",
+   "behaviour_top": [
+    {
+     "feature": "n_drop",
+     "impact": 2.7575,
+     "value": 1.0986,
+     "weight": 2.51
+    },
+    {
+     "feature": "n_persist",
+     "impact": 1.1776,
+     "value": 0.6931,
+     "weight": 1.6991
+    },
+    {
+     "feature": "n_file_write",
+     "impact": -0.0447,
+     "value": 1.6094,
+     "weight": -0.0278
+    }
+   ],
+   "family": "unknown (closest: njRAT)",
+   "family_evidence": [
+    [
+     "tech:T1105",
+     0.2302
+    ],
+    [
+     "tactic:command-and-control",
+     0.2253
+    ],
+    [
+     "tech:T1547.001",
+     0.2143
+    ],
+    [
+     "tactic:persistence",
+     0.2004
+    ]
+   ],
+   "family_model": "avast-ctu-logreg (behaviour+static)",
+   "family_p": 0.821,
+   "first_sigma": "title: 'SPECIMEN auto - file_event pattern'\nstatus: experimental\ndescription: Auto-synthesized from one sandbox run of 2434c0af980a3a71; generalisation rung 2; zero hits on the negative corpus at synthesis time. Review before deploy.\nauthor: SPECIMEN\ntags:\n    - attack.t1547.001\nlogsource:\n    product: windows\n    category: file_event\ndetection:\n    selection:\n        TargetFilename: 'C:\\\\Users\\\\*\\\\AppData\\\\Roaming\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\\\\*\\\\Host Process for Windows Services.url'\n    condition: selection\nlevel: medium\n",
+   "graph": {
+    "edges": 60,
+    "mermaid": "flowchart LR\n  n0[\"process: sample.exe (1000)\"]\n  n1[\"mutex: bitsperf\"]\n  n2[\"mutex: Global\\CLR_CASOFF_MUTEX\"]\n  n3[\"mutex: 10e93180d6481ad63a77c2b255d40864\"]\n  n4[\"mutex: Global\\.net clr networking\"]\n  n5[\"process: RegAsm.exe (1001)\"]\n  n6[\"process: netsh (1002)\"]\n  n7[\"file: C:\\Windows\\WindowsShell.Manifest\"]\n  n8[\"file: \\Device\\KsecDD\"]\n  n9[\"file: C:\\Users\\comp\\AppData\\Local\\Temp\\83DFFD621EFA44CF1A60.exe\"]\n  n10[\"file: C:\\Windows\\Globalization\\Sorting\\sortdefault.nls\"]\n  n11[\"file: C:\\Windows\\System32\\UxTheme.dll[.]Config\"]\n  n12[\"file: C:\\Windows\\System32\\uxtheme.dll\"]\n  n13[\"file: C:\\Users\\comp\\service\\svchost.exe\"]\n  n14[\"file: C:\\Users\\comp\\AppData\\Roaming~ocess for Windows Services.url\"]\n  n15[\"file: C:\\Users\\comp\\service\\Host Process for Windows Services.vbs\"]\n  n16[\"file: C:\\Windows\\Microsoft.NET\\Fram~k\\v2.0.50727\\RegAsm.exe[.]config\"]\n  n17[\"file: C:\\Windows\\Microsoft.NET\\Framework\\v2.0.50727\\mscorwks.dll\"]\n  n18[\"file: C:\\Windows\\winsxs\\x86_microso~e_d08cc06a442b34fc\\msvcr80.dll\"]\n  n19[\"file: C:\\Users\"]\n  n20[\"file: C:\\Users\\comp\"]\n  n21[\"file: C:\\Users\\comp\\AppData\"]\n  n22[\"file: C:\\Users\\comp\\AppData\\Local\"]\n  n23[\"file: C:\\Users\\comp\\AppData\\Local\\Temp\"]\n  n24[\"file: C:\\Users\\comp\\AppData\\Local\\T~3DFFD621EFA44CF1A60.exe.Local\\\"]\n  n25[\"file: \\Device\\Http\\Communication\"]\n  n26[\"registry: HKEY_CURRENT_USER\\di\"]\n  n27[\"registry: HKEY_CURRENT_USER\\Environment\\SEE_MASK_NOZONECHECKS\"]\n  n28[\"registry: HKEY_CURRENT_USER\\Software\\10e93180d6481ad63a77c2b255d40864\"]\n  n29[\"registry: HKEY_CURRENT_USER\\Software\\10~0d6481ad63a77c2b255d40864\\(kl)\"]\n  n30[\"registry: HKEY_CURRENT_USER\\Software\\Cl~iCache\\6\\52C64B7E\\LanguageList\"]\n  n31[\"registry: HKEY_CURRENT_USER\\Software\\Cl~oot%\\system32\\dhcpqec.dll,-100\"]\n  n32[\"registry: HKEY_CURRENT_USER\\Software\\Cl~oot%\\system32\\dhcpqec.dll,-101\"]\n  n33[\"registry: HKEY_CURRENT_USER\\Software\\Cl~oot%\\system32\\dhcpqec.dll,-103\"]\n  n34[\"registry: HKEY_CURRENT_USER\\Software\\Cl~oot%\\system32\\dhcpqec.dll,-102\"]\n  n35[\"registry: HKEY_CURRENT_USER\\Software\\Cl~Root%\\system32\\napipsec.dll,-1\"]\n  n36[\"registry: HKEY_CURRENT_USER\\Software\\Cl~Root%\\system32\\napipsec.dll,-2\"]\n  n37[\"registry: HKEY_CURRENT_USER\\Software\\Cl~Root%\\system32\\napipsec.dll,-4\"]\n  n38[\"registry: HKEY_LOCAL_MACHINE\\SOFTWARE\\W~tings\\DisableImprovedZoneCheck\"]\n  n39[\"registry: HKEY_LOCAL_MACHINE\\SOFTWARE\\P~et Settings\\Security_HKLM_only\"]\n  n40[\"registry: DisableUserModeCallbackFilter\"]\n  n41[\"registry: HKEY_CURRENT_USER\\Control Panel\\Mouse\\SwapMouseButtons\"]\n  n42[\"registry: HKEY_LOCAL_MACHINE\\SYSTEM\\Con~Control\\Nls\\CustomLocale\\en-US\"]\n  n43[\"registry: HKEY_LOCAL_MACHINE\\SYSTEM\\Con~ntrol\\Nls\\ExtendedLocale\\en-US\"]\n  n44[\"registry: HKEY_LOCAL_MACHINE\\SYSTEM\\Con~ing\\Versions\\00060101[.]00060101\"]\n  n45[\"registry: HKEY_LOCAL_MACHINE\\SYSTEM\\Con~01\\Control\\Nls\\Locale\\00000409\"]\n  n46[\"registry: HKEY_LOCAL_MACHINE\\SYSTEM\\Con~\\Control\\Nls\\Language Groups\\1\"]\n  n47[\"registry: HKEY_LOCAL_MACHINE\\SYSTEM\\Con~AccessProviders\\MartaExtension\"]\n  n48[\"registry: HKEY_LOCAL_MACHINE\\SOFTWARE\\M~RE_Initialize\\DisableMetaFiles\"]\n  n49[\"registry: HKEY_LOCAL_MACHINE\\SOFTWARE\\W~soft\\.NETFramework\\InstallRoot\"]\n  n50[\"registry: HKEY_LOCAL_MACHINE\\Software\\M~dows\\CurrentVersion\\SideBySide\"]\n  n51[\"registry: HKEY_LOCAL_MACHINE\\system\\Cur~ontrol\\NetworkProvider\\HwOrder\"]\n  n52[\"registry: HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\OLEAUT\"]\n  n53[\"registry: HKEY_LOCAL_MACHINE\\Software\\M~rrentVersion\\Internet Settings\"]\n  n54[\"registry: HKEY_LOCAL_MACHINE\\Software\\P~rrentVersion\\Internet Settings\"]\n  n55[\"registry: HKEY_CURRENT_USER\\Control Panel\\Mouse\"]\n  n56[\"registry: HKEY_CURRENT_USER\\Software\\AutoIt v3\\AutoIt\"]\n  n57[\"registry: HKEY_LOCAL_MACHINE\\System\\Cur~olSet\\Control\\Nls\\CustomLocale\"]\n  n0 -->|\"created\"| n1\n  n0 -->|\"created\"| n2\n  n0 -->|\"created\"| n3\n  n0 -->|\"created\"| n4\n  n0 -->|\"spawned\"| n5\n  n0 -->|\"spawned\"| n6\n  n0 -->|\"read\"| n7\n  n0 -->|\"read\"| n8\n  n0 -->|\"read\"| n9\n  n0 -->|\"read\"| n10\n  n0 -->|\"read\"| n11\n  n0 -->|\"read\"| n12\n  n0 -->|\"read\"| n13\n  n0 -->|\"read\"| n14\n  n0 -->|\"read\"| n15\n  n0 -->|\"read\"| n16\n  n0 -->|\"read\"| n17\n  n0 -->|\"read\"| n18\n  n0 -->|\"read\"| n19\n  n0 -->|\"read\"| n20\n  n0 -->|\"read\"| n21\n  n0 -->|\"read\"| n22\n  n0 -->|\"read\"| n23\n  n0 -->|\"read\"| n24\n  n0 -->|\"wrote\"| n13\n  n0 -->|\"wrote\"| n14\n  n0 -->|\"wrote\"| n15\n  n0 -->|\"wrote\"| n25\n  n0 -->|\"set\"| n26\n  n0 -->|\"set\"| n27\n  n0 -->|\"set\"| n28\n  n0 -->|\"set\"| n29\n  n0 -->|\"set\"| n30\n  n0 -->|\"set\"| n31\n  n0 -->|\"set\"| n32\n  n0 -->|\"set\"| n33\n  n0 -->|\"set\"| n34\n  n0 -->|\"set\"| n35\n  n0 -->|\"set\"| n36\n  n0 -->|\"set\"| n37\n  n0 -->|\"read\"| n38\n  n0 -->|\"read\"| n39\n  n0 -->|\"read\"| n40\n  n0 -->|\"read\"| n41\n  n0 -->|\"read\"| n42\n  n0 -->|\"read\"| n43\n  n0 -->|\"read\"| n44\n  n0 -->|\"read\"| n45\n  n0 -->|\"read\"| n46\n  n0 -->|\"read\"| n47\n  n0 -->|\"read\"| n48\n  n0 -->|\"read\"| n49\n  n0 -->|\"read\"| n50\n  n0 -->|\"read\"| n51\n  n0 -->|\"read\"| n52\n  n0 -->|\"read\"| n53\n  n0 -->|\"read\"| n54\n  n0 -->|\"read\"| n55\n  n0 -->|\"read\"| n56\n  n0 -->|\"read\"| n57",
+    "nodes": 58
+   },
+   "manifest": {
+    "negative_corpus": {
+     "excluded_family": "njRAT",
+     "packaged": true
+    },
+    "specimen_version": "1.1.0",
+    "trace_binding": null
+   },
+   "sigma_rules": 10,
+   "static_score": 0.2315,
+   "static_top": [
+    {
+     "feature": "pe_executable",
+     "impact": 0.8,
+     "value": 1.0,
+     "weight": 0.8
+    }
+   ],
+   "techniques": [
+    "T1105",
+    "T1547.001"
+   ],
+   "timeline_head": [
+    {
+     "anomaly": 0.537,
+     "description": "sample.exe wrote C:\\Users\\comp\\service\\svchost.exe",
+     "tactic": "command-and-control",
+     "technique": "T1105",
+     "ts": 0.025
+    },
+    {
+     "anomaly": 0.537,
+     "description": "sample.exe wrote C:\\Users\\comp\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\Host Process for Windows Services.url",
+     "tactic": "persistence",
+     "technique": "T1547.001",
+     "ts": 0.026
+    },
+    {
+     "anomaly": 0.537,
+     "description": "sample.exe wrote C:\\Users\\comp\\service\\Host Process for Windows Services.vbs",
+     "tactic": "command-and-control",
+     "technique": "T1105",
+     "ts": 0.027
+    }
+   ],
+   "verdict": {
+    "confidence": "medium (behavior-driven)",
+    "label": "malicious",
+    "score": 0.9133
+   },
+   "yara": true
+  },
+  "full_cape_synthetic": {
+   "behaviour_p": 0.7396,
+   "behaviour_scorer": "api-ngram-lr (MalbehavD-V1)",
+   "behaviour_top": [
+    {
+     "feature": "writeprocessmemory",
+     "impact": 0.8216,
+     "value": 0.3416,
+     "weight": 2.4051
+    },
+    {
+     "feature": "createremotethread",
+     "impact": 0.5244,
+     "value": 0.4172,
+     "weight": 1.257
+    },
+    {
+     "feature": "isdebuggerpresent",
+     "impact": -0.4188,
+     "value": 0.1694,
+     "weight": -2.4722
+    }
+   ],
+   "family": "unknown (closest: Zeus)",
+   "family_evidence": [
+    [
+     "tech:T1055",
+     0.433
+    ],
+    [
+     "tech:T1622",
+     0.384
+    ],
+    [
+     "tactic:defense-evasion",
+     0.188
+    ],
+    [
+     "file_delete_ext:exe",
+     0.1849
+    ]
+   ],
+   "family_model": "avast-ctu-logreg (behaviour+static)",
+   "family_p": 0.363,
+   "first_sigma": "title: 'SPECIMEN auto - file_event pattern'\nstatus: experimental\ndescription: Auto-synthesized from one sandbox run of 5d1f0a0c3a2f7e6b; generalisation rung 2; zero hits on the negative corpus at synthesis time. Review before deploy.\nauthor: SPECIMEN\ntags:\n    - attack.t1105\nlogsource:\n    product: windows\n    category: file_event\ndetection:\n    selection:\n        TargetFilename: 'C:\\\\Users\\\\*\\\\AppData\\\\*\\\\labupd.exe'\n    condition: selection\nlevel: medium\n",
+   "graph": {
+    "edges": 10,
+    "mermaid": "flowchart LR\n  n0[\"process: invoice_lab.exe (2100)\"]\n  n1[\"api: IsDebuggerPresent\"]\n  n2[\"process: cmd.exe (2200)\"]\n  n3[\"mutex: Global\\LabMutex-77\"]\n  n4[\"registry: HKEY_CURRENT_USER\\Software\\Mi~\\CurrentVersion\\Run\\labupdater\"]\n  n5[\"process: pid 3300 (3300)\"]\n  n6[\"file: C:\\Users\\lab\\Downloads\\invoice_lab.exe\"]\n  n7[\"process: invoice_lab.exe (1000)\"]\n  n8[\"file: C:\\Users\\lab\\AppData\\Roaming\\labupd.exe\"]\n  n9[\"domain: c2.lab[.]invalid\"]\n  n10[\"network: 203[.]0[.]113[.]66:8443\"]\n  n0 -->|\"called\"| n1\n  n0 -->|\"spawned\"| n2\n  n0 -->|\"created\"| n3\n  n0 -->|\"set\"| n4\n  n0 -->|\"injected\"| n5\n  n0 -->|\"injected\"| n5\n  n0 -->|\"deleted\"| n6\n  n7 -->|\"wrote\"| n8\n  n7 -->|\"resolved\"| n9\n  n7 -->|\"connected\"| n10",
+    "nodes": 11
+   },
+   "manifest": {
+    "negative_corpus": {
+     "excluded_family": "Zeus",
+     "packaged": true
+    },
+    "specimen_version": "1.1.0",
+    "trace_binding": null
+   },
+   "sigma_rules": 3,
+   "static_score": 0.3543,
+   "static_top": [
+    {
+     "feature": "pe_executable",
+     "impact": 0.8,
+     "value": 1.0,
+     "weight": 0.8
+    },
+    {
+     "feature": "few_imports",
+     "impact": 0.6,
+     "value": 1.0,
+     "weight": 0.6
+    }
+   ],
+   "techniques": [
+    "T1055",
+    "T1070.004",
+    "T1071",
+    "T1071.004",
+    "T1105",
+    "T1490",
+    "T1547.001",
+    "T1622"
+   ],
+   "timeline_head": [
+    {
+     "anomaly": 1.0,
+     "description": "invoice_lab.exe called IsDebuggerPresent",
+     "tactic": "defense-evasion",
+     "technique": "T1622",
+     "ts": 0.0
+    },
+    {
+     "anomaly": 1.0,
+     "description": "invoice_lab.exe spawned cmd.exe `cmd.exe /c vssadmin delete shadows /all /quiet`",
+     "tactic": "impact",
+     "technique": "T1490",
+     "ts": 0.001
+    },
+    {
+     "anomaly": 1.0,
+     "description": "invoice_lab.exe set HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\labupdater",
+     "tactic": "persistence",
+     "technique": "T1547.001",
+     "ts": 0.20000004768371582
+    },
+    {
+     "anomaly": 1.0,
+     "description": "invoice_lab.exe injected into pid 3300",
+     "tactic": "defense-evasion",
+     "technique": "T1055",
+     "ts": 0.3000001907348633
+    }
+   ],
+   "verdict": {
+    "confidence": "low-static/behavior-disagree",
+    "label": "suspicious",
+    "score": 0.7396
+   },
+   "yara": false
+  },
+  "sysmon_lab_run": {
+   "behaviour_p": 0.98,
+   "behaviour_scorer": "mvp-synthetic-logreg (ATT&CK features)",
+   "behaviour_top": [
+    {
+     "feature": "n_drop",
+     "impact": 1.7397,
+     "value": 0.6931,
+     "weight": 2.51
+    },
+    {
+     "feature": "n_inject",
+     "impact": 1.3361,
+     "value": 0.6931,
+     "weight": 1.9277
+    },
+    {
+     "feature": "n_persist",
+     "impact": 1.1776,
+     "value": 0.6931,
+     "weight": 1.6991
+    }
+   ],
+   "family": "sim-persist-loader",
+   "family_evidence": [],
+   "family_model": "synthetic-prototypes",
+   "family_p": 0.714,
+   "first_sigma": "title: 'SPECIMEN auto - file_event pattern'\nstatus: experimental\ndescription: Auto-synthesized from one sandbox run of b81a2a0872b6f42e; generalisation rung 2; zero hits on the negative corpus at synthesis time. Review before deploy.\nauthor: SPECIMEN\ntags:\n    - attack.t1105\nlogsource:\n    product: windows\n    category: file_event\ndetection:\n    selection:\n        TargetFilename: 'C:\\\\Users\\\\*\\\\AppData\\\\*\\\\svcupd.exe'\n    condition: selection\nlevel: medium\n",
+   "graph": {
+    "edges": 8,
+    "mermaid": "flowchart LR\n  n0[\"process: C:\\Windows\\explorer.exe (3100)\"]\n  n1[\"process: C:\\Users\\lab\\Desktop\\sample.exe (4200)\"]\n  n2[\"process: C:\\Windows\\System32\\WindowsPo~ell\\v1.0\\powershell.exe (4300)\"]\n  n3[\"domain: update.example[.]invalid\"]\n  n4[\"network: 203[.]0[.]113[.]10:443\"]\n  n5[\"file: C:\\Users\\lab\\AppData\\Roaming\\svcupd.exe\"]\n  n6[\"registry: HKU\\S-1-5-21-1\\Software\\Micro~dows\\CurrentVersion\\Run\\svcupd\"]\n  n7[\"process: pid 900 (-1)\"]\n  n8[\"file: C:\\Users\\lab\\Desktop\\sample.exe\"]\n  n0 -->|\"spawned\"| n1\n  n1 -->|\"spawned\"| n2\n  n2 -->|\"resolved\"| n3\n  n2 -->|\"connected\"| n4\n  n2 -->|\"wrote\"| n5\n  n1 -->|\"set\"| n6\n  n1 -->|\"injected\"| n7\n  n1 -->|\"deleted\"| n8",
+    "nodes": 9
+   },
+   "manifest": {
+    "negative_corpus": {
+     "excluded_family": null,
+     "packaged": true
+    },
+    "specimen_version": "1.1.0",
+    "trace_binding": "bound: the trace records this sample's SHA-256"
+   },
+   "sigma_rules": 4,
+   "static_score": 0.1192,
+   "static_top": [],
+   "techniques": [
+    "T1055",
+    "T1059.001",
+    "T1070.004",
+    "T1071",
+    "T1071.004",
+    "T1105",
+    "T1547.001"
+   ],
+   "timeline_head": [
+    {
+     "anomaly": 1.0,
+     "description": "C:\\Users\\lab\\Desktop\\sample.exe spawned C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe `powershell.exe -nop -w hidden -enc SQBFAFgA`",
+     "tactic": "execution",
+     "technique": "T1059.001",
+     "ts": 1.15
+    },
+    {
+     "anomaly": 0.451,
+     "description": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe resolved update.example.invalid",
+     "tactic": "command-and-control",
+     "technique": "T1071.004",
+     "ts": 1.9
+    },
+    {
+     "anomaly": 0.58,
+     "description": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe connected 203.0.113.10:443",
+     "tactic": "command-and-control",
+     "technique": "T1071",
+     "ts": 2.3
+    },
+    {
+     "anomaly": 0.537,
+     "description": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe wrote C:\\Users\\lab\\AppData\\Roaming\\svcupd.exe",
+     "tactic": "command-and-control",
+     "technique": "T1105",
+     "ts": 2.9
+    }
+   ],
+   "verdict": {
+    "confidence": "medium (behavior-driven)",
+    "label": "malicious",
+    "score": 0.98
+   },
+   "yara": false
+  }
+ },
+ "specimen_version": "1.1.0"
+}

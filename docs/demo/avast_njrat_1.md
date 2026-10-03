@@ -12,7 +12,7 @@ score 0.2315 / entropy 6.78
 - pe&#95;executable impact +0.80
 
 ## Behavior
-P(malicious)=0.9133 label=malicious scorer=mvp-synthetic-logreg (ATT&CK features) | family match **njRAT** (p=0.821, avast-ctu-logreg (behaviour+static))
+P(malicious)=0.9133 label=malicious scorer=mvp-synthetic-logreg (ATT&CK features) | family match **unknown &#40;closest: njRAT&#41;** (p=0.821, avast-ctu-logreg (behaviour+static))
 
 - n&#95;drop = 1.0986, impact +2.76
 - n&#95;persist = 0.6931, impact +1.18
@@ -20,78 +20,78 @@ P(malicious)=0.9133 label=malicious scorer=mvp-synthetic-logreg (ATT&CK features
 - frac&#95;suspicious = 0.0139, impact +0.02
 
 ### Family evidence
-Top tokens supporting **njRAT** (avast-ctu-logreg (behaviour+static)):
+Top tokens supporting **unknown &#40;closest: njRAT&#41;** (avast-ctu-logreg &#40;behaviour+static&#41;):
 
-- tech:T1105 (+0.230)
-- tactic:command-and-control (+0.225)
-- tech:T1547.001 (+0.214)
-- tactic:persistence (+0.200)
-- exec:regasm.exe (+0.147)
-- file&#95;read:\device\ksecdd (+0.136)
+- tech:T1105 &#40;+0.230&#41;
+- tactic:command-and-control &#40;+0.225&#41;
+- tech:T1547.001 &#40;+0.214&#41;
+- tactic:persistence &#40;+0.200&#41;
+- exec:regasm.exe &#40;+0.147&#41;
+- file&#95;read:&#92;device&#92;ksecdd &#40;+0.136&#41;
 
 ## Timeline
 | t | event | ATT&CK | anomaly |
 |---|---|---|---|
 | 0.00 | sample.exe created bitsperf |   | 1.0 |
-| 0.00 | sample.exe created Global\CLR&#95;CASOFF&#95;MUTEX |   | 1.0 |
+| 0.00 | sample.exe created Global&#92;CLR&#95;CASOFF&#95;MUTEX |   | 1.0 |
 | 0.00 | sample.exe created 10e93180d6481ad63a77c2b255d40864 |   | 1.0 |
-| 0.00 | sample.exe created Global\.net clr networking |   | 1.0 |
-| 0.01 | sample.exe spawned RegAsm.exe &#96;"C:\Windows\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe"&#96; |   | 1.0 |
-| 0.01 | sample.exe spawned netsh &#96;netsh firewall add allowedprogram "C:\Windows\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe" "RegAsm.exe" ENABLE&#96; |   | 1.0 |
-| 0.01 | sample.exe read C:\Windows\WindowsShell.Manifest |   | 0.0 |
-| 0.01 | sample.exe read \Device\KsecDD |   | 0.0 |
-| 0.01 | sample.exe read C:\Users\comp\AppData\Local\Temp\83DFFD621EFA44CF1A60.exe |   | 0.0 |
-| 0.01 | sample.exe read C:\Windows\Globalization\Sorting\sortdefault.nls |   | 0.0 |
-| 0.01 | sample.exe read C:\Windows\System32\UxTheme.dll[.]Config |   | 0.0 |
-| 0.01 | sample.exe read C:\Windows\System32\uxtheme.dll |   | 0.0 |
-| 0.01 | sample.exe read C:\Users\comp\service\svchost.exe |   | 0.0 |
-| 0.01 | sample.exe read C:\Users\comp\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\Host Process for Windows Services.url |   | 0.0 |
-| 0.01 | sample.exe read C:\Users\comp\service\Host Process for Windows Services.vbs |   | 0.0 |
-| 0.02 | sample.exe read C:\Windows\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe[.]config |   | 0.0 |
-| 0.02 | sample.exe read C:\Windows\Microsoft.NET\Framework\v2.0.50727\mscorwks.dll |   | 0.0 |
-| 0.02 | sample.exe read C:\Windows\winsxs\x86&#95;microsoft.vc80.crt&#95;1fc8b3b9a1e18e3b&#95;8.0.50727.4940&#95;none&#95;d08cc06a442b34fc\msvcr80.dll |   | 0.0 |
-| 0.02 | sample.exe read C:\Users |   | 0.0 |
-| 0.02 | sample.exe read C:\Users\comp |   | 0.0 |
-| 0.02 | sample.exe read C:\Users\comp\AppData |   | 0.0 |
-| 0.02 | sample.exe read C:\Users\comp\AppData\Local |   | 0.0 |
-| 0.02 | sample.exe read C:\Users\comp\AppData\Local\Temp |   | 0.0 |
-| 0.02 | sample.exe read C:\Users\comp\AppData\Local\Temp\83DFFD621EFA44CF1A60.exe.Local\ |   | 0.0 |
-| 0.03 | sample.exe wrote C:\Users\comp\service\svchost.exe | T1105 command-and-control | 0.537 |
-| 0.03 | sample.exe wrote C:\Users\comp\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\Host Process for Windows Services.url | T1547.001 persistence | 0.537 |
-| 0.03 | sample.exe wrote C:\Users\comp\service\Host Process for Windows Services.vbs | T1105 command-and-control | 0.537 |
-| 0.03 | sample.exe wrote \Device\Http\Communication |   | 0.237 |
-| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER\di |   | 1.0 |
-| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER\Environment\SEE&#95;MASK&#95;NOZONECHECKS |   | 1.0 |
-| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER\Software\10e93180d6481ad63a77c2b255d40864 |   | 1.0 |
-| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER\Software\10e93180d6481ad63a77c2b255d40864\[kl] |   | 1.0 |
-| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\LanguageList |   | 1.0 |
-| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-100 |   | 1.0 |
-| 0.04 | sample.exe set HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-101 |   | 1.0 |
-| 0.04 | sample.exe set HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-103 |   | 1.0 |
-| 0.04 | sample.exe set HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-102 |   | 1.0 |
-| 0.04 | sample.exe set HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\napipsec.dll,-1 |   | 1.0 |
-| 0.04 | sample.exe set HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\napipsec.dll,-2 |   | 1.0 |
-| 0.04 | sample.exe set HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\napipsec.dll,-4 |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Internet Settings\DisableImprovedZoneCheck |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\Security&#95;HKLM&#95;only |   | 1.0 |
+| 0.00 | sample.exe created Global&#92;.net clr networking |   | 1.0 |
+| 0.01 | sample.exe spawned RegAsm.exe &#96;"C:&#92;Windows&#92;Microsoft.NET&#92;Framework&#92;v2.0.50727&#92;RegAsm.exe"&#96; |   | 1.0 |
+| 0.01 | sample.exe spawned netsh &#96;netsh firewall add allowedprogram "C:&#92;Windows&#92;Microsoft.NET&#92;Framework&#92;v2.0.50727&#92;RegAsm.exe" "RegAsm.exe" ENABLE&#96; |   | 1.0 |
+| 0.01 | sample.exe read C:&#92;Windows&#92;WindowsShell.Manifest |   | 0.0 |
+| 0.01 | sample.exe read &#92;Device&#92;KsecDD |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Users&#92;comp&#92;AppData&#92;Local&#92;Temp&#92;83DFFD621EFA44CF1A60.exe |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Windows&#92;Globalization&#92;Sorting&#92;sortdefault.nls |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Windows&#92;System32&#92;UxTheme.dll&#91;.&#93;Config |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Windows&#92;System32&#92;uxtheme.dll |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Users&#92;comp&#92;service&#92;svchost.exe |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Users&#92;comp&#92;AppData&#92;Roaming&#92;Microsoft&#92;Windows&#92;Start Menu&#92;Programs&#92;Startup&#92;Host Process for Windows Services.url |   | 0.0 |
+| 0.01 | sample.exe read C:&#92;Users&#92;comp&#92;service&#92;Host Process for Windows Services.vbs |   | 0.0 |
+| 0.02 | sample.exe read C:&#92;Windows&#92;Microsoft.NET&#92;Framework&#92;v2.0.50727&#92;RegAsm.exe&#91;.&#93;config |   | 0.0 |
+| 0.02 | sample.exe read C:&#92;Windows&#92;Microsoft.NET&#92;Framework&#92;v2.0.50727&#92;mscorwks.dll |   | 0.0 |
+| 0.02 | sample.exe read C:&#92;Windows&#92;winsxs&#92;x86&#95;microsoft.vc80.crt&#95;1fc8b3b9a1e18e3b&#95;8.0.50727.4940&#95;none&#95;d08cc06a442b34fc&#92;msvcr80.dll |   | 0.0 |
+| 0.02 | sample.exe read C:&#92;Users |   | 0.0 |
+| 0.02 | sample.exe read C:&#92;Users&#92;comp |   | 0.0 |
+| 0.02 | sample.exe read C:&#92;Users&#92;comp&#92;AppData |   | 0.0 |
+| 0.02 | sample.exe read C:&#92;Users&#92;comp&#92;AppData&#92;Local |   | 0.0 |
+| 0.02 | sample.exe read C:&#92;Users&#92;comp&#92;AppData&#92;Local&#92;Temp |   | 0.0 |
+| 0.02 | sample.exe read C:&#92;Users&#92;comp&#92;AppData&#92;Local&#92;Temp&#92;83DFFD621EFA44CF1A60.exe.Local&#92; |   | 0.0 |
+| 0.03 | sample.exe wrote C:&#92;Users&#92;comp&#92;service&#92;svchost.exe | T1105 command-and-control | 0.537 |
+| 0.03 | sample.exe wrote C:&#92;Users&#92;comp&#92;AppData&#92;Roaming&#92;Microsoft&#92;Windows&#92;Start Menu&#92;Programs&#92;Startup&#92;Host Process for Windows Services.url | T1547.001 persistence | 0.537 |
+| 0.03 | sample.exe wrote C:&#92;Users&#92;comp&#92;service&#92;Host Process for Windows Services.vbs | T1105 command-and-control | 0.537 |
+| 0.03 | sample.exe wrote &#92;Device&#92;Http&#92;Communication |   | 0.237 |
+| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER&#92;di |   | 1.0 |
+| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER&#92;Environment&#92;SEE&#95;MASK&#95;NOZONECHECKS |   | 1.0 |
+| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER&#92;Software&#92;10e93180d6481ad63a77c2b255d40864 |   | 1.0 |
+| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER&#92;Software&#92;10e93180d6481ad63a77c2b255d40864&#92;&#91;kl&#93; |   | 1.0 |
+| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER&#92;Software&#92;Classes&#92;Local Settings&#92;MuiCache&#92;6&#92;52C64B7E&#92;LanguageList |   | 1.0 |
+| 0.03 | sample.exe set HKEY&#95;CURRENT&#95;USER&#92;Software&#92;Classes&#92;Local Settings&#92;MuiCache&#92;6&#92;52C64B7E&#92;@%SystemRoot%&#92;system32&#92;dhcpqec.dll,-100 |   | 1.0 |
+| 0.04 | sample.exe set HKEY&#95;CURRENT&#95;USER&#92;Software&#92;Classes&#92;Local Settings&#92;MuiCache&#92;6&#92;52C64B7E&#92;@%SystemRoot%&#92;system32&#92;dhcpqec.dll,-101 |   | 1.0 |
+| 0.04 | sample.exe set HKEY&#95;CURRENT&#95;USER&#92;Software&#92;Classes&#92;Local Settings&#92;MuiCache&#92;6&#92;52C64B7E&#92;@%SystemRoot%&#92;system32&#92;dhcpqec.dll,-103 |   | 1.0 |
+| 0.04 | sample.exe set HKEY&#95;CURRENT&#95;USER&#92;Software&#92;Classes&#92;Local Settings&#92;MuiCache&#92;6&#92;52C64B7E&#92;@%SystemRoot%&#92;system32&#92;dhcpqec.dll,-102 |   | 1.0 |
+| 0.04 | sample.exe set HKEY&#95;CURRENT&#95;USER&#92;Software&#92;Classes&#92;Local Settings&#92;MuiCache&#92;6&#92;52C64B7E&#92;@%SystemRoot%&#92;system32&#92;napipsec.dll,-1 |   | 1.0 |
+| 0.04 | sample.exe set HKEY&#95;CURRENT&#95;USER&#92;Software&#92;Classes&#92;Local Settings&#92;MuiCache&#92;6&#92;52C64B7E&#92;@%SystemRoot%&#92;system32&#92;napipsec.dll,-2 |   | 1.0 |
+| 0.04 | sample.exe set HKEY&#95;CURRENT&#95;USER&#92;Software&#92;Classes&#92;Local Settings&#92;MuiCache&#92;6&#92;52C64B7E&#92;@%SystemRoot%&#92;system32&#92;napipsec.dll,-4 |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SOFTWARE&#92;Wow6432Node&#92;Microsoft&#92;Windows&#92;CurrentVersion&#92;Internet Settings&#92;DisableImprovedZoneCheck |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SOFTWARE&#92;Policies&#92;Microsoft&#92;Windows&#92;CurrentVersion&#92;Internet Settings&#92;Security&#95;HKLM&#95;only |   | 1.0 |
 | 0.04 | sample.exe read DisableUserModeCallbackFilter |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;CURRENT&#95;USER\Control Panel\Mouse\SwapMouseButtons |   | 1.0 |
-| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\Nls\CustomLocale\en-US |   | 1.0 |
-| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\Nls\ExtendedLocale\en-US |   | 1.0 |
-| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\Nls\Sorting\Versions\00060101.00060101 |   | 1.0 |
-| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\Nls\Locale\00000409 |   | 1.0 |
-| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\Nls\Language Groups\1 |   | 1.0 |
-| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SYSTEM\ControlSet001\Control\Lsa\AccessProviders\MartaExtension |   | 1.0 |
-| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\GRE&#95;Initialize\DisableMetaFiles |   | 1.0 |
-| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\InstallRoot |   | 1.0 |
-| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\Software\Microsoft\Windows\CurrentVersion\SideBySide |   | 1.0 |
-| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\system\CurrentControlSet\control\NetworkProvider\HwOrder |   | 1.0 |
-| 0.06 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\SOFTWARE\Microsoft\OLEAUT |   | 1.0 |
-| 0.06 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\Software\Microsoft\Windows\CurrentVersion\Internet Settings |   | 1.0 |
-| 0.06 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings |   | 1.0 |
-| 0.06 | sample.exe read HKEY&#95;CURRENT&#95;USER\Control Panel\Mouse |   | 1.0 |
-| 0.06 | sample.exe read HKEY&#95;CURRENT&#95;USER\Software\AutoIt v3\AutoIt |   | 1.0 |
-| 0.06 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE\System\CurrentControlSet\Control\Nls\CustomLocale |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;CURRENT&#95;USER&#92;Control Panel&#92;Mouse&#92;SwapMouseButtons |   | 1.0 |
+| 0.04 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SYSTEM&#92;ControlSet001&#92;Control&#92;Nls&#92;CustomLocale&#92;en-US |   | 1.0 |
+| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SYSTEM&#92;ControlSet001&#92;Control&#92;Nls&#92;ExtendedLocale&#92;en-US |   | 1.0 |
+| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SYSTEM&#92;ControlSet001&#92;Control&#92;Nls&#92;Sorting&#92;Versions&#92;00060101&#91;.&#93;00060101 |   | 1.0 |
+| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SYSTEM&#92;ControlSet001&#92;Control&#92;Nls&#92;Locale&#92;00000409 |   | 1.0 |
+| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SYSTEM&#92;ControlSet001&#92;Control&#92;Nls&#92;Language Groups&#92;1 |   | 1.0 |
+| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SYSTEM&#92;ControlSet001&#92;Control&#92;Lsa&#92;AccessProviders&#92;MartaExtension |   | 1.0 |
+| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SOFTWARE&#92;Microsoft&#92;Windows NT&#92;CurrentVersion&#92;GRE&#95;Initialize&#92;DisableMetaFiles |   | 1.0 |
+| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SOFTWARE&#92;Wow6432Node&#92;Microsoft&#92;.NETFramework&#92;InstallRoot |   | 1.0 |
+| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;Software&#92;Microsoft&#92;Windows&#92;CurrentVersion&#92;SideBySide |   | 1.0 |
+| 0.05 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;system&#92;CurrentControlSet&#92;control&#92;NetworkProvider&#92;HwOrder |   | 1.0 |
+| 0.06 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;SOFTWARE&#92;Microsoft&#92;OLEAUT |   | 1.0 |
+| 0.06 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;Software&#92;Microsoft&#92;Windows&#92;CurrentVersion&#92;Internet Settings |   | 1.0 |
+| 0.06 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;Software&#92;Policies&#92;Microsoft&#92;Windows&#92;CurrentVersion&#92;Internet Settings |   | 1.0 |
+| 0.06 | sample.exe read HKEY&#95;CURRENT&#95;USER&#92;Control Panel&#92;Mouse |   | 1.0 |
+| 0.06 | sample.exe read HKEY&#95;CURRENT&#95;USER&#92;Software&#92;AutoIt v3&#92;AutoIt |   | 1.0 |
+| 0.06 | sample.exe read HKEY&#95;LOCAL&#95;MACHINE&#92;System&#92;CurrentControlSet&#92;Control&#92;Nls&#92;CustomLocale |   | 1.0 |
 
 ## Provenance graph
 ```mermaid
@@ -140,7 +140,7 @@ flowchart LR
   n41["registry: HKEY_CURRENT_USER\Control Panel\Mouse\SwapMouseButtons"]
   n42["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~Control\Nls\CustomLocale\en-US"]
   n43["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~ntrol\Nls\ExtendedLocale\en-US"]
-  n44["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~ing\Versions\00060101.00060101"]
+  n44["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~ing\Versions\00060101[.]00060101"]
   n45["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~01\Control\Nls\Locale\00000409"]
   n46["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~\Control\Nls\Language Groups\1"]
   n47["registry: HKEY_LOCAL_MACHINE\SYSTEM\Con~AccessProviders\MartaExtension"]
@@ -217,8 +217,8 @@ flowchart LR
 ```
 
 ## IOCs (defanged)
-- **dropped_files**: C:\Users\comp\service\svchost.exe
-- **registry**: HKEY&#95;CURRENT&#95;USER\Environment\SEE&#95;MASK&#95;NOZONECHECKS, HKEY&#95;CURRENT&#95;USER\Software\10e93180d6481ad63a77c2b255d40864, HKEY&#95;CURRENT&#95;USER\Software\10e93180d6481ad63a77c2b255d40864\[kl], HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-100, HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-101, HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-102, HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\dhcpqec.dll,-103, HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\napipsec.dll,-1, HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\napipsec.dll,-2, HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\@%SystemRoot%\system32\napipsec.dll,-4, HKEY&#95;CURRENT&#95;USER\Software\Classes\Local Settings\MuiCache\6\52C64B7E\LanguageList, HKEY&#95;CURRENT&#95;USER\di
+- **dropped_files**: C:&#92;Users&#92;comp&#92;service&#92;svchost.exe
+- **registry**: HKEY&#95;CURRENT&#95;USER&#92;Environment&#92;SEE&#95;MASK&#95;NOZONECHECKS, HKEY&#95;CURRENT&#95;USER&#92;Software&#92;10e93180d6481ad63a77c2b255d40864, HKEY&#95;CURRENT&#95;USER&#92;Software&#92;10e93180d6481ad63a77c2b255d40864&#92;&#91;kl&#93;, HKEY&#95;CURRENT&#95;USER&#92;Software&#92;Classes&#92;Local Settings&#92;MuiCache&#92;6&#92;52C64B7E&#92;@%SystemRoot%&#92;system32&#92;dhcpqec.dll,-100, HKEY&#95;CURRENT&#95;USER&#92;Software&#92;Classes&#92;Local Settings&#92;MuiCache&#92;6&#92;52C64B7E&#92;@%SystemRoot%&#92;system32&#92;dhcpqec.dll,-101, HKEY&#95;CURRENT&#95;USER&#92;Software&#92;Classes&#92;Local Settings&#92;MuiCache&#92;6&#92;52C64B7E&#92;@%SystemRoot%&#92;system32&#92;dhcpqec.dll,-102, HKEY&#95;CURRENT&#95;USER&#92;Software&#92;Classes&#92;Local Settings&#92;MuiCache&#92;6&#92;52C64B7E&#92;@%SystemRoot%&#92;system32&#92;dhcpqec.dll,-103, HKEY&#95;CURRENT&#95;USER&#92;Software&#92;Classes&#92;Local Settings&#92;MuiCache&#92;6&#92;52C64B7E&#92;@%SystemRoot%&#92;system32&#92;napipsec.dll,-1, HKEY&#95;CURRENT&#95;USER&#92;Software&#92;Classes&#92;Local Settings&#92;MuiCache&#92;6&#92;52C64B7E&#92;@%SystemRoot%&#92;system32&#92;napipsec.dll,-2, HKEY&#95;CURRENT&#95;USER&#92;Software&#92;Classes&#92;Local Settings&#92;MuiCache&#92;6&#92;52C64B7E&#92;@%SystemRoot%&#92;system32&#92;napipsec.dll,-4, HKEY&#95;CURRENT&#95;USER&#92;Software&#92;Classes&#92;Local Settings&#92;MuiCache&#92;6&#92;52C64B7E&#92;LanguageList, HKEY&#95;CURRENT&#95;USER&#92;di
 
 ## YARA
 ```yara
@@ -303,24 +303,7 @@ level: medium
 
 ```
 
-## Sigma 4 - registry_set
-```yaml
-title: 'SPECIMEN auto - registry_set pattern'
-status: experimental
-description: Auto-synthesized from one sandbox run of 2434c0af980a3a71; generalisation rung 2; zero hits on the negative corpus at synthesis time. Review before deploy.
-author: SPECIMEN
-logsource:
-    product: windows
-    category: registry_set
-detection:
-    selection:
-        TargetObject: 'HKEY_CURRENT_USER\\Software\\Classes\\Local Settings\\MuiCache\\*\\*\\@%SystemRoot%\\system*\\*'
-    condition: selection
-level: medium
-
-```
-
-## Sigma 5 - file_event
+## Sigma 4 - file_event
 ```yaml
 title: 'SPECIMEN auto - file_event pattern'
 status: experimental
@@ -339,6 +322,23 @@ level: medium
 
 ```
 
+## Sigma 5 - registry_set
+```yaml
+title: 'SPECIMEN auto - registry_set pattern'
+status: experimental
+description: Auto-synthesized from one sandbox run of 2434c0af980a3a71; generalisation rung 1; zero hits on the negative corpus at synthesis time. Review before deploy.
+author: SPECIMEN
+logsource:
+    product: windows
+    category: registry_set
+detection:
+    selection:
+        TargetObject: 'HKEY_CURRENT_USER\\Software\\Classes\\Local Settings\\MuiCache\\*\\*\\@%SystemRoot%\\system*\\dhcpqec.dll,-*'
+    condition: selection
+level: medium
+
+```
+
 ## Sigma 6 - registry_set
 ```yaml
 title: 'SPECIMEN auto - registry_set pattern'
@@ -350,7 +350,7 @@ logsource:
     category: registry_set
 detection:
     selection:
-        TargetObject: 'HKEY_CURRENT_USER\\Environment\\*'
+        TargetObject: 'HKEY_CURRENT_USER\\Software\\Classes\\Local Settings\\MuiCache\\*\\*\\@%SystemRoot%\\system*\\napipsec.dll,-*'
     condition: selection
 level: medium
 
@@ -385,13 +385,30 @@ logsource:
     category: registry_set
 detection:
     selection:
-        TargetObject: 'HKEY_CURRENT_USER\\Software\\10e93180d6481ad63a77c2b255d40864'
+        TargetObject: 'HKEY_CURRENT_USER\\Environment\\SEE_MASK_NOZONECHECKS'
     condition: selection
 level: medium
 
 ```
 
 ## Sigma 9 - registry_set
+```yaml
+title: 'SPECIMEN auto - registry_set pattern'
+status: experimental
+description: Auto-synthesized from one sandbox run of 2434c0af980a3a71; generalisation rung 0; zero hits on the negative corpus at synthesis time. Review before deploy.
+author: SPECIMEN
+logsource:
+    product: windows
+    category: registry_set
+detection:
+    selection:
+        TargetObject: 'HKEY_CURRENT_USER\\Software\\10e93180d6481ad63a77c2b255d40864'
+    condition: selection
+level: medium
+
+```
+
+## Sigma 10 - registry_set
 ```yaml
 title: 'SPECIMEN auto - registry_set pattern'
 status: experimental
@@ -417,9 +434,9 @@ Specificity: 3 Sigma candidate(s) dropped because no generalisation rung was spe
   "trace_sha256": "2434c0af980a3a712b4ead907d2bdcd79682c37ce7c6c6a973f87c50d0698391",
   "trace_run_id": "avast_njrat_1",
   "python": "3.14.3",
-  "specimen_version": "1.0.0",
+  "specimen_version": "1.1.0",
   "execution": "report-only (sandbox report replay; no sample bytes handled)",
-  "report_content_sha256": "d19ff7e27c6157256c347458cc7f58743e260481d1e8ff0c885073a7937fc423",
+  "report_content_sha256": "cc31df7128963449907c1e800b288a0ada9b3503045927d8873413bdfec059f9",
   "report_sha256": "2434c0af980a3a712b4ead907d2bdcd79682c37ce7c6c6a973f87c50d0698391",
   "sample_sha256_note": "not present in the (reduced) report; rule names use the report hash",
   "negative_corpus": {

@@ -1,36 +1,43 @@
 # Reproduce
 
-Every published number comes from a script in `benchmarks/` and a JSON file in `results/`. Full-data runs must not run on a shared laptop, so they go through the manual **`bench`** GitHub Actions workflow (`gh workflow run bench -f suite=<suite> -f seeds=5`), which downloads pinned data, runs the suite and uploads `results/` and figures as artefacts; only the small JSON files are committed.
+Every published number comes from a script in `benchmarks/` and a JSON file in `results/`. All of them run in the manual **`bench`** GitHub Actions workflow, so each result file records the run id, job, commit, command and runtime that produced it (`provenance`):
 
-## Data
+```bash
+gh workflow run bench -R rakshit-737/specimen -f suite=all -f seeds=5
+# suites: rules | family | avast (rules+family) | static-temporal | static | malbehavd | api-cross | maldetconv | light | all
+```
+
+The workflow downloads pinned data (SHA-256 checked; the whole 1.7 GB EMBER archive and the 1.6 GB Speakeasy reports only ever inside Actions), runs the suite, checks every result file (`scripts/check_results.py`: provenance, finite values, proportions and intervals in [0, 1]) and uploads `results/`, figures and model files as artefacts. Only the small JSON files are committed; `python scripts/render_results.py` then regenerates every table in the README and on these pages, and CI fails if they drift.
+
+## Benchmarks
+
+<!-- gen:reproduce -->
+<!-- /gen:reproduce -->
+
+All scripts need `pip install -e ".[ml]"`; `api-cross` also needs `xgboost`, `maldetconv` needs CPU `torch`, and the benign Speakeasy cache needs `huggingface_hub`. Every script has `--help` and exits with a one-line hint when its data is missing.
+
+## Data, locally
 
 ```bash
 export SPECIMEN_DATA=/data/specimen        # anywhere outside the repo
 python scripts/download_data.py --dest "$SPECIMEN_DATA"          # Avast 593 MB, EMBER prefix 120 MB, MalbehavD, Mal-API, Oliveira
 python scripts/download_data.py --dest "$SPECIMEN_DATA" --verify # checks the pinned SHA-256s, not only SHA256SUMS
-python -c "from specimen.ml.avast import build_cache; build_cache()"  # Avast token cache, ~20 min, needed by rules/family
+python -c "from specimen.ml.avast import build_cache; build_cache()"  # Avast token cache, needed by rules/family
 ```
 
-A file that does not match its pinned hash is renamed `*.bad` and the script exits non-zero.
+A file that does not match its pinned hash is renamed `*.bad` and the script exits non-zero. The benign Speakeasy reports (`scripts/build_speakeasy_cache.py`) and the whole EMBER archive (`--ember-mb 0`) are over 1 GB and belong in the `bench` workflow, not on a shared laptop.
 
-## Benchmarks
+## Models
 
-| result file | command | where | wall clock (reference) | headline key |
-|---|---|---|---|---|
-| `static_ember_temporal.json` | `bench` workflow, `suite=static-temporal` | Actions (1.7 GB archive) | 29 min | `summary` (AUC 0.989, TPR@0.1% 0.49) |
-| `static_ember.json` | `python benchmarks/bench_static.py` | laptop, 120 MB prefix | 33 min | LightGBM AUC 0.994 |
-| `rules_avast.json` | `bench` workflow, `suite=rules` (or `python benchmarks/bench_rules.py --seeds 5` under the heavy lock) | Actions | see file `runtime_s` | `summary` |
-| `family_avast.json` | `bench` workflow, `suite=family` | Actions | see file | `selected_variant`, accuracy |
-| `behaviour_malbehavd.json` | `python benchmarks/bench_malbehavd.py` | laptop, < 1 GB RAM | 2 min | `seeds_70_30`, `dedup_70_30` |
-| `repro_maldetconv.json` | `python benchmarks/repro_maldetconv.py` | laptop, CPU PyTorch | see file | paper vs reproduction table |
-| `api_cross.json` | `python benchmarks/bench_api_cross.py` | laptop, streamed, < 1.5 GB RAM | see file | cross-dataset and Li et al. tables |
-
-All scripts need `pip install -e ".[ml]"`; the MalDetConv reproduction also needs `torch`. Expected numbers are those in the committed JSON; re-runs on other hardware should agree within the published intervals.
+The trained family model and the EMBER gate are too large for git. `scripts/model_assets.json` pins their SHA-256s and says where they come from; `python scripts/fetch_models.py` downloads them from the pinned release, else the latest release, else the `bench` artefact that produced them, and refuses any file whose hash differs. `release.yml` attaches the same files to every release and lists their SHA-256s in the release notes.
 
 ## Demo pages
 
 ```bash
-gh release download v1.0.0 -R rakshit-737/specimen -p 'family_*' -D models
-python scripts/build_demo.py      # regenerates docs/demo/*.md
-python -m mkdocs build --strict   # pip install -r docs/requirements.txt
+python scripts/fetch_models.py --only family_   # pinned family model, SHA-256 verified
+python scripts/build_demo.py                     # regenerates docs/demo/*.md and docs/demo/summary.json
+python scripts/render_results.py                 # README example and walkthrough numbers
+python -m mkdocs build --strict                  # pip install -r docs/requirements.txt
 ```
+
+The docs workflow runs the same commands and fails if the regenerated demo index differs from the committed one.

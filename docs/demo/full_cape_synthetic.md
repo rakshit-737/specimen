@@ -13,7 +13,7 @@ score 0.3543 / entropy 0.0
 - few&#95;imports impact +0.60
 
 ## Behavior
-P(malicious)=0.7396 label=suspicious scorer=api-ngram-lr (MalbehavD-V1) | family match **unknown (closest: Zeus)** (p=0.363, avast-ctu-logreg (behaviour+static))
+P(malicious)=0.7396 label=suspicious scorer=api-ngram-lr (MalbehavD-V1) | family match **unknown &#40;closest: Zeus&#41;** (p=0.363, avast-ctu-logreg (behaviour+static))
 
 - writeprocessmemory = 0.3416, impact +0.82
 - createremotethread = 0.4172, impact +0.52
@@ -23,28 +23,28 @@ P(malicious)=0.7396 label=suspicious scorer=api-ngram-lr (MalbehavD-V1) | family
 - deletefilew&gt;ntopenfile = 0.5225, impact +0.14
 
 ### Family evidence
-Top tokens supporting **unknown (closest: Zeus)** (avast-ctu-logreg (behaviour+static)):
+Top tokens supporting **unknown &#40;closest: Zeus&#41;** (avast-ctu-logreg &#40;behaviour+static&#41;):
 
-- tech:T1055 (+0.433)
-- tech:T1622 (+0.384)
-- tactic:defense-evasion (+0.188)
-- file&#95;delete&#95;ext:exe (+0.185)
-- exec:cmd.exe (+0.145)
-- tech:T1070.004 (+0.115)
+- tech:T1055 &#40;+0.433&#41;
+- tech:T1622 &#40;+0.384&#41;
+- tactic:defense-evasion &#40;+0.188&#41;
+- file&#95;delete&#95;ext:exe &#40;+0.185&#41;
+- exec:cmd.exe &#40;+0.145&#41;
+- tech:T1070.004 &#40;+0.115&#41;
 
 ## Timeline
 | t | event | ATT&CK | anomaly |
 |---|---|---|---|
 | 0.00 | invoice&#95;lab.exe called IsDebuggerPresent | T1622 defense-evasion | 1.0 |
 | 0.00 | invoice&#95;lab.exe spawned cmd.exe &#96;cmd.exe /c vssadmin delete shadows /all /quiet&#96; | T1490 impact | 1.0 |
-| 0.10 | invoice&#95;lab.exe created Global\LabMutex-77 |   | 1.0 |
-| 0.20 | invoice&#95;lab.exe set HKEY&#95;CURRENT&#95;USER\Software\Microsoft\Windows\CurrentVersion\Run\labupdater | T1547.001 persistence | 1.0 |
+| 0.10 | invoice&#95;lab.exe created Global&#92;LabMutex-77 |   | 1.0 |
+| 0.20 | invoice&#95;lab.exe set HKEY&#95;CURRENT&#95;USER&#92;Software&#92;Microsoft&#92;Windows&#92;CurrentVersion&#92;Run&#92;labupdater | T1547.001 persistence | 1.0 |
 | 0.30 | invoice&#95;lab.exe injected into pid 3300 | T1055 defense-evasion | 1.0 |
 | 0.40 | invoice&#95;lab.exe injected into pid 3300 | T1055 defense-evasion | 1.0 |
-| 0.50 | invoice&#95;lab.exe deleted C:\Users\lab\Downloads\invoice&#95;lab.exe | T1070.004 defense-evasion | 1.0 |
-| 0.90 | invoice&#95;lab.exe wrote C:\Users\lab\AppData\Roaming\labupd.exe | T1105 command-and-control | 0.537 |
-| 0.90 | invoice&#95;lab.exe resolved c2.lab[.]invalid | T1071.004 command-and-control | 0.451 |
-| 0.91 | invoice&#95;lab.exe connected 203[.]0[.]113[.]66:8443 | T1071 command-and-control | 0.58 |
+| 0.50 | invoice&#95;lab.exe deleted C:&#92;Users&#92;lab&#92;Downloads&#92;invoice&#95;lab.exe | T1070.004 defense-evasion | 1.0 |
+| 0.90 | invoice&#95;lab.exe wrote C:&#92;Users&#92;lab&#92;AppData&#92;Roaming&#92;labupd.exe | T1105 command-and-control | 0.537 |
+| 0.90 | invoice&#95;lab.exe resolved c2.lab&#91;.&#93;invalid | T1071.004 command-and-control | 0.451 |
+| 0.91 | invoice&#95;lab.exe connected 203&#91;.&#93;0&#91;.&#93;113&#91;.&#93;66:8443 | T1071 command-and-control | 0.58 |
 
 ## Provenance graph
 ```mermaid
@@ -73,10 +73,10 @@ flowchart LR
 ```
 
 ## IOCs (defanged)
-- **network**: 203[.]0[.]113[.]66:8443
-- **domains**: c2.lab[.]invalid
-- **dropped_files**: C:\Users\lab\AppData\Roaming\labupd.exe
-- **registry**: HKEY&#95;CURRENT&#95;USER\Software\Microsoft\Windows\CurrentVersion\Run\labupdater
+- **network**: 203&#91;.&#93;0&#91;.&#93;113&#91;.&#93;66:8443
+- **domains**: c2.lab&#91;.&#93;invalid
+- **dropped_files**: C:&#92;Users&#92;lab&#92;AppData&#92;Roaming&#92;labupd.exe
+- **registry**: HKEY&#95;CURRENT&#95;USER&#92;Software&#92;Microsoft&#92;Windows&#92;CurrentVersion&#92;Run&#92;labupdater
 
 ## Sigma 1 - file_event
 ```yaml
@@ -143,9 +143,9 @@ Specificity: 0 Sigma candidate(s) dropped because no generalisation rung was spe
   "trace_sha256": "1c6780cf6a678c2cc7b0d0f74d9677973ae5e1129642ec16cbf156ade159800d",
   "trace_run_id": "full_cape_synthetic",
   "python": "3.14.3",
-  "specimen_version": "1.0.0",
+  "specimen_version": "1.1.0",
   "execution": "report-only (sandbox report replay; no sample bytes handled)",
-  "report_content_sha256": "869dd3aec9814f5692e888169a5b6497b94947029587b619eabf627255ac001f",
+  "report_content_sha256": "0ac9dde3b89cfbf27897abf4922cd21afb65d4b20cb087a1d3f0e6f923d731a7",
   "report_sha256": "1c6780cf6a678c2cc7b0d0f74d9677973ae5e1129642ec16cbf156ade159800d",
   "negative_corpus": {
     "packaged": true,

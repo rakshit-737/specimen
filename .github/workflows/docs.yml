@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  actions: read  # scripts/fetch_models.py may fall back to the bench run artefact that produced the model
 concurrency:
   group: pages
   cancel-in-progress: false
@@ -19,15 +20,22 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -e . -r docs/requirements.txt
-      - name: Regenerate the demo pages (family model from the latest release's assets)
+      - name: Regenerate the demo pages with the pinned family model (SHA-256 verified; fails if missing)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           pip install numpy scipy scikit-learn
-          gh release download -R "$GITHUB_REPOSITORY" -p 'family_*' -D models || echo "no release model assets"
+          python scripts/fetch_models.py --only family_ --dest models
           python scripts/build_demo.py
           git diff --stat -- docs/demo
-      - run: mkdocs build --strict
+          # the committed demo index (verdict, family, rule counts) must match what the pinned model produces
+          git diff --exit-code -- docs/demo/index.md
+      - name: Result tables in README and docs match results/*.json
+        run: python scripts/render_results.py --check
+      - name: mkdocs build --strict
+        env:
+          NO_MKDOCS_2_WARNING: "1"
+        run: mkdocs build --strict
       - name: Check that every <img src> in the built site resolves
         run: |
           python - <<'PY'
