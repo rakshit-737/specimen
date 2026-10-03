@@ -8,10 +8,20 @@
    pipeline thresholds (0.5 suspicious, 0.8 malicious) with Wilson CIs, for
    the first 100 / 1,000 calls and the whole sequence.
 2. **Reproduction of Li et al. 2024** (IJCSIT 2(1), doi:10.62051/ijcsit.v2n1.01,
-   Table I): 8-class family classification on Mal-API-2019 with TF-IDF (+PCA)
-   and Random Forest / XGBoost / KNN / MLP, 5-fold CV. Grid-search ranges and
-   the PCA size are not given, so defaults and 100 components are used and
-   recorded. SPECIMEN's API uni+bigram TF-IDF + LR runs on the same folds.
+   Table I on p. 6): 8-class family classification on Mal-API-2019, 5-fold CV.
+   The paper reports TF-IDF models (KNN 0.54, RF 0.68, XGBoost 0.68, a 4-layer
+   ReLU+dropout network 0.56) and TF-IDF + PCA models (KNN 0.54, RF 0.62,
+   XGBoost 0.62). Re-implemented here on the same feature sets: unigram
+   TF-IDF, and unigram TF-IDF + TruncatedSVD(100) (sparse "PCA"; the size is
+   not stated). The paper grid-searches hyperparameters (section 5.1, p. 6)
+   without giving the ranges, so **no grid search is run**: defaults are used
+   and recorded, which may explain part of any gap. The 4-layer network uses
+   hidden sizes 256-128-64-32 (not stated) and scikit-learn's MLP (L2 instead
+   of dropout).
+   **Feature-matched comparison**: SPECIMEN's logistic regression on the same
+   unigram TF-IDF (with and without SVD), and a random forest on SPECIMEN's
+   uni+bigram TF-IDF, all on the same folds, so each pair differs only in the
+   model (XGBoost on the ~10^4 uni+bigram columns is left out for run time); differences get a Nadeau-Bengio corrected paired t-test.
    Reported under the paper protocol (all rows) and a duplicate-free
    protocol (one row per distinct sequence).
 3. **Oliveira (2019)** API-call sequences (integer-coded, first 100 calls,
@@ -33,7 +43,7 @@ import zipfile
 from collections import Counter
 
 import numpy as np
-from common import md_table, mean_ci_nb, wilson, write_result
+from common import corrected_paired_t, nb_interval, require_data, wilson, write_result
 from scipy import sparse
 from sklearn.decomposition import TruncatedSVD
 from sklearn.ensemble import RandomForestClassifier
@@ -48,7 +58,13 @@ from specimen.api_behaviour import ApiBehaviourModel, ngrams
 from specimen.datasets import data_root
 from specimen.pipeline import PACKAGED_MODELS
 
-PAPER_LI2024 = {"random-forest": 0.68, "xgboost": 0.68, "knn": 0.54, "mlp": 0.56}
+# Li et al. 2024, Table I (p. 6): average accuracy over 5-fold CV
+PAPER_LI2024 = {("random-forest", "tfidf"): 0.68, ("xgboost", "tfidf"): 0.68, ("knn", "tfidf"): 0.54,
+                ("nn-4-layer", "tfidf"): 0.56, ("knn", "tfidf+pca"): 0.54, ("random-forest", "tfidf+pca"): 0.62,
+                ("xgboost", "tfidf+pca"): 0.62}
+FEATURES = {"tfidf": "unigram TF-IDF (paper features)",
+            "tfidf+pca": "unigram TF-IDF + TruncatedSVD(100) (paper's PCA; size not stated)",
+            "uni+bigram": "uni+bigram TF-IDF (SPECIMEN features)"}
 
 
 def stream_malapi(cuts: tuple[int, ...] = (100, 1000)):
@@ -76,7 +92,7 @@ def cross_dataset(model: ApiBehaviourModel, prefixes: list[list[str]], fulls: li
         for thr in (0.5, 0.8):
             k = int((s >= thr).sum())
             rows.append({"input": name, "threshold": thr, "detected": k, "n": len(s),
-                         "detection_rate": round(k / len(s), 4), "wilson_95ci": list(wilson(k, len(s)))})
+                         "detection_rate": k / len(s), "wilson_95ci": list(wilson(k, len(s)))})
     return rows, round(overlap, 4)
 
 
@@ -89,32 +105,59 @@ def _proba_counts(model: ApiBehaviourModel, c: Counter) -> float:
     return 1 / (1 + math.exp(-max(min(z, 30), -30)))
 
 
-def li2024(X_uni: sparse.csr_matrix, X_bi: sparse.csr_matrix, y: np.ndarray, pool: np.ndarray, seeds: int) -> list[dict]:
+def _models():
     from xgboost import XGBClassifier
-    models = {
+    return {
         "random-forest": lambda s: RandomForestClassifier(n_estimators=300, n_jobs=4, random_state=s),
         "xgboost": lambda s: XGBClassifier(n_estimators=300, max_depth=6, learning_rate=0.1, n_jobs=4,
                                            random_state=s, tree_method="hist"),
         "knn": lambda s: KNeighborsClassifier(n_neighbors=5),
-        "mlp": lambda s: MLPClassifier(hidden_layer_sizes=(128,), max_iter=300, random_state=s),
+        "nn-4-layer": lambda s: MLPClassifier(hidden_layer_sizes=(256, 128, 64, 32), max_iter=300,
+                                              early_stopping=True, random_state=s),
+        "specimen-lr": lambda s: LogisticRegression(C=10, max_iter=3000),
     }
-    acc: dict[str, list[float]] = {m: [] for m in [*models, "specimen-lr (uni+bigram)"]}
+
+
+# (model, features) pairs evaluated on every fold
+GRID = [("random-forest", "tfidf"), ("xgboost", "tfidf"), ("knn", "tfidf"), ("nn-4-layer", "tfidf"),
+        ("knn", "tfidf+pca"), ("random-forest", "tfidf+pca"), ("xgboost", "tfidf+pca"),
+        ("specimen-lr", "tfidf"), ("specimen-lr", "tfidf+pca"), ("specimen-lr", "uni+bigram"),
+        ("random-forest", "uni+bigram")]
+PAIRS = [(("random-forest", "tfidf"), ("specimen-lr", "tfidf")), (("xgboost", "tfidf"), ("specimen-lr", "tfidf")),
+         (("random-forest", "tfidf+pca"), ("specimen-lr", "tfidf+pca")),
+         (("random-forest", "uni+bigram"), ("specimen-lr", "uni+bigram")),
+         (("specimen-lr", "tfidf"), ("specimen-lr", "uni+bigram"))]
+
+
+def li2024(X_uni: sparse.csr_matrix, X_bi: sparse.csr_matrix, y: np.ndarray, pool: np.ndarray, seeds: int) -> dict:
+    """Paper rows and feature-matched rows on identical folds, with corrected paired tests."""
+    models = _models()
+    acc: dict[tuple[str, str], list[float]] = {g: [] for g in GRID}
     for sd in range(seeds):
         for tr, te in StratifiedKFold(5, shuffle=True, random_state=sd).split(pool, y[pool]):
             tr, te = pool[tr], pool[te]
             tf = TfidfTransformer(sublinear_tf=True).fit(X_uni[tr])
-            svd = TruncatedSVD(100, random_state=sd).fit(tf.transform(X_uni[tr]))  # "PCA" on sparse TF-IDF
-            Ztr, Zte = svd.transform(tf.transform(X_uni[tr])), svd.transform(tf.transform(X_uni[te]))
-            for name, mk in models.items():
-                m = mk(sd).fit(Ztr, y[tr])
-                acc[name].append(float((m.predict(Zte) == y[te]).mean()))
+            U_tr, U_te = tf.transform(X_uni[tr]), tf.transform(X_uni[te])
+            svd = TruncatedSVD(100, random_state=sd).fit(U_tr)  # "PCA" on sparse TF-IDF
             tb = TfidfTransformer(sublinear_tf=True).fit(X_bi[tr])
-            lr = LogisticRegression(C=10, max_iter=3000).fit(tb.transform(X_bi[tr]), y[tr])
-            acc["specimen-lr (uni+bigram)"].append(float((lr.predict(tb.transform(X_bi[te])) == y[te]).mean()))
-        print(f"  seed {sd}: " + ", ".join(f"{k}={np.mean(v):.3f}" for k, v in acc.items()), flush=True)
+            feats = {"tfidf": (U_tr, U_te), "tfidf+pca": (svd.transform(U_tr), svd.transform(U_te)),
+                     "uni+bigram": (tb.transform(X_bi[tr]), tb.transform(X_bi[te]))}
+            for name, fset in GRID:
+                Ztr, Zte = feats[fset]
+                if name == "nn-4-layer":  # dense input for the MLP is small (unigram vocabulary)
+                    Ztr, Zte = Ztr.toarray(), Zte.toarray()
+                m = models[name](sd).fit(Ztr, y[tr])
+                acc[(name, fset)].append(float((m.predict(Zte) == y[te]).mean()))
+        print(f"  seed {sd}: " + ", ".join(f"{k[0]}/{k[1]}={np.mean(v):.3f}" for k, v in acc.items()), flush=True)
     n = len(pool)
-    return [{"model": k, "paper_table1": PAPER_LI2024.get(k, "-"),
-             "accuracy": mean_ci_nb(v, n * 4 // 5, n // 5), "runs": [round(x, 4) for x in v]} for k, v in acc.items()]
+    rows = [{"model": k[0], "features": k[1], "features_text": FEATURES[k[1]],
+             "paper_table1": PAPER_LI2024.get(k, None), "accuracy": nb_interval(v, n * 4 // 5, n // 5),
+             "runs": v} for k, v in acc.items()]
+    tests = [{"a": f"{a[0]} / {a[1]}", "b": f"{b[0]} / {b[1]}",
+              **corrected_paired_t(acc[a], acc[b], n * 4 // 5, n // 5)} for a, b in PAIRS]
+    for t in tests:
+        print(t, flush=True)
+    return {"rows": rows, "paired_tests": tests}
 
 
 def oliveira(seeds: int) -> dict:
@@ -148,14 +191,17 @@ def oliveira(seeds: int) -> dict:
     n = len(y)
     return {"rows": n_rows, "distinct_sequences": n, "malware": int(y.sum()), "goodware": int((y == 0).sum()),
             "protocol": "duplicate-free, 5-fold stratified CV x seeds, class_weight=balanced",
-            "accuracy": mean_ci_nb(accs, n * 4 // 5, n // 5), "balanced_accuracy": mean_ci_nb(bal, n * 4 // 5, n // 5),
-            "roc_auc": mean_ci_nb(aucs, n * 4 // 5, n // 5)}
+            "accuracy": nb_interval(accs, n * 4 // 5, n // 5),
+            "balanced_accuracy": nb_interval(bal, n * 4 // 5, n // 5),
+            "roc_auc": nb_interval(aucs, n * 4 // 5, n // 5)}
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser()
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--seeds", type=int, default=5)
     a = ap.parse_args()
+    require_data("malapi/mal-api-2019.zip", "malapi/labels.csv",
+                 "oliveira/dynamic_api_call_sequence_per_malware_100_0_306.csv")
     t0 = time.time()
     model = ApiBehaviourModel.load(PACKAGED_MODELS)
     labels, prefixes, lens, unis, bis, keys = [], [], [], [], [], []
@@ -184,21 +230,23 @@ def main() -> int:
         out[pname] = li2024(X_uni, X_bi, y, pool, a.seeds)
     oli = oliveira(a.seeds)
     print("oliveira", oli)
-    li_rows = [{"protocol": p, **r} for p, rs in out.items() for r in rs]
     write_result("api_cross", {
         "malapi": {"rows": len(y), "distinct_sequences": len(first), "classes": sorted(set(labels)),
                    "median_calls": int(np.median(lens)), "max_calls": int(max(lens)),
                    "source": "github.com/ocatak/malware_api_class (MIT)"},
         "cross_dataset_malbehavd_to_malapi": {"model": "shipped specimen/data/api_behaviour.json (MalbehavD-V1)",
                                               "call_vocabulary_overlap": overlap, "rows": cross},
-        "repro_li2024": {"paper": "Li et al. 2024, IJCSIT 2(1), Table I (5-fold CV, grid-searched)",
-                         "unspecified_choices": "TruncatedSVD(100) for PCA; default hyperparameters "
-                                                "(RF/XGB 300 trees, KNN k=5, MLP 128 hidden); unigram TF-IDF",
-                         "rows": li_rows},
+        "repro_li2024": {"paper": "Li Z., Zhu H., Liu H., Song J., Cheng Q. Comprehensive evaluation of Mal-API-2019 "
+                                  "dataset by machine learning in malware detection. IJCSIT 2(1), 2024, "
+                                  "doi:10.62051/ijcsit.v2n1.01; Table I, p. 6",
+                         "unspecified_choices": "no grid search (ranges not given; paper section 5.1, p. 6); "
+                                                "TruncatedSVD(100) for PCA; RF/XGB 300 trees, KNN k=5; 4-layer NN "
+                                                "hidden sizes 256-128-64-32 with L2 instead of dropout",
+                         "features": FEATURES,
+                         "protocols": {p: v for p, v in out.items()}},
         "oliveira_within_dataset": oli,
-        "ci_method": "Wilson (detection rates); Nadeau-Bengio corrected t over folds x seeds",
-        "markdown": md_table(cross, ["input", "threshold", "detection_rate", "wilson_95ci"]) + "\n\n"
-        + md_table(li_rows, ["protocol", "model", "paper_table1", "accuracy"]),
+        "ci_method": "Wilson (detection rates); Nadeau-Bengio corrected t over folds x seeds (logit scale near 0/1); "
+                     "corrected paired t for model comparisons on the same folds",
     })
     print(f"done in {time.time() - t0:.0f}s")
     return 0
