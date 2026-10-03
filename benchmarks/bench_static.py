@@ -11,6 +11,10 @@ Compares three detonation gates on the same held-out split:
 It also answers the spec's research question for the gate: at a threshold
 tuned on validation data for >= 99% malware recall, how many detonations
 does the gate save, and how much malware does it wrongly skip?
+
+This is the earlier one-month *random* split (optimistic about drift); the
+released ``triage-ember`` model comes from the temporal benchmark
+(``bench_static_temporal.py``), so this script does not write ``models/``.
 """
 from __future__ import annotations
 
@@ -18,13 +22,13 @@ import argparse
 import time
 
 import numpy as np
-from common import FIGURES, ROOT, binary_metrics, bootstrap_ci, md_table, mean_ci, write_result
+from common import FIGURES, binary_metrics, bootstrap_ci, md_table, require_data, t_interval, write_result
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
-from specimen.datasets import data_root, iter_ember
+from specimen.datasets import EMBER_TAR, data_root, iter_ember
 from specimen.ml.ember import StaticModel, heuristic_score, train, vectorize
 
 TARGET_RECALL = 0.99
@@ -50,6 +54,17 @@ def load(limit: int | None) -> tuple[np.ndarray, np.ndarray, np.ndarray, list[st
     return Xa, ya, ha, fam
 
 
+def tpr_boot(y: np.ndarray, s: np.ndarray, n: int = 300, seed: int = 0) -> tuple[float, float]:
+    """Percentile bootstrap over test rows of the TPR at 0.1 % FPR."""
+    from common import tpr_at_fpr
+    rng = np.random.default_rng(seed)
+    v = []
+    for _ in range(n):
+        i = rng.integers(0, len(y), len(y))
+        v.append(tpr_at_fpr(y[i], s[i], 1e-3))
+    return float(np.percentile(v, 2.5)), float(np.percentile(v, 97.5))
+
+
 def gate_threshold(y: np.ndarray, s: np.ndarray, recall: float) -> float:
     mal = np.sort(s[y == 1])
     return float(mal[int(np.floor((1 - recall) * len(mal)))]) if len(mal) else 0.5
@@ -66,9 +81,11 @@ def gate_stats(y: np.ndarray, s: np.ndarray, thr: float) -> dict[str, float]:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser()
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--limit", type=int, default=None)
     a = ap.parse_args()
+    if not (data_root() / "cache" / f"ember_vec_{a.limit or 'all'}.npz").exists():
+        require_data(EMBER_TAR)
     X, y, h, _ = load(a.limit)
     print(f"EMBER rows: {len(y)} (malicious {int(y.sum())}, benign {int((y == 0).sum())})")
     idx = np.arange(len(y))
@@ -92,7 +109,8 @@ def main() -> int:
     for name, s, sv in (("mvp-heuristic", h[te], h[va]), ("logreg", s_lr, s_lr_va), ("lightgbm", s_lgb, s_va)):
         m = binary_metrics(y[te], s)
         lo, hi = bootstrap_ci(y[te], s, "roc_auc", n=300)
-        rows.append({"model": name, **m, "roc_auc_95ci": f"[{lo}, {hi}]"})
+        tlo, thi = tpr_boot(y[te], s)
+        rows.append({"model": name, **m, "roc_auc_95ci": [lo, hi], "tpr@0.1%fpr_95ci": [tlo, thi]})
         g = gate_stats(y[te], s, gate_threshold(y[va], sv, TARGET_RECALL))
         gates.append({"gate": name, **g})
     gates.insert(0, {"gate": "mvp-policy (detonate every PE)", "threshold": "-", "detonations_saved_pct": 0.0,
@@ -112,14 +130,13 @@ def main() -> int:
         g = gate_stats(y[te2], st, gate_threshold(y[va2], sv2, TARGET_RECALL))
         seed_rows.append({"seed": sd, "roc_auc": binary_metrics(y[te2], st)["roc_auc"], **g})
         print(seed_rows[-1])
-    seed_summary = {k: mean_ci([r[k] for r in seed_rows]) for k in
+    seed_summary = {k: t_interval([r[k] for r in seed_rows]) for k in
                     ("roc_auc", "detonations_saved_pct", "benign_skipped_pct", "malware_missed_pct")}
     print(seed_summary)
 
     thr = gate_threshold(y[va], s_va, TARGET_RECALL)
     model = StaticModel(booster, thr, {"trained_on": "EMBER 2018 v2 (train_features_1 prefix)", "n_train": len(trf),
-                                       "target_recall": TARGET_RECALL})
-    model.save(ROOT / "models")
+                                       "target_recall": TARGET_RECALL})  # not saved: see the module docstring
     # one explained example (highest-scoring malicious test sample)
     ex_i = te[int(np.argmax(s_lgb))]
     expl = model.explain(X[ex_i])
@@ -152,6 +169,7 @@ def main() -> int:
                     "split": "stratified random 75/25 (seed 0); single month 2018-01 in prefix"},
         "metrics": rows, "gate_at_99pct_recall": gates,
         "lightgbm_5_seeds": seed_rows, "lightgbm_5_seeds_mean_95ci": seed_summary,
+        "ci_method": "percentile bootstrap over test rows (single split); t-interval over the 5 re-split seeds",
         "lightgbm_train_seconds": round(t_train, 1), "lightgbm_ms_per_sample": round(t_pred, 4),
         "example_explanation": expl,
         "published_reference": {"EMBER 2017 LightGBM (Anderson & Roth 2018)": {

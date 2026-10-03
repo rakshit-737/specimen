@@ -17,12 +17,21 @@ Protocol:
   changes the training subsample and the booster seed);
 * per test month: ROC AUC, TPR at 0.1 % / 1 % FPR, detonations saved and
   malware missed at the October threshold; plus a random split over the
-  same months and volume, to show what a random split hides.
+  same months and volume, to show what a random split hides;
+* baselines on the same temporal test rows: the MVP heuristic gate (no
+  training; ported to EMBER raw features) and the "detonate every PE" policy;
+* intervals: 95 % t-intervals over the seeds (seed variance only: the test
+  rows are fixed) and, for seed 0, a percentile bootstrap over test rows;
+* the seed-0 model with its October threshold is saved to ``models/`` (the
+  ``static_*`` release asset used by ``specimen triage-ember``).
 
-Published like-for-like reference: upstream EMBER-2018 LightGBM benchmark
-(elastic/ember ``resources/ember2018-notebook.ipynb``): ROC AUC 0.99643,
-86.81 % detection at 0.1 % FPR, 96.50 % at 1 % FPR, trained on all 600k
-labelled train rows (Jan-Oct) and tested on the 200k test rows (Nov-Dec).
+Published reference, same test months but not the same setup: the upstream
+EMBER-2018 LightGBM benchmark (elastic/ember
+``resources/ember2018-notebook.ipynb``) reaches ROC AUC 0.99643, 86.81 %
+detection at 0.1 % FPR and 96.50 % at 1 % FPR, trained on all 600k labelled
+Jan-Oct rows with EMBER's own 2,381-dimension features. SPECIMEN trains on a
+132k-row Jan-Sep subsample with its own featuriser and holds October out for
+calibration, so the gap mixes training volume and features with drift.
 """
 from __future__ import annotations
 
@@ -35,11 +44,12 @@ import time
 from collections import defaultdict
 
 import numpy as np
-from common import FIGURES, binary_metrics, md_table, write_result
+from common import FIGURES, ROOT, binary_metrics, require_data, t_interval, tpr_at_fpr, write_result
+from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
 
 from specimen.datasets import EMBER_TAR, data_root
-from specimen.ml.ember import train, vectorize
+from specimen.ml.ember import StaticModel, heuristic_score, train, vectorize
 
 TRAIN_MONTHS = [f"2018-{m:02d}" for m in range(1, 10)]
 CAL_MONTH = "2018-10"
@@ -73,7 +83,7 @@ def keep(sha: str, salt: str, rate: float) -> bool:
 
 def collect(train_cap: int, test_cap: int) -> dict[str, dict[str, list]]:
     """Month -> {X, y}; rates sized from EMBER-2018's published month counts (~60k/100k)."""
-    by: dict[str, dict[str, list]] = defaultdict(lambda: {"X": [], "y": [], "sha": []})
+    by: dict[str, dict[str, list]] = defaultdict(lambda: {"X": [], "y": [], "sha": [], "h": []})
     t0 = time.time()
     n = 0
     for raw in lines():
@@ -102,6 +112,7 @@ def collect(train_cap: int, test_cap: int) -> dict[str, dict[str, list]]:
         d["X"].append(vectorize(row).astype(np.float32))
         d["y"].append(int(row["label"]))
         d["sha"].append(row["sha256"])
+        d["h"].append(heuristic_score(row))
         if n % 100_000 == 0:
             print(f"  {n} rows read, kept " + ", ".join(f"{m}:{len(v['y'])}" for m, v in sorted(by.items()))
                   + f" ({time.time() - t0:.0f}s)", flush=True)
@@ -110,24 +121,38 @@ def collect(train_cap: int, test_cap: int) -> dict[str, dict[str, list]]:
 
 def gate(y: np.ndarray, s: np.ndarray, thr: float) -> dict[str, float]:
     det = s >= thr
-    return {"detonations_saved": round(float(1 - det.mean()), 4),
-            "malware_missed": round(float((~det[y == 1]).mean()), 4),
-            "benign_skipped": round(float((~det[y == 0]).mean()), 4),
-            "malware_share": round(float(y.mean()), 4)}
+    return {"detonations_saved": float(1 - det.mean()),
+            "malware_missed": float((~det[y == 1]).mean()),
+            "benign_skipped": float((~det[y == 0]).mean()),
+            "malware_share": float(y.mean())}
+
+
+def boot_test_rows(y: np.ndarray, s: np.ndarray, n: int = 400, seed: int = 0) -> dict[str, list[float]]:
+    """Percentile bootstrap over test rows of ROC AUC and TPR at 0.1 % / 1 % FPR."""
+    rng = np.random.default_rng(seed)
+    vals: dict[str, list[float]] = {"roc_auc": [], "tpr@0.1%fpr": [], "tpr@1%fpr": []}
+    for _ in range(n):
+        i = rng.integers(0, len(y), len(y))
+        vals["roc_auc"].append(roc_auc_score(y[i], s[i]))
+        vals["tpr@0.1%fpr"].append(tpr_at_fpr(y[i], s[i], 1e-3))
+        vals["tpr@1%fpr"].append(tpr_at_fpr(y[i], s[i], 1e-2))
+    return {k: [float(np.percentile(v, 2.5)), float(np.percentile(v, 97.5))] for k, v in vals.items()}
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser()
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--train-per-month", type=int, default=15_000)
     ap.add_argument("--test-per-month", type=int, default=50_000)
     ap.add_argument("--seeds", type=int, default=3)
     ap.add_argument("--rounds", type=int, default=600)
     a = ap.parse_args()
+    require_data(EMBER_TAR)
     t0 = time.time()
     by = collect(a.train_per_month, a.test_per_month)
     counts = {m: {"rows": len(v["y"]), "malicious": int(sum(v["y"]))} for m, v in sorted(by.items())}
     print("collected", counts, f"{time.time() - t0:.0f}s", flush=True)
     stack = {m: (np.vstack(v["X"]), np.asarray(v["y"])) for m, v in by.items()}
+    heur = {m: np.asarray(v["h"]) for m, v in by.items()}
     by.clear()
     Xc, yc = stack[CAL_MONTH]
     per_month, per_seed, random_rows = [], [], []
@@ -155,30 +180,49 @@ def main() -> int:
                               "tpr@0.1%fpr": met["tpr@0.1%fpr"], "tpr@1%fpr": met["tpr@1%fpr"], **gate(y, s, thr)})
             print(per_month[-1], flush=True)
         py, ps = np.concatenate(pooled_y), np.concatenate(pooled_s)
-        met = binary_metrics(py, ps)
-        per_seed.append({"seed": seed, "threshold": round(thr, 5), "roc_auc": met["roc_auc"],
-                         "tpr@0.1%fpr": met["tpr@0.1%fpr"], "tpr@1%fpr": met["tpr@1%fpr"], **gate(py, ps, thr)})
+        per_seed.append({"seed": seed, "threshold": thr, "roc_auc": float(roc_auc_score(py, ps)),
+                         "tpr@0.1%fpr": tpr_at_fpr(py, ps, 1e-3), "tpr@1%fpr": tpr_at_fpr(py, ps, 1e-2),
+                         **gate(py, ps, thr)})
+        if seed == 0:
+            boot0 = boot_test_rows(py, ps)
+            model = StaticModel(booster, thr, {
+                "trained_on": "EMBER 2018 v2, labelled rows appeared 2018-01..2018-09 (month-stratified "
+                              "subsample, seed 0)", "n_train": int(len(ytr)),
+                "threshold_policy": f"{TARGET_RECALL:.0%} malware recall on {CAL_MONTH}",
+                "evaluated_on": "2018-11..2018-12 (results/static_ember_temporal.json)", "rounds": a.rounds})
+            model.save(ROOT / "models")
+            # baselines on the same temporal test rows
+            hy = np.concatenate([heur[m] for m in TEST_MONTHS])
+            hcal = heur[CAL_MONTH]
+            hmal = np.sort(hcal[yc == 1])
+            hthr = float(hmal[int(np.floor((1 - TARGET_RECALL) * len(hmal)))])
+            baselines = [
+                {"protocol": "MVP heuristic gate (no training), same test rows",
+                 "roc_auc": float(roc_auc_score(py, hy)), "tpr@0.1%fpr": tpr_at_fpr(py, hy, 1e-3),
+                 "tpr@1%fpr": tpr_at_fpr(py, hy, 1e-2), "threshold": hthr, **gate(py, hy, hthr),
+                 "roc_auc_95ci": boot_test_rows(py, hy, n=200)["roc_auc"]},
+                {"protocol": "detonate every PE (what analyze does)", "roc_auc": None, "tpr@0.1%fpr": None,
+                 "tpr@1%fpr": None, "detonations_saved": 0.0, "malware_missed": 0.0, "benign_skipped": 0.0},
+            ]
         # random split over the same months and volume (what the v1.0 benchmark did)
         Xall = np.vstack([Xtr, Xc, *[stack[m][0] for m in TEST_MONTHS]])
         yall = np.concatenate([ytr, yc, *[stack[m][1] for m in TEST_MONTHS]])
         i_tr, i_te = train_test_split(np.arange(len(yall)), train_size=len(ytr), stratify=yall, random_state=seed)
         b2 = train(Xall[i_tr], yall[i_tr], seed=seed, rounds=a.rounds)
-        m2 = binary_metrics(yall[i_te], b2.predict(Xall[i_te]))
-        random_rows.append({"seed": seed, "roc_auc": m2["roc_auc"], "tpr@0.1%fpr": m2["tpr@0.1%fpr"],
-                            "tpr@1%fpr": m2["tpr@1%fpr"]})
+        yt, st = yall[i_te], b2.predict(Xall[i_te])
+        random_rows.append({"seed": seed, "roc_auc": float(roc_auc_score(yt, st)), "tpr@0.1%fpr": tpr_at_fpr(yt, st, 1e-3),
+                            "tpr@1%fpr": tpr_at_fpr(yt, st, 1e-2)})
         print("temporal", per_seed[-1], "random", random_rows[-1], f"{time.time() - t0:.0f}s", flush=True)
         del Xall, yall
 
-    def agg(rows: list[dict], k: str) -> str:
-        v = np.asarray([r[k] for r in rows], dtype=float)
-        return f"{v.mean():.4f} (min {v.min():.4f}, max {v.max():.4f})"
-
     keys = ["roc_auc", "tpr@0.1%fpr", "tpr@1%fpr", "detonations_saved", "malware_missed", "benign_skipped"]
     summary = [{"protocol": "temporal (train Jan-Sep, calibrate Oct, test Nov-Dec)",
-                **{k: agg(per_seed, k) for k in keys}},
+                **{k: t_interval([r[k] for r in per_seed]) for k in keys},
+                "seed0_test_row_bootstrap_95ci": boot0},
                {"protocol": "random split, same months and volume",
-                **{k: agg(random_rows, k) for k in keys[:3]}},
-               {"protocol": "upstream EMBER-2018 LightGBM (all 600k train rows, Nov-Dec test)", **UPSTREAM}]
+                **{k: t_interval([r[k] for r in random_rows]) for k in keys[:3]}},
+               {"protocol": "upstream EMBER-2018 LightGBM (all 600k Jan-Oct rows, EMBER features, Nov-Dec test)",
+                **UPSTREAM}]
     try:
         import matplotlib
         matplotlib.use("Agg")
@@ -201,9 +245,11 @@ def main() -> int:
         "featuriser": "specimen.ml.ember.vectorize (the shipped gate's 2,440-dim CRC32 feature space)",
         "months_collected": counts, "seeds": a.seeds, "rounds": a.rounds,
         "threshold_policy": f"{TARGET_RECALL:.0%} malware recall on {CAL_MONTH}",
-        "summary": summary, "per_seed": per_seed, "per_month": per_month, "random_split": random_rows,
-        "markdown": md_table(summary, ["protocol", *keys]),
-        "runtime_s": round(time.time() - t0, 1),
+        "summary": summary, "baselines_same_test_rows": baselines, "per_seed": per_seed, "per_month": per_month,
+        "random_split": random_rows,
+        "ci_method": "95 % t-interval over seeds (seed variance only; test rows fixed); seed-0 percentile "
+                     "bootstrap over test rows",
+        "released_model": "seed 0 -> models/static_lgbm.txt + static_meta.json (bench artefact, release asset)",
     })
     return 0
 

@@ -8,7 +8,9 @@ Datasets (no binaries are downloaded - ever):
                 48,976 CAPE behaviour reports + labels, MIT).
 * ``ember``     EMBER 2018 v2 raw static features (JSON lines). Only a prefix of
                 the 1.7 GB tar.bz2 is fetched by default (``--ember-mb``); the
-                loader stream-decodes whatever prefix is present.
+                loader stream-decodes whatever prefix is present. The 120 MB
+                prefix and the whole archive (``--ember-mb 0``) have pinned
+                SHA-256s; the whole archive belongs in GitHub Actions.
 * ``malbehavd`` MalbehavD-V1 Cuckoo API-call sequences, 1,285 benign +
                 1,285 malicious (MIT).
 
@@ -46,6 +48,8 @@ KNOWN = {
         "11005ff6f5007bfee7d60bd0dc2e787f4e77b46f3b0a3d09424421c5339a8406",
     # 120 MB prefix (default --ember-mb)
     "ember/ember_dataset_2018_2.tar.bz2@120": "c1637eaa021ee7d4a534e22c3208907ba0c40e2f3baa59b413fadfbd3d34bf65",
+    # the whole 1.7 GB archive (--ember-mb 0; downloaded only inside the bench workflow)
+    "ember/ember_dataset_2018_2.tar.bz2@0": "b6052eb8d350a49a8d5a5396fbe7d16cf42848b86ff969b77464434cf2997812",
 }
 
 
@@ -53,7 +57,8 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--dest", type=Path, default=Path(os.environ.get("SPECIMEN_DATA", "data")))
     ap.add_argument("--only", default="malbehavd,avast,ember,malapi,oliveira")
-    ap.add_argument("--ember-mb", type=int, default=120, help="MB prefix of the EMBER tar.bz2 to fetch")
+    ap.add_argument("--ember-mb", type=int, default=120,
+                    help="MB prefix of the EMBER tar.bz2 to fetch (0 = whole 1.7 GB archive, pinned SHA-256)")
     ap.add_argument("--avast-mb", type=int, default=0, help="0 = full reduced archive; >0 = prefix only")
     ap.add_argument("--workers", type=int, default=6)
     ap.add_argument("--verify", action="store_true", help="only verify SHA256SUMS")
