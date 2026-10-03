@@ -57,7 +57,7 @@ _GENERIC_PREFIX = re.compile(
     r"c:\\windows(\\(system32|syswow64|temp))?|c:\\program files( \(x86\))?|c:\\programdata|"
     r"\\device\\[^\\]+|"
     r"hk(ey_)?(current_user|local_machine|lm|cu|users|cr|classes_root)(\\\*)?"
-    r"(\\software(\\classes\\local settings(\\software\\microsoft\\windows\\shell\\muicache)?|"
+    r"(\\environment|\\software(\\classes\\local settings(\\muicache|\\software\\microsoft\\windows\\shell\\muicache)?|"
     r"\\microsoft\\windows\\currentversion|\\microsoft\\windows nt\\currentversion|\\wow6432node)?)?"
     r")")
 

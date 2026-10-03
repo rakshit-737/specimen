@@ -34,6 +34,17 @@ def test_literal_len_ignores_generic_prefixes():
     assert literal_len(r"C:\Users\*\AppData\Local\iproppass\*.exe") >= 10
 
 
+def test_environment_and_muicache_prefixes_are_not_specific():
+    assert literal_len(r"HKEY_CURRENT_USER\Environment\*") == 0
+    assert literal_len(r"HKEY_USERS\*\Environment\*") == 0
+    assert literal_len(r"HKEY_CURRENT_USER\Software\Classes\Local Settings\MuiCache\*") < 10
+    # a named value under Environment (e.g. a logon script) is still specific enough
+    assert literal_len(r"HKEY_CURRENT_USER\Environment\UserInitMprLogonScript") >= 10
+    env = ["registry_set", r"HKEY_CURRENT_USER\Environment\abcdef12", ""]
+    res = synthesize_sigma([env], [])
+    assert all(r.fields[0][1].lower() != r"hkey_current_user\environment\*" for r in res.rules)
+
+
 def test_image_of():
     assert image_of(EXEC[2], "x").endswith("DF4FD49DC53618D7F3A1.exe")
     assert image_of("cmd.exe /c whoami", "") == "cmd.exe"
